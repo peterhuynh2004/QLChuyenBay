@@ -1,18 +1,6 @@
 <header class="header">
     <div class="content nav-content">
         <nav class="navbar">
-            <!--nav mobile-->
-            <label for="nav-mobile-input" class="nav_bars-btn">
-                <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 512"
-                >
-                    <!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                    <path
-                            d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"
-                    />
-                </svg>
-            </label>
 
             <input
                     type="checkbox"
@@ -38,15 +26,15 @@
                 </label>
                 <ul class="nav-mobile-list">
                     <li>
-                        <a href="./index.php" class="item-nav-mobile"
+                        <a href="./index.html" class="item-nav-mobile"
                         >Trang&nbsp;chủ</a
                         >
                     </li>
                     <li>
                         <a
-                                href="./Listen_Reading.php"
+                                href="/appQLChuyenBay/templates/huong_dan_dat_cho.html"
                                 class="item-nav-mobile"
-                        >Luyện&nbsp;L&R</a
+                        >Hướng dẫn đặt chỗ</a
                         >
                     </li>
                     <li>
@@ -82,7 +70,7 @@
                         <a
                                 href="./toeic-tip.php"
                                 class="item-nav-mobile"
-                        >TOEIC&nbsp;Tips</a
+                        >FlySmart</a
                         >
                     </li>
                     <?php if (!$isLoggedIn): ?>
@@ -105,7 +93,7 @@
                             alt="Logo"
                             class="lg"
                     />
-                    <p class="desc-Logo">TOEIC</p>
+                    <p class="desc-Logo">FlySmart</p>
                 </a>
             </div>
 
@@ -117,8 +105,8 @@
                     >
                 </li>
                 <li>
-                    <a href="./Listen_Reading.php" class="item"
-                    >Luyện&nbsp;L&R</a
+                    <a href="{{ url_for('appQLChuyenBay', filename='huong_dan_dat_cho.html') }}" class="item"
+                    >Hướng dẫn đặt chỗ</a
                     >
                 </li>
                 <li>
