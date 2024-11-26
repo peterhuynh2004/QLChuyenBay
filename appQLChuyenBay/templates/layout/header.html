@@ -100,39 +100,18 @@
             <!-- Navigation pc-->
             <ul class="nav-items">
                 <li>
-                    <a href="./index.php" class="item"
+                    <a href="./" class="item"
                     >Trang&nbsp;chủ</a
                     >
                 </li>
                 <li>
-                    <a href="{{ url_for('appQLChuyenBay', filename='huong_dan_dat_cho.html') }}" class="item"
+                    <a href="/huong_dan_dat_cho" class="item"
                     >Hướng dẫn đặt chỗ</a
                     >
                 </li>
                 <li>
-                    <a href="./Speaking_Writing.php" class="item"
-                    >Luyện&nbsp;S&W</a
-                    >
-                </li>
-                <li>
-                    <a href="./Mock_exams.php" class="item"
-                    >Đề&nbsp;thi&nbsp;thử</a
-                    >
-                </li>
-                <li>
-                    <a href="./grammar.php" class="item"
-                    >Ngữ&nbsp;pháp</a
-                    >
-                </li>
-                <li>
-                    <a href="./voca.php" class="item">Từ&nbsp;vựng</a>
-                </li>
-                <li>
-                    <a href="./blog.php" class="item">Blog</a>
-                </li>
-                <li>
-                    <a href="./toeic-tip.php" class="item"
-                    >TOEIC&nbsp;Tips</a
+                    <a href="./kiem_tra_ma" class="item"
+                    >Kiểm tra mã đặt chỗ</a
                     >
                 </li>
             </ul>
@@ -151,8 +130,8 @@
                     <p>Unlock&nbsp;Pro</p>
                 </a>
                 <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="./login.php" class="log btn" id="log">
-                    <p class="text">Đăng&nbsp;nhập</p>
+                <a href="/login" class="log btn" id="log">
+                    <p class="text">Đăng&nbsp;nhập</p>đăng
                 </a>
                 <?php else: ?>
                 <li class="nav-item dropdown btn">

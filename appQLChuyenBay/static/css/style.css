@@ -911,12 +911,13 @@ a {
     font-weight: 700;
 }
 
-.footer .social-media .card {
+.footer .social-media .card_web {
     display: flex;
     align-items: center;
     justify-content: left;
     padding: 25px 25px 25px 0px;
     gap: 20px;
+    flex-direction: row !important;
 }
 
 /* for all social containers*/
