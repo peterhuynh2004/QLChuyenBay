@@ -118,22 +118,7 @@
 
             <!-- Button -->
             <div class="actions">
-                <a href="./prenium.php" class="pro btn">
-                    <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 36 24"
-                    >
-                        <path
-                                d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"
-                        ></path>
-                    </svg>
-                    <p>Unlock&nbsp;Pro</p>
-                </a>
-                <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="/login" class="log btn" id="log">
-                    <p class="text">Đăng&nbsp;nhập</p>đăng
-                </a>
-                <?php else: ?>
+                {% if current_user.is_authenticated %}
                 <li class="nav-item dropdown btn">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-bs-toggle="dropdown"><?php echo $usernameindex ?></a>
@@ -143,7 +128,21 @@
                         <li><a class="dropdown-item" href="/TrungTamTiengAnh/LOGCODE/logout.php">Đăng xuất</a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
+                <li class="nav-item">
+                    <a class="nav-link text-success" href="/logout">Đăng xuất</a>
+                </li>
+                {% else %}
+                <a href="./prenium.php" class="pro btn">
+                        <path
+                                d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"
+                        ></path>
+                    </svg>
+                    <p>Đăng ký</p>
+                </a>
+                <a href="/login" class="log btn" id="log">
+                    <p class="text">Đăng&nbsp;nhập</p>đăng
+                </a>
+                {% endif %}
             </div>
         </nav>
     </div>

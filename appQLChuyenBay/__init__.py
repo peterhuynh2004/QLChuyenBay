@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote
-# from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 import cloudinary
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ app.config["PAGE_SIZE"] = 8
 
 db = SQLAlchemy(app)
 
-# login = LoginManager(app)
+login = LoginManager(app)
 
 cloudinary.config(
     cloud_name="ddgxultsd",
