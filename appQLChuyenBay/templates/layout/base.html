@@ -6,7 +6,7 @@
     <!-- Favicon -->
     <link
             rel="shortcut icon"
-            href="./assets/favicon/favicon.ico"
+            href="https://res.cloudinary.com/ddgxultsd/image/upload/v1732555525/logo1.png"
             type="image/x-icon"
     />
     <!-- Bootstrap -->
@@ -50,9 +50,8 @@
 {% block footer %}
 {% include 'layout/footer.html' %}
 {% endblock %}
-<!-- Nhúng Javascript -->
-<script src="./assets/js/index.js"></script>
-<script src="./assets/js/go-top.js"></script>
-<script src="./assets/js/if_log.js"></script>
 </body>
+<!-- Nhúng Javascript -->
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
 </html>

@@ -9,85 +9,9 @@
                     value=""
             />
 
-            <!--Nav_overlay-->
-            <label for="nav-mobile-input" class="nav_overlay"></label>
-
-            <nav class="nav-mobile">
-                <label for="nav-mobile-input" class="nav-mobile-close">
-                    <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 352 512"
-                    >
-                        <!-- Font Awesome Pro 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) -->
-                        <path
-                                d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
-                        />
-                    </svg>
-                </label>
-                <ul class="nav-mobile-list">
-                    <li>
-                        <a href="./index.html" class="item-nav-mobile"
-                        >Trang&nbsp;chủ</a
-                        >
-                    </li>
-                    <li>
-                        <a
-                                href="/appQLChuyenBay/templates/huong_dan_dat_cho.html"
-                                class="item-nav-mobile"
-                        >Hướng dẫn đặt chỗ</a
-                        >
-                    </li>
-                    <li>
-                        <a
-                                href="./Speaking_Writing.php"
-                                class="item-nav-mobile"
-                        >Luyện&nbsp;S&W</a
-                        >
-                    </li>
-                    <li>
-                        <a
-                                href="./Mock_exams.php"
-                                class="item-nav-mobile"
-                        >Đề&nbsp;thi&nbsp;thử</a
-                        >
-                    </li>
-                    <li>
-                        <a href="./grammar.php" class="item-nav-mobile"
-                        >Ngữ&nbsp;pháp</a
-                        >
-                    </li>
-                    <li>
-                        <a href="./voca.php" class="item-nav-mobile"
-                        >Từ&nbsp;vựng</a
-                        >
-                    </li>
-                    <li>
-                        <a href="./blog.php" class="item-nav-mobile"
-                        >Blog</a
-                        >
-                    </li>
-                    <li>
-                        <a
-                                href="./toeic-tip.php"
-                                class="item-nav-mobile"
-                        >FlySmart</a
-                        >
-                    </li>
-                    <?php if (!$isLoggedIn): ?>
-                    <li>
-                        <a href="./login.php" class="item-nav-mobile">Đăng&nbsp;nhập</a>
-                    </li>
-                    <?php else: ?>
-                    <li>
-                        <a href="./information.php" class="item-nav-mobile">Cài&nbsp;đặt</a>
-                    </li>
-                    <?php endif; ?>
-
-                </ul>
-            </nav>
             <!-- Logo -->
             <div class="Logo-nav">
-                <a href="./index.php" class="Logo">
+                <a href="./" class="Logo">
                     <img
                             src="https://res.cloudinary.com/ddgxultsd/image/upload/v1732555525/logo1.png"
                             alt="Logo"
@@ -125,7 +49,7 @@
                 {% if current_user.is_authenticated %}
                 <li class="nav-item dropdown btn">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
-                       data-bs-toggle="dropdown"><?php echo $usernameindex ?></a>
+                       data-bs-toggle="dropdown">{{ current_user.HoTen }}</a>
                     <ul class="dropdown-menu dropmn">
                         <li><a class="dropdown-item" href="/TRUNGTAMTIENGANH/verify_password.php">Thay đổi thông tin</a>
                         </li>
@@ -136,7 +60,7 @@
                     <a class="nav-link text-success" href="/logout">Đăng xuất</a>
                 </li>
                 {% else %}
-                <a href="./prenium.php" class="pro btn">
+                <a href="/register" class="pro btn">
                         <path
                                 d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"
                         ></path>

@@ -16,6 +16,9 @@ body {
 }
 
 /* ===== Common ===== */
+.nav-item.dropdown.btn {
+    color: black;
+}
 .lg1 {
     width: 50px;
     height: auto; /* Để giữ tỷ lệ gốc */
@@ -175,7 +178,7 @@ a {
     font-size: 1.8rem; /* Kích thước chữ */
     font-weight: 700; /* Định dạng chữ đậm */
     border-radius: 15px; /* Bo tròn các góc */
-    background-color: #333; /* Thêm màu nền nếu cần */
+    background-color: white; /* Thêm màu nền nếu cần */
 }
 
 
@@ -1015,6 +1018,16 @@ a {
     font-weight: 400;
 }
 
+.ava {
+    padding-top: 0.625rem !important;
+}
+
+.form-floating.input-box {
+    margin: 10px auto !important;
+}
+.fs-2 {
+    padding-bottom: 5px;
+}
 /* =============== Go to top =============== */
 .btn-to-top {
     opacity: 0;

@@ -62,18 +62,21 @@ class DiaChi(db.Model):
     TinhTP = Column(String(255), nullable=False)
 
 
-class User(db.Model, UserMixin):
+class NguoiDung(db.Model, UserMixin):
     __tablename__ = 'NguoiDung'
     ID_User = Column(Integer, primary_key=True, autoincrement=True)
     HoTen = Column(String(255), nullable=False)
     Email = Column(String(255), nullable=False)
-    SDT = Column(Integer, primary_key=False)
+    SDT = Column(Integer, nullable=False)
     TenDangNhap = Column(String(255), nullable=False)
     MatKhau = Column(String(255), nullable=False)
     NgaySinh = Column(DateTime, nullable=True)
     GioiTinh = Column(Enum(GioiTinh), nullable=False)
     DiaChi = Column(Integer, ForeignKey('DiaChi.ID_DC', ondelete='CASCADE'))
+    Avt = Column(String(255), default="https://res.cloudinary.com/ddgxultsd/image/upload/v1732958968/tu5tpwmkwetp4ico5liv.png")
 
+    def get_id(self):
+        return str(self.ID_User)
 
 class NguoiDung_VaiTro(db.Model):
     __tablename__ = 'NguoiDung_VaiTro'
