@@ -16,7 +16,6 @@ myInput.onblur = function () {
 
 myInput.addEventListener("keyup", function () {
     validatePasswordComplexity();
-    validatePasswordsMatch();
 });
 
 function validatePasswordComplexity() {
@@ -39,14 +38,4 @@ function validatePasswordComplexity() {
     length.classList.toggle("invalid", !hasMinimumLength);
 }
 
-function validatePasswordsMatch() {
-    if (myInput.value === dfpass.value) {
-        err_pass.style.visibility = "hidden";
-        btn.style.opacity = "1";
-        btn.disabled = false;
-    } else {
-        err_pass.style.visibility = "visible";
-        btn.style.opacity = "0.7";
-        btn.disabled = true;
-    }
-}
+document.querySelector(".alert").classList.add("show");

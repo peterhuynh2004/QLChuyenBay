@@ -33,9 +33,15 @@ def login_process():
     return render_template('login.html')
 
 
+@app.route("/logout")
+def logout_process():
+    logout_user()
+    return redirect('/login')
+
+
 @app.route('/register', methods=['get', 'post'])
 def register_process():
-    err_msg = 'lỗi'
+    err_msg = ''
     if request.method.__eq__('POST'):
         password = request.form.get('password')
         confirm = request.form.get('confirm')

@@ -30,9 +30,7 @@
                             class="email-input"
                             name="email"
                             placeholder="Nhập địa chỉ email(VD: abc@gmail.com)"
-                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                            required
-                    />
+                            pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}" required>
                     <i class="bx bxs-user"></i>
                 </div>
                 <p class="form-error">
@@ -73,12 +71,13 @@
                             required
                     />
                     <i class="bx bxs-lock-alt"></i>
-                    <p class="df-pass">
-                        Vui lòng nhập giống với mật khẩu đã tạo
-                        trước đó
-                    </p>
                 </div>
-                <label class="fs-2">Nhập lại mật khẩu:</label>
+                {% if err_msg %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ err_msg }}
+                        </div>
+                {% endif %}
+                <label class="fs-2">Ảnh đại diện:</label>
                 <div class="form-floating input-box">
                     <input type="file" class="form-control ava" id="avatar" name="avatar" />
                 </div>
