@@ -2,6 +2,7 @@ from models import NguoiDung
 from appQLChuyenBay import app, db
 import hashlib
 import cloudinary.uploader
+from sqlalchemy.orm import sessionmaker
 
 
 def auth_user(username, password):
@@ -27,3 +28,14 @@ def add_user(name, email, password, avatar):
 
 def get_user_by_id(id):
     return NguoiDung.query.get(id)
+
+
+def check_email_exists(email):
+    Session = sessionmaker(bind=db.engine)
+    session = Session()
+    try:
+        # Tìm người dùng với email đã cho
+        user = session.query(NguoiDung).filter_by(Email=email).first()
+        return user is not None  # Trả về True nếu email tồn tại
+    finally:
+        session.close()

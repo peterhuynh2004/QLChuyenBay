@@ -43,10 +43,16 @@ def logout_process():
 def register_process():
     err_msg = ''
     if request.method.__eq__('POST'):
+        email = request.form.get('email')
         password = request.form.get('password')
         confirm = request.form.get('confirm')
 
-        if password.__eq__(confirm):
+        # Kiểm tra nếu email đã tồn tại
+        if dao.check_email_exists(email):  # Hàm này kiểm tra email trong cơ sở dữ liệu
+            err_msg = 'Email đã tồn tại!'
+        elif not password.__eq__(confirm):
+            err_msg = 'Mật khẩu không khớp!'
+        else:
             data = request.form.copy()
             del data['confirm']
             data.pop('dangky', None)  # Loại bỏ trường 'dangky' nếu tồn tại
@@ -54,8 +60,7 @@ def register_process():
             dao.add_user(avatar=avatar, **data)
 
             return redirect('/login')
-        else:
-            err_msg = 'Mật khẩu không khớp!'
+
     return render_template('register.html', err_msg=err_msg)
 
 
