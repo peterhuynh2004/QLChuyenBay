@@ -39,9 +39,12 @@ def timkiemchuyenbay():
     airport = dao.load_airport()
     id_SanBayDen= request.args.get('id_SanBayDen')
     id_SanBayDi = request.args.get('id_SanBayDi')
-    flight = dao.load_flight(id_SanBayDen=id_SanBayDen, id_SanBayDi=id_SanBayDi)
+    ngayDi = request.args.get('ngayDi')
+    flight = dao.load_flight(id_SanBayDen=id_SanBayDen, id_SanBayDi=id_SanBayDi, ngayDi=ngayDi)
 
-    return render_template('timkiemchuyenbay.html', airport = airport, flight = flight)
+    return render_template('timkiemchuyenbay.html',
+                           airport = airport, flight = flight,
+                           id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen)
 
 
 @app.route("/datveonline")

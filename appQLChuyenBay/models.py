@@ -54,6 +54,7 @@ class ChuyenBay(db.Model):
     id_SanBayDi = Column(Integer, ForeignKey('SanBay.id_SanBay'))
     id_SanBayDen = Column(Integer, ForeignKey('SanBay.id_SanBay'))
     id_TuyenBay = Column(Integer, ForeignKey('TuyenBay.id_TuyenBay'))
+    # ngay_Bay = Column(DateTime)
     gio_Bay = Column(DateTime)
     tG_Bay = Column(DateTime)
     GH1 = Column(Integer)

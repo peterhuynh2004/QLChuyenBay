@@ -21,9 +21,9 @@ def load_airport():
     return query.all()
 
 
-def load_flight(id_SanBayDen=None, id_SanBayDi=None):
+def load_flight(id_SanBayDen=None, id_SanBayDi=None, ngayDi=None):
     query = ChuyenBay.query
 
-    if id_SanBayDen and id_SanBayDi:
-        query = query.filter(ChuyenBay.id_SanBayDen == id_SanBayDen and ChuyenBay.id_SanBayDi == id_SanBayDi)
+    if id_SanBayDen and id_SanBayDi and ngayDi:
+        query = query.filter(ChuyenBay.id_SanBayDen == id_SanBayDen and ChuyenBay.id_SanBayDi == id_SanBayDi and ChuyenBay.gio_Bay.date() == ngayDi)
     return query.all()
