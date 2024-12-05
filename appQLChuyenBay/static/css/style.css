@@ -1061,3 +1061,41 @@ a {
     pointer-events: auto;
     opacity: 1;
 }
+
+/*trang datve_online*/
+.form-select{
+    background-color: #cccccc;
+    color: #ffffff;
+    font-size: 18px;
+    border-color: lightblue;
+    border-width: 2px;
+}
+
+.datve_online{
+    font-size: 16px;
+}
+
+.form-control{
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+ .form-container {
+    display: none;
+}
+.form-container.active {
+    display: block;
+}
+.button-container {
+    margin-top: 20px;
+}

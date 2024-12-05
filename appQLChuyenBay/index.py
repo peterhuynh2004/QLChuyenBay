@@ -34,6 +34,20 @@ def kiemtrama():
     return render_template('kiem_tra_ma.html')
 
 
+@app.route("/timkiemchuyenbay")
+def timkiemchuyenbay():
+    airport = dao.load_airport()
+    id_SanBayDen= request.args.get('id_SanBayDen')
+    id_SanBayDi = request.args.get('id_SanBayDi')
+    flight = dao.load_flight(id_SanBayDen=id_SanBayDen, id_SanBayDi=id_SanBayDi)
+
+    return render_template('timkiemchuyenbay.html', airport = airport, flight = flight)
+
+
+@app.route("/datveonline")
+def datveonline():
+    return render_template('datveonline.html')
+
 @login.user_loader
 def load_user(user_id):
     return dao.get_user_by_id(user_id)

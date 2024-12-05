@@ -23,6 +23,16 @@ class GioiTinh(GioiTinhEnum):
     Nu = 2
 
 
+class TuyenBay(db.Model):
+    __tablename__ = 'TuyenBay'
+    id_TuyenBay = Column(Integer, primary_key=True, autoincrement=True)
+    tenTuyen = Column(String(50), nullable=False)
+    doanhThu = Column(Integer)
+    soLuotBay = Column(Integer)
+    tiLe = Column(Integer)
+    baocao = relationship('BaoCao', backref='TuyenBay', lazy=True)
+
+
 class BaoCao(db.Model):
     __tablename__ = 'BaoCao'
     id_BaoCao = Column(Integer, primary_key=True, autoincrement=True)
@@ -34,6 +44,8 @@ class BaoCao(db.Model):
     __table_args__ = (
         UniqueConstraint('thang', 'id_BaoCao', 'id_TuyenBay', name='UC_Thang'),
     )
+
+
 
 
 class ChuyenBay(db.Model):
@@ -95,8 +107,8 @@ class SanBay(db.Model):
 class SBayTrungGian(db.Model):
     __tablename__ = 'SBayTrungGian'
     ID = Column(Integer, primary_key=True, autoincrement=True)
-    ID_ChuyenBay = Column(Integer, ForeignKey('ChuyenBay.ID_ChuyenBay'), nullable=False)
-    ID_SanBay = Column(Integer, ForeignKey('SanBay.ID_SanBay'), nullable=False)
+    ID_ChuyenBay = Column(Integer, ForeignKey('ChuyenBay.id_ChuyenBay'), nullable=False)
+    ID_SanBay = Column(Integer, ForeignKey('SanBay.id_SanBay'), nullable=False)
     ThoiGianDung = Column(Integer, nullable=False)  # Thời gian dừng (phút)
     GhiChu = Column(String(255), nullable=True)  # Ghi chú
 
@@ -141,35 +153,97 @@ class ThongTinHanhKhach(db.Model):
     ID_User = Column(Integer, ForeignKey('NguoiDung.ID_User'), nullable=False)  # Liên kết với người dùng
 
 
-if __name__ == '__main__':
-    with app.app_context():
-        airports = [
-            {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
-            {"Sanbay": "Phù Cát", "Tinh": "Bình Định"},
-            {"Sanbay": "Cà Mau", "Tinh": "Cà Mau"},
-            {"Sanbay": "Cần Thơ", "Tinh": "Cần Thơ"},
-            {"Sanbay": "Buôn Ma Thuột", "Tinh": "Đắk Lắk"},
-            {"Sanbay": "Đà Nẵng", "Tinh": "Đà Nẵng"},
-            {"Sanbay": "Điện Biên Phủ", "Tinh": "Điện Biên"},
-            {"Sanbay": "Pleiku", "Tinh": "Gia Lai"},
-            {"Sanbay": "Cát Bi", "Tinh": "Hải Phòng"},
-            {"Sanbay": "Nội Bài", "Tinh": "Hà Nội"},
-            {"Sanbay": "Tân Sơn Nhất", "Tinh": "Thành phố Hồ Chí Minh"},
-            {"Sanbay": "Cam Ranh", "Tinh": "Khánh Hòa"},
-            {"Sanbay": "Rạch Giá", "Tinh": "Kiên Giang"},
-            {"Sanbay": "Phú Quốc", "Tinh": "Kiên Giang"},
-            {"Sanbay": "Liên Khương", "Tinh": "Lâm Đồng"},
-            {"Sanbay": "Vinh", "Tinh": "Nghệ An"},
-            {"Sanbay": "Tuy Hòa", "Tinh": "Phú Yên"},
-            {"Sanbay": "Đồng Hới", "Tinh": "Quảng Bình"},
-            {"Sanbay": "Chu Lai", "Tinh": "Quảng Nam"},
-            {"Sanbay": "Phú Bài", "Tinh": "Thừa Thiên Huế"},
-            {"Sanbay": "Thọ Xuân", "Tinh": "Thanh Hóa"},
-            {"Sanbay": "Vân Đồn", "Tinh": "Quảng Ninh"},
-        ]
+# if __name__ == '__main__':
+#     with app.app_context():
+        # db.create_all()
+        # airports = [
+        #     {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
+        #     {"Sanbay": "Phù Cát", "Tinh": "Bình Định"},
+        #     {"Sanbay": "Cà Mau", "Tinh": "Cà Mau"},
+        #     {"Sanbay": "Cần Thơ", "Tinh": "Cần Thơ"},
+        #     {"Sanbay": "Buôn Ma Thuột", "Tinh": "Đắk Lắk"},
+        #     {"Sanbay": "Đà Nẵng", "Tinh": "Đà Nẵng"},
+        #     {"Sanbay": "Điện Biên Phủ", "Tinh": "Điện Biên"},
+        #     {"Sanbay": "Pleiku", "Tinh": "Gia Lai"},
+        #     {"Sanbay": "Cát Bi", "Tinh": "Hải Phòng"},
+        #     {"Sanbay": "Nội Bài", "Tinh": "Hà Nội"},
+        #     {"Sanbay": "Tân Sơn Nhất", "Tinh": "Thành phố Hồ Chí Minh"},
+        #     {"Sanbay": "Cam Ranh", "Tinh": "Khánh Hòa"},
+        #     {"Sanbay": "Rạch Giá", "Tinh": "Kiên Giang"},
+        #     {"Sanbay": "Phú Quốc", "Tinh": "Kiên Giang"},
+        #     {"Sanbay": "Liên Khương", "Tinh": "Lâm Đồng"},
+        #     {"Sanbay": "Vinh", "Tinh": "Nghệ An"},
+        #     {"Sanbay": "Tuy Hòa", "Tinh": "Phú Yên"},
+        #     {"Sanbay": "Đồng Hới", "Tinh": "Quảng Bình"},
+        #     {"Sanbay": "Chu Lai", "Tinh": "Quảng Nam"},
+        #     {"Sanbay": "Phú Bài", "Tinh": "Thừa Thiên Huế"},
+        #     {"Sanbay": "Thọ Xuân", "Tinh": "Thanh Hóa"},
+        #     {"Sanbay": "Vân Đồn", "Tinh": "Quảng Ninh"},
+        # ]
+        #
+        # for p in airports:
+        #     prod = SanBay(ten_SanBay=p['Sanbay'],
+        #                   DiaChi=p['Tinh'])
+        #     db.session.add(prod)
+        # db.session.commit()
+        #
+        # flights = [
+        #     {   "id_SanBayDi": 1,
+        #         "id_SanBayDen": 2,
+        #         # "id_TuyenBay": 1,
+        #         "gio_Bay": "2024-12-05 08:00:00",
+        #         "tG_Bay": "2024-12-05 09:30:00",
+        #         "GH1": 100,
+        #         "GH2": 120,
+        #         "GH1_DD": 50,
+        #         "GH2_DD": 70
+        #     },
+        #     {   "id_SanBayDi": 2,
+        #         "id_SanBayDen": 3,
+        #         # "id_TuyenBay": 2,
+        #         "gio_Bay": "2024-12-05 10:00:00",
+        #         "tG_Bay": "2024-12-05 11:30:00",
+        #         "GH1": 90,
+        #         "GH2": 110,
+        #         "GH1_DD": 40,
+        #         "GH2_DD": 60
+        #     },
+        #     {   "id_SanBayDi": 3,
+        #         "id_SanBayDen": 4,
+        #         # "id_TuyenBay": 3,
+        #         "gio_Bay": "2024-12-05 12:00:00",
+        #         "tG_Bay": "2024-12-05 13:30:00",
+        #         "GH1": 80,
+        #         "GH2": 100,
+        #         "GH1_DD": 30,
+        #         "GH2_DD": 50
+        #     },
+        #     {   "id_SanBayDi": 6,
+        #         "id_SanBayDen": 7,
+        #         # "id_TuyenBay": 4,
+        #         "gio_Bay": "2024-12-05 14:00:00",
+        #         "tG_Bay": "2024-12-05 15:30:00",
+        #         "GH1": 60,
+        #         "GH2": 80,
+        #         "GH1_DD": 20,
+        #         "GH2_DD": 40
+        #     },
+        #     {   "id_SanBayDi": 10,
+        #         "id_SanBayDen": 12,
+        #         # "id_TuyenBay": 5,
+        #         "gio_Bay": "2024-12-05 16:00:00",
+        #         "tG_Bay": "2024-12-05 17:30:00",
+        #         "GH1": 120,
+        #         "GH2": 140,
+        #         "GH1_DD": 60,
+        #         "GH2_DD": 80
+        #     }
+        # ]
+        #
+        # for f in flights:
+        #     flight = ChuyenBay(**f)
+        #     db.session.add(flight)
+        #
+        # db.session.commit()
 
-        for p in airports:
-            prod = SanBay(ten_SanBay=p['Sanbay'],
-                          DiaChi=p['Tinh'])
-            db.session.add(prod)
-        db.session.commit()
+

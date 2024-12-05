@@ -1,0 +1,126 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="container mt-5 datve_online" >
+    <!-- Tiêu đề -->
+    <h1 class="text-center mb-4">Tìm Kiếm Chuyến Bay</h1>
+
+    <!-- Form tìm kiếm -->
+    <form>
+        <div class="row g-3">
+            <!-- Nơi đi -->
+            <div class="col-md-6">
+                <label for="departure" class="form-label">Nơi đi</label>
+                <select class="form-select" id="departure" name="id_SanBayDi">
+                    <option selected>Chọn nơi đi</option>
+                    {% for a in airport %}
+                    <option value="{{ a.id_SanBay}}">{{ a.DiaChi }} (Sân Bay {{ a.ten_SanBay }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Nơi đến -->
+            <div class="col-md-6">
+                <label for="destination" class="form-label">Nơi đến</label>
+                <select class="form-select" id="destination" name="id_SanBayDen">
+                    <option selected>Chọn nơi đến</option>
+                    {% for a in airport %}
+                    <option value="{{ a.id_SanBay }}">{{ a.DiaChi }} (Sân Bay {{ a.ten_SanBay }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row g-3 mt-3">
+            <!-- Ngày đi -->
+            <div class="col-md-6">
+                <label for="departure-date" class="form-label">Ngày đi</label>
+                <input type="date" class="form-control" id="departure-date" name="ngayDi">
+            </div>
+            <!-- Khứ hồi -->
+            <div class="col-md-6">
+                <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" id="return-checkbox" onchange="kiemtrakhuhoi()">
+                    <label class="form-check-label" for="return-checkbox">Khứ hồi</label>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mt-3">
+            <!-- Ngày về -->
+            <div class="col-md-6">
+                <label for="return-date" class="form-label">Ngày về</label>
+                <input type="date" class="form-control" id="return-date" name="ngayVe" disabled>
+            </div>
+        </div>
+        <div class="row g-3 mt-3">
+            <!-- Số lượng hành khách -->
+            <div class="col-md-12">
+                <label class="form-label">Chọn số lượng hành khách:</label>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label for="adults" class="form-label">Người lớn (trên 12 tuổi)</label>
+                        <input type="number" class="form-control" id="adults" min="0" value="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="children" class="form-label">Trẻ em (2-12 tuổi)</label>
+                        <input type="number" class="form-control" id="children" min="0" value="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="infants" class="form-label">Trẻ em nhỏ hơn 2 tuổi</label>
+                        <input type="number" class="form-control" id="infants" min="0" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Nút tìm kiếm -->
+        <div class="mt-4 text-center">
+            <button type="submit" class="btn btn-primary" style="margin-top: 15px">Tìm chuyến bay</button>
+        </div>
+    </form>
+
+    <!-- Danh sách chuyến bay -->
+    <div class="mt-5">
+        <h2 class="mb-4">Danh Sách Chuyến Bay</h2>
+        <div id="flight-list" class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                <tr>
+                    <th>Mã chuyến bay</th>
+<!--                    <th>Ngày bay</th>-->
+                    <th>Thời gian bay</th>
+                    <th>Nơi đi</th>
+                    <th>Nơi đến</th>
+                    <th>Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Kết quả chuyến bay sẽ được thêm vào đây -->
+                    {% for f in flight %}
+                    <tr>
+                        <td>{{ f.id_ChuyenBay}}</td>
+                        <td>{{ f.gio_Bay }}</td>
+                        {% for i in airport %}
+                            {% if i.id_SanBay == f.id_SanBayDi %}
+                            <td>{{ i.ten_SanBay}}</td>
+                            {% endif %}
+                        {% endfor %}
+                        {% for i in airport %}
+                            {% if i.id_SanBay == f.id_SanBayDen %}
+                            <td>{{ i.ten_SanBay}}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            <form action="/datveonline" method="get">
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary" onclick="searchFlights()"> Chọn
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
