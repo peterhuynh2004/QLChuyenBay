@@ -26,8 +26,8 @@ def add_user(name, email, password, avatar):
     db.session.commit()
 
 
-def get_user_by_id(id):
-    return NguoiDung.query.get(id)
+def get_user_by_id(user_id):
+    return NguoiDung.query.get(user_id)  # Trả về None nếu không tìm thấy
 
 
 def check_email_exists(email):

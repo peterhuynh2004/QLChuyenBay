@@ -4,6 +4,7 @@ const letter = document.getElementById("letter");
 const capital = document.getElementById("capital");
 const number = document.getElementById("number");
 const length = document.getElementById("length");
+
 // When the user clicks on the password field, show the message box
 myInput.onfocus = function () {
     document.getElementById("pass-error").style.display = "block";

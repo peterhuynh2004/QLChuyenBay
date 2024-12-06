@@ -1,7 +1,9 @@
 import random
+from sqlalchemy import Date  # Correct import
+from datetime import datetime
 from sqlalchemy.orm import relationship
 from sqlalchemy import (
-    create_engine, Column, Integer, String, DateTime, ForeignKey, Enum, UniqueConstraint, CheckConstraint
+    create_engine, Column, Integer, String, DateTime, ForeignKey, Enum, UniqueConstraint, CheckConstraint, Float
 )
 from appQLChuyenBay import db, app
 from enum import Enum as RoleEnum
@@ -36,11 +38,26 @@ class BaoCao(db.Model):
     )
 
 
+class TuyenBay(db.Model):
+    __tablename__ = 'TuyenBay'
+
+    # Khóa chính tự động tăng
+    id_TuyenBay = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Các cột dữ liệu
+    tenTuyen = Column(String(255), nullable=False)  # Tên tuyến bay
+    id_SanBayDi = Column(Integer, ForeignKey('SanBay.id_SanBay'))
+    id_SanBayDen = Column(Integer, ForeignKey('SanBay.id_SanBay'))
+    doanhThu = Column(Integer, nullable=True)  # Doanh thu (có thể NULL)
+    soLuotBay = Column(Integer, nullable=True)  # Số lượt bay (có thể NULL)
+    tyLe = Column(Integer, nullable=True)  # Tỷ lệ (có thể NULL)
+    __table_args__ = (
+        UniqueConstraint('id_SanBayDi', 'id_SanBayDen', name='UQ_SanBay'),
+    )
+
 class ChuyenBay(db.Model):
     __tablename__ = 'ChuyenBay'
     id_ChuyenBay = Column(Integer, primary_key=True, autoincrement=True)
-    id_SanBayDi = Column(Integer, ForeignKey('SanBay.id_SanBay'))
-    id_SanBayDen = Column(Integer, ForeignKey('SanBay.id_SanBay'))
     id_TuyenBay = Column(Integer, ForeignKey('TuyenBay.id_TuyenBay'))
     gio_Bay = Column(DateTime)
     tG_Bay = Column(DateTime)
@@ -48,10 +65,26 @@ class ChuyenBay(db.Model):
     GH2 = Column(Integer)
     GH1_DD = Column(Integer)
     GH2_DD = Column(Integer)
-    __table_args__ = (
-        UniqueConstraint('id_SanBayDi', 'id_SanBayDen', name='UQ_SanBay'),
-    )
 
+
+class VeChuyenBay(db.Model):
+    __tablename__ = 'VeChuyenBay'
+
+    # Các cột
+    maVe = Column(Integer, primary_key=True, autoincrement=True)  # Mã vé
+    giaVe = Column(Integer, nullable=False)  # Giá vé
+    maThongTin = Column(Integer, ForeignKey('ThongTinHanhKhach.ID_HanhKhach'), nullable=False)  # Mã thông tin hành khách
+    hangVe = Column(Integer, nullable=False)  # Hạng vé (ví dụ: 1: hạng nhất, 2: hạng phổ thông)
+    soGhe = Column(Integer, nullable=False)  # Số ghế
+    giaHanhLy = Column(Integer, nullable=False)  # Giá hành lý
+    thoiGianDat = Column(DateTime, nullable=False, default=datetime.utcnow)  # Thời gian đặt vé
+    id_user = Column(Integer, ForeignKey('NguoiDung.ID_User'), nullable=False)  # Khoá ngoại đến bảng User
+    id_ChuyenBay = Column(Integer, ForeignKey('ChuyenBay.id_ChuyenBay'),
+                          nullable=False)  # Khoá ngoại đến bảng ChuyenBay
+
+    # Quan hệ (relationship) với bảng khác
+    user = relationship('User', backref='ve_chuyen_bay')
+    chuyen_bay = relationship('ChuyenBay', backref='ve_chuyen_bay')
 
 class DiaChi(db.Model):
     __tablename__ = 'DiaChi'
@@ -73,10 +106,12 @@ class NguoiDung(db.Model, UserMixin):
     NgaySinh = Column(DateTime, nullable=True)
     GioiTinh = Column(Enum(GioiTinh), nullable=False)
     DiaChi = Column(Integer, ForeignKey('DiaChi.ID_DC', ondelete='CASCADE'))
-    Avt = Column(String(255), default="https://res.cloudinary.com/ddgxultsd/image/upload/v1732958968/tu5tpwmkwetp4ico5liv.png")
+    Avt = Column(String(255),
+                 default="https://res.cloudinary.com/ddgxultsd/image/upload/v1732958968/tu5tpwmkwetp4ico5liv.png")
 
     def get_id(self):
         return str(self.ID_User)
+
 
 class NguoiDung_VaiTro(db.Model):
     __tablename__ = 'NguoiDung_VaiTro'
@@ -85,6 +120,30 @@ class NguoiDung_VaiTro(db.Model):
     ID_VaiTro = Column(Enum(UserRole, native_enum=False), nullable=False)
     __table_args__ = (
         UniqueConstraint('ID_User', 'ID_VaiTro', name='UC_User_VaiTro'),
+    )
+
+
+class NguoiDungQuyDinh(db.Model):
+    __tablename__ = 'NguoiDung_QuyDinh'
+
+    # Khóa chính
+    ID_ND_QD = Column(Integer, primary_key=True, autoincrement=True)  # Khóa chính tự động tăng
+    ID_NguoiDung = Column(Integer, ForeignKey('NguoiDung.ID_User'),
+                          nullable=False)  # Khóa ngoại đến bảng NguoiDung (ID_User)
+    ID_QuyDinh = Column(Integer, ForeignKey('QuyDinh.ID_QuyDinh'),
+                        nullable=False)  # Khóa ngoại đến bảng QuyDinh (ID_QuyDinh)
+    thoiGianSua = Column(DateTime, nullable=True)  # Thời gian sửa (có thể NULL)
+    lyDoSua = Column(String(255), nullable=True)  # Lý do sửa (có thể NULL)
+
+    # Quan hệ (relationship) với bảng NguoiDung
+    nguoi_dung = relationship('NguoiDung', foreign_keys=[ID_NguoiDung])
+
+    # Quan hệ (relationship) với bảng QuyDinh
+    quy_dinh = relationship('QuyDinh', foreign_keys=[ID_QuyDinh])
+
+    # Đảm bảo không có sự kết hợp trùng lặp giữa NguoiDung và QuyDinh
+    __table_args__ = (
+        UniqueConstraint('ID_NguoiDung', 'ID_QuyDinh', 'thoiGianSua', name='unique_nguoidung_quydinh'),
     )
 
 
@@ -98,8 +157,8 @@ class SanBay(db.Model):
 class SBayTrungGian(db.Model):
     __tablename__ = 'SBayTrungGian'
     ID = Column(Integer, primary_key=True, autoincrement=True)
-    ID_ChuyenBay = Column(Integer, ForeignKey('ChuyenBay.ID_ChuyenBay'), nullable=False)
-    ID_SanBay = Column(Integer, ForeignKey('SanBay.ID_SanBay'), nullable=False)
+    ID_ChuyenBay = Column(Integer, ForeignKey('ChuyenBay.id_ChuyenBay'), nullable=False)
+    ID_SanBay = Column(Integer, ForeignKey('SanBay.id_SanBay'), nullable=False)
     ThoiGianDung = Column(Integer, nullable=False)  # Thời gian dừng (phút)
     GhiChu = Column(String(255), nullable=True)  # Ghi chú
 
@@ -109,8 +168,8 @@ class QuyDinh(db.Model):
     ID_QuyDinh = Column(Integer, primary_key=True, autoincrement=True)
     TenQuyDinh = Column(String(255), nullable=False, unique=True)
     ID_QuyDinhBanVe = Column(Integer, ForeignKey('QuyDinhBanVe.ID'), nullable=False)
-    ID_QuyDinhVe = Column(Integer, ForeignKey('QuyDinhVe.ID'), nullable=False)
-    ID_QuyDinhSanBay = Column(Integer, ForeignKey('QuyDinhSanBay.ID'), nullable=False)
+    ID_QuyDinhVe = Column(Integer, ForeignKey('QuyDinhVe.ID_QuyDinhVe'), nullable=False)
+    ID_QuyDinhSanBay = Column(Integer, ForeignKey('QuyDinhSanBay.ID_QuyDinhSanBay'), nullable=False)
     MoTa = Column(String(500), nullable=True)  # Mô tả quy định
 
 
@@ -123,16 +182,64 @@ class QuyDinhBanVe(db.Model):
 
 class QuyDinhVe(db.Model):
     __tablename__ = 'QuyDinhVe'
+    # Khóa chính tự động tăng
+    ID_QuyDinhVe = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Các cột dữ liệu
+    SoLuongHangGhe1 = Column(Integer, nullable=False)  # Số lượng hạng ghế 1
+    SoLuongHangGhe2 = Column(Integer, nullable=False)  # Số lượng hạng ghế 2
+
+    # Các điều kiện kiểm tra (Check Constraints)
+    __table_args__ = (
+        CheckConstraint('SoLuongHangGhe1 > 0', name='quydinhve_chk_1'),
+        CheckConstraint('SoLuongHangGhe2 > 0', name='quydinhve_chk_2'),
+    )
+
+
+class BangGiaVe(db.Model):
+    __tablename__ = 'BangGiaVe'
     ID = Column(Integer, primary_key=True, autoincrement=True)
-    SoLuongGheToiDa = Column(Integer, nullable=False)  # Số lượng ghế tối đa trên chuyến bay
-    BangGia = Column(String(500), nullable=True)  # Dữ liệu bảng giá (JSON hoặc chuỗi mô tả)
+    LoaiHangGhe = Column(Enum('GH1', 'GH2', name='loai_hang_ghe'), nullable=False)
+    ThoiGian = Column(Integer, nullable=False)  # Giờ trong ngày (từ 0h đến 23h)
+    ID_SanBayDi = Column(Integer, ForeignKey('SanBay.id_SanBay'), nullable=False)  # Khóa ngoại đến bảng SanBay
+    ID_SanBayDen = Column(Integer, ForeignKey('SanBay.id_SanBay'), nullable=False)  # Khóa ngoại đến bảng SanBay
+    ID_PhuThu = Column(Integer, ForeignKey('PhuThuDacBiet.ID'), nullable=True)  # Khóa ngoại đến bảng PhuThuDacBiet
+    ID_QuyDinhVe = Column(Integer, ForeignKey('QuyDinhVe.ID_QuyDinhVe'), nullable=True)
+    # Quan hệ (relationship) với bảng SanBay
+    san_bay_di = relationship('SanBay', foreign_keys=[ID_SanBayDi])
+    san_bay_den = relationship('SanBay', foreign_keys=[ID_SanBayDen])
+
+    # Quan hệ (relationship) với bảng PhuThuDacBiet
+    phu_thu = relationship('PhuThuDacBiet', backref='bang_gia_ve')
+
+    # Đảm bảo không có sự kết hợp trùng lặp giữa SanBayDi, SanBayDen và LoaiHangGhe
+    __table_args__ = (
+        UniqueConstraint('ID_SanBayDi', 'ID_SanBayDen', 'LoaiHangGhe', name='unique_sanbay_hangghe'),
+    )
+
+
+class PhuThuDacBiet(db.Model):
+    __tablename__ = 'PhuThuDacBiet'
+    ID = Column(Integer, primary_key=True, autoincrement=True)
+    TenDipLe = Column(String(255), nullable=False)  # Tên dịp lễ
+    NgayBatDau = Column(Date, nullable=False)  # Ngày bắt đầu phụ thu
+    NgayKetThuc = Column(Date, nullable=False)  # Ngày kết thúc phụ thu
+    PhanTramTang = Column(Float, default=0.0)  # Tăng giá theo phần trăm
+    SoTienTang = Column(Float, default=0.0)  # Tăng giá cố định
 
 
 class QuyDinhSanBay(db.Model):
     __tablename__ = 'QuyDinhSanBay'
-    ID = Column(Integer, primary_key=True, autoincrement=True)
-    SoLuongSanBayToiDa = Column(Integer, nullable=False)  # Số lượng Sanbay tối đa
+
+    # Khóa chính tự động tăng
+    ID_QuyDinhSanBay = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Các cột dữ liệu
+    SoLuongSanBay = Column(Integer, nullable=False)  # Số lượng sân bay
     ThoiGianBayToiThieu = Column(Integer, nullable=False)  # Thời gian bay tối thiểu (phút)
+    SanBayTrungGianToiDa = Column(Integer, nullable=False)  # Số lượng sân bay trung gian tối đa
+    ThoiGianDungToiThieu = Column(Integer, nullable=False)  # Thời gian dừng tối thiểu (phút)
+    ThoiGianDungToiDa = Column(Integer, nullable=False)  # Thời gian dừng tối đa (phút)
 
 
 class ThongTinHanhKhach(db.Model):
@@ -146,33 +253,35 @@ class ThongTinHanhKhach(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        airports = [
-            {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
-            {"Sanbay": "Phù Cát", "Tinh": "Bình Định"},
-            {"Sanbay": "Cà Mau", "Tinh": "Cà Mau"},
-            {"Sanbay": "Cần Thơ", "Tinh": "Cần Thơ"},
-            {"Sanbay": "Buôn Ma Thuột", "Tinh": "Đắk Lắk"},
-            {"Sanbay": "Đà Nẵng", "Tinh": "Đà Nẵng"},
-            {"Sanbay": "Điện Biên Phủ", "Tinh": "Điện Biên"},
-            {"Sanbay": "Pleiku", "Tinh": "Gia Lai"},
-            {"Sanbay": "Cát Bi", "Tinh": "Hải Phòng"},
-            {"Sanbay": "Nội Bài", "Tinh": "Hà Nội"},
-            {"Sanbay": "Tân Sơn Nhất", "Tinh": "Thành phố Hồ Chí Minh"},
-            {"Sanbay": "Cam Ranh", "Tinh": "Khánh Hòa"},
-            {"Sanbay": "Rạch Giá", "Tinh": "Kiên Giang"},
-            {"Sanbay": "Phú Quốc", "Tinh": "Kiên Giang"},
-            {"Sanbay": "Liên Khương", "Tinh": "Lâm Đồng"},
-            {"Sanbay": "Vinh", "Tinh": "Nghệ An"},
-            {"Sanbay": "Tuy Hòa", "Tinh": "Phú Yên"},
-            {"Sanbay": "Đồng Hới", "Tinh": "Quảng Bình"},
-            {"Sanbay": "Chu Lai", "Tinh": "Quảng Nam"},
-            {"Sanbay": "Phú Bài", "Tinh": "Thừa Thiên Huế"},
-            {"Sanbay": "Thọ Xuân", "Tinh": "Thanh Hóa"},
-            {"Sanbay": "Vân Đồn", "Tinh": "Quảng Ninh"},
-        ]
+        db.create_all()
 
-        for p in airports:
-            prod = SanBay(ten_SanBay=p['Sanbay'],
-                          DiaChi=p['Tinh'])
-            db.session.add(prod)
-        db.session.commit()
+        # airports = [
+        #     {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
+        #     {"Sanbay": "Phù Cát", "Tinh": "Bình Định"},
+        #     {"Sanbay": "Cà Mau", "Tinh": "Cà Mau"},
+        #     {"Sanbay": "Cần Thơ", "Tinh": "Cần Thơ"},
+        #     {"Sanbay": "Buôn Ma Thuột", "Tinh": "Đắk Lắk"},
+        #     {"Sanbay": "Đà Nẵng", "Tinh": "Đà Nẵng"},
+        #     {"Sanbay": "Điện Biên Phủ", "Tinh": "Điện Biên"},
+        #     {"Sanbay": "Pleiku", "Tinh": "Gia Lai"},
+        #     {"Sanbay": "Cát Bi", "Tinh": "Hải Phòng"},
+        #     {"Sanbay": "Nội Bài", "Tinh": "Hà Nội"},
+        #     {"Sanbay": "Tân Sơn Nhất", "Tinh": "Thành phố Hồ Chí Minh"},
+        #     {"Sanbay": "Cam Ranh", "Tinh": "Khánh Hòa"},
+        #     {"Sanbay": "Rạch Giá", "Tinh": "Kiên Giang"},
+        #     {"Sanbay": "Phú Quốc", "Tinh": "Kiên Giang"},
+        #     {"Sanbay": "Liên Khương", "Tinh": "Lâm Đồng"},
+        #     {"Sanbay": "Vinh", "Tinh": "Nghệ An"},
+        #     {"Sanbay": "Tuy Hòa", "Tinh": "Phú Yên"},
+        #     {"Sanbay": "Đồng Hới", "Tinh": "Quảng Bình"},
+        #     {"Sanbay": "Chu Lai", "Tinh": "Quảng Nam"},
+        #     {"Sanbay": "Phú Bài", "Tinh": "Thừa Thiên Huế"},
+        #     {"Sanbay": "Thọ Xuân", "Tinh": "Thanh Hóa"},
+        #     {"Sanbay": "Vân Đồn", "Tinh": "Quảng Ninh"},
+        # ]
+        #
+        # for p in airports:
+        #     prod = SanBay(ten_SanBay=p['Sanbay'],
+        #                   DiaChi=p['Tinh'])
+        #     db.session.add(prod)
+        # db.session.commit()
