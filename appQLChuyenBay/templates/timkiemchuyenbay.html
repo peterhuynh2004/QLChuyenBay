@@ -6,15 +6,15 @@
     <h1 class="text-center mb-4 title" style="padding: 10px; background-color: lightblue">Tìm Kiếm Chuyến Bay</h1>
 
     <!-- Form tìm kiếm -->
-    <form method="get" action="">
+    <form method="get" action="/timkiemchuyenbay">
         <div class="row g-3">
             <!-- Nơi đi -->
             <div class="col-md-6">
                 <label for="departure" class="form-label">Nơi đi</label>
                 <select class="form-select" id="departure" name="id_SanBayDi">
-                    <option value="" {% if not id_SanBayDi %}selected{% endif %}>Chọn nơi đi</option>
+                    <option value="">Chọn nơi đi</option>
                     {% for a in airport %}
-                    <option value="{{ a.id_SanBay }}" {% if id_SanBayDi==a.id_SanBay %}selected{% endif %}>
+                    <option value="{{ a.id_SanBay }}">
                         {{ a.DiaChi }} (Sân Bay {{ a.ten_SanBay }})
                     </option>
                     {% endfor %}
@@ -24,9 +24,9 @@
             <div class="col-md-6">
                 <label for="destination" class="form-label">Nơi đến</label>
                 <select class="form-select" id="destination" name="id_SanBayDen">
-                    <option value="" {% if not id_SanBayDen %}selected{% endif %}>Chọn nơi đến</option>
+                    <option value="">Chọn nơi đến</option>
                     {% for a in airport %}
-                    <option value="{{ a.id_SanBay }}" {% if id_SanBayDen== a.id_SanBay %}selected{% endif %}>
+                    <option value="{{ a.id_SanBay }}">
                         {{ a.DiaChi }} (Sân Bay {{ a.ten_SanBay }})
                     </option>
                     {% endfor %}
@@ -86,12 +86,12 @@
 
         {% if flight %}
         <div id="flight-list" class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
-                <tr>
+            <table class="table table-success" style="text-align: center">
+                <thead class="table-info">
+                <tr >
                     <th>Mã chuyến bay</th>
-                    <!--                    <th>Ngày bay</th>-->
-                    <th>Thời gian bay</th>
+                    <!--<th>Ngày bay</th>-->
+                    <th>Ngày đi</th>
                     <th>Nơi đi</th>
                     <th>Nơi đến</th>
                     <th>Trạng thái</th>
