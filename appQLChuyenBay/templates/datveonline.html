@@ -40,31 +40,10 @@
             <div class="error-message" id="cccdError"></div>
         </div>
         <div class="button  -container">
-            <button type="submit" onclick="kiemTraThongTin(2)" class="btn btn-primary" value="Tiep tuc">Tiếp tục</button>
+            <button type="submit" name="form1_submit" onclick="kiemTraThongTin(event, 2)" class="btn btn-primary" value="Tiep tuc">Tiếp tục</button>
         </div>
     </form>
 </div>
 
-<div id="formStep2" class="form-container">
-    <h1 style="text-align: center; color: darkblue; background-color: lightblue; font-size: 20px; padding: 10px">
-        CHỌN TIỆN ÍCH CHO CHUYẾN BAY
-    </h1>
-    <form id="form2">
-        <input type="text" placeholder="Nhập CCCD" class="form-control"><br>
-        <div class="button-container">
-            <button type="button" onclick="nextForm(3)" class="btn btn-primary">Tiếp tục</button>
-            <button type="button" onclick="prevForm(1)" class="btn btn-danger">Quay lại</button>
-        </div>
-    </form>
-</div>
-
-<div id="formStep3" class="form-container">
-    <h2>HELLO {{fullName}}</h2>
-    <p>Vui lòng kiểm tra thông tin trước khi gửi!</p>
-    <div class="button-container">
-        <button type="submit" class="btn btn-success">Hoàn tất</button>
-        <button type="button" onclick="prevForm(2)" class="btn btn-danger">Quay lại</button>
-    </div>
-</div>
 
 {% endblock %}

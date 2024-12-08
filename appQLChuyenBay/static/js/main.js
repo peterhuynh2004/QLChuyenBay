@@ -1,5 +1,8 @@
-//function kiemTraThongTin(nextStep) {
-//    //tạo 1 biến giữ trạng thái thông tin hợp lệ
+//function kiemTraThongTin(event, nextStep) {
+//    // Ngăn chặn hành vi mặc định của form (gửi form và tải lại trang)
+//    event.preventDefault();
+//
+//    // Tạo 1 biến giữ trạng thái thông tin hợp lệ
 //    let isValid = true;
 //
 //    // Kiểm tra họ và tên
@@ -15,7 +18,7 @@
 //    // Kiểm tra số điện thoại
 //    const phone = document.getElementById('phone');
 //    const phoneError = document.getElementById('phoneError');
-//    const phoneRegex = /^[0-9]{10}$/; //sử dụng biểu thức chính quy để kiểm tra định dạng email
+//    const phoneRegex = /^[0-9]{10}$/; // Sử dụng biểu thức chính quy để kiểm tra định dạng số điện thoại
 //    if (!phoneRegex.test(phone.value)) {
 //        phoneError.textContent = 'Số điện thoại phải là 10 chữ số.';
 //        isValid = false;
@@ -45,6 +48,7 @@
 //        cccdError.textContent = '';
 //    }
 //
+//    // Nếu tất cả thông tin hợp lệ, di chuyển sang bước tiếp theo
 //    if (isValid) {
 //        nextForm(nextStep); // Di chuyển đến bước tiếp theo
 //    }
@@ -61,7 +65,8 @@
 //    currentForm.classList.remove('active');
 //    document.getElementById(`formStep${step}`).classList.add('active');
 //}
-
+//
+//
 
 
 function kiemtrakhuhoi() {
