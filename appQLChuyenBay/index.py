@@ -9,14 +9,9 @@ from flask import session
 from flask_login import login_user, logout_user
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/")
 def index():
-    airport = dao.load_airport()
-    if request.method == 'POST':
-        noiDi = request.form.get('noiDi')
-        noiDen = request.form.get('noiDen')
-        return redirect(url_for('timkiemchuyenbay', noiDi = noiDi, noiDen=noiDen ))
-    return render_template('index.html', airport=airport)
+    return render_template('index.html')
 
 
 @app.route('/api/get_sanbay', methods=['GET'])
@@ -117,13 +112,13 @@ def verify_otp():
 
     return render_template('xacthucotp.html', err_msg=err_msg)
 
-@app.route("/ket_qua_tim_kiem")
-def huongdandatcho():
-    return render_template('huong_dan_dat_cho.html')
-
-# @app.route("/huong_dan_dat_cho")
+# @app.route("/ket_qua_tim_kiem")
 # def huongdandatcho():
 #     return render_template('huong_dan_dat_cho.html')
+
+@app.route("/huong_dan_dat_cho")
+def huongdandatcho():
+    return render_template('huong_dan_dat_cho.html')
 
 @app.route("/nhan_vien")
 def nhanvien():
