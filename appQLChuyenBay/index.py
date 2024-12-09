@@ -1,6 +1,6 @@
 import math
 from datetime import timedelta
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, url_for
 import dao
 from appQLChuyenBay import app, login, mail
 from flask_mail import Message
@@ -9,9 +9,14 @@ from flask import session
 from flask_login import login_user, logout_user
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    airport = dao.load_airport()
+    if request.method == 'POST':
+        noiDi = request.form.get('noiDi')
+        noiDen = request.form.get('noiDen')
+        return redirect(url_for('timkiemchuyenbay', noiDi = noiDi, noiDen=noiDen ))
+    return render_template('index.html', airport=airport)
 
 
 @app.route("/trangchu")
