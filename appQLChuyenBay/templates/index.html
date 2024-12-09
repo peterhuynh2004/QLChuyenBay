@@ -82,7 +82,7 @@
                                                                                placeholder="Điểm kết thúc" value="" name="noiDen">
                                                                         <datalist id="options_DiemDen">
                                                                             {% for a in airport %}
-                                                                                <option value="{{ a.DiaChi }}"> {{ a.DiaChi }} Sân bay {{ a.ten_SanBay }} </option>
+                                                                                <option value="{{ a.id_SanBay }}" hidden>  {{ a.DiaChi }} Sân bay {{ a.ten_SanBay }} </option>
                                                                             {% endfor %}
                                                                         </datalist>
                                                                     </div>

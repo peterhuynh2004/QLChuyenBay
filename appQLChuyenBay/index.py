@@ -15,7 +15,8 @@ def index():
     if request.method == 'POST':
         noiDi = request.form.get('noiDi')
         noiDen = request.form.get('noiDen')
-        return redirect(url_for('timkiemchuyenbay', noiDi = noiDi, noiDen=noiDen ))
+        ngayDi = request.form.get('Date')
+        return redirect(url_for('timkiemchuyenbay', noiDi = noiDi, noiDen=noiDen, ngayDi=ngayDi ))
     return render_template('index.html', airport=airport)
 
 
@@ -132,8 +133,8 @@ def load_user(user_id):
 @app.route("/timkiemchuyenbay")
 def timkiemchuyenbay():
     airport = dao.load_airport()
-    id_SanBayDen = request.args.get('id_SanBayDen')
-    id_SanBayDi = request.args.get('id_SanBayDi')
+    id_SanBayDen = request.args.get('noiDi')
+    id_SanBayDi = request.args.get('noiDen')
     ngayDi = request.args.get('ngayDi')
     flight = dao.load_flight(id_SanBayDen=id_SanBayDen, id_SanBayDi=id_SanBayDi, ngayDi=ngayDi)
 
