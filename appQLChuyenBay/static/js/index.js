@@ -120,6 +120,68 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+    const $input = $("#SanBayDen");
+    const $dropdown = $("#dropdown-results-den");
+
+    // Lấy dữ liệu từ API
+    let sampleData = [];
+    $.ajax({
+        url: "/api/get_sanbay", // Địa chỉ API
+        method: "GET",
+        success: function (data) {
+            // Dữ liệu trả về từ API
+            sampleData = data.map(item => `${item.ten_SanBay}`);
+        },
+        error: function () {
+            console.error("Không thể tải dữ liệu từ API.");
+        }
+    });
+
+    // Function to filter results
+    function filterResults(query) {
+        return sampleData.filter(item =>
+            item.toLowerCase().includes(query.toLowerCase())
+        );
+    }
+
+    // Event listener for input
+    $input.on("input", function () {
+        const query = $(this).val();
+
+        // Clear dropdown if query is empty
+        if (!query) {
+            $dropdown.empty().hide();
+            return;
+        }
+
+        // Filter results and populate dropdown
+        const results = filterResults(query);
+        if (results.length) {
+            $dropdown.empty().show();
+            results.forEach(item => {
+                $dropdown.append(`<li>${item}</li>`);
+            });
+        } else {
+            $dropdown.empty().hide();
+        }
+    });
+
+    // Event listener for selecting a dropdown item
+    $dropdown.on("click", "li", function () {
+        const selectedItem = $(this).text();
+        $input.val(selectedItem);
+        $dropdown.empty().hide();
+    });
+
+    // Hide dropdown when clicking outside
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest(".search-container").length) {
+            $dropdown.empty().hide();
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     // Lấy tất cả các nút cộng và trừ
     const buttons = document.querySelectorAll('.signa');
