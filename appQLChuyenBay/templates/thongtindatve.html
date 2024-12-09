@@ -1,0 +1,27 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<div>
+    <div class="form-group">
+        <div>
+            <input type="text" class="form-control" value="Hạng ghế: {{ session['hangGhe'] }}" disabled>
+        </div>
+        <div>
+            <input type="text" class="form-control" value=" Họ và tên hành khách:  {{ session['fullName'] }}" disabled>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value=" Số điên thoại:  {{ session['phone'] }}" disabled>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value=" Email:  {{ session['email'] }}" disabled>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" value=" Căn cước công dân:  {{ session['cccd'] }}" disabled>
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}

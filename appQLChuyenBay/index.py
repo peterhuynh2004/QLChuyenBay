@@ -14,7 +14,6 @@ def index():
     return render_template('index.html')
 
 
-
 @app.route("/trangchu")
 def trangchudangnhap():
     name = request.args.get('user_name')
@@ -123,6 +122,55 @@ def load_user(user_id):
         # Xử lý các lỗi khác
         print("Error loading user:", e)
         return None
+
+
+@app.route("/timkiemchuyenbay")
+def timkiemchuyenbay():
+    airport = dao.load_airport()
+    id_SanBayDen = request.args.get('id_SanBayDen')
+    id_SanBayDi = request.args.get('id_SanBayDi')
+    ngayDi = request.args.get('ngayDi')
+    flight = dao.load_flight(id_SanBayDen=id_SanBayDen, id_SanBayDi=id_SanBayDi, ngayDi=ngayDi)
+
+    return render_template('timkiemchuyenbay.html',
+                           airport=airport, flight=flight,
+                           id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen)
+
+
+@app.route("/datveonline", methods=['GET', 'POST'])
+def datveonline():
+    if request.method == 'POST':
+        # Lấy giá trị từ form
+        hangGhe = request.form.get('hangGhe')
+        fullName = request.form.get('fullName')
+        phone = request.form.get('phone')
+        email = request.form.get('email')
+        cccd = request.form.get('cccd')
+
+        # Lưu thông tin vào session
+        session['hangGhe'] = hangGhe
+        session['fullName'] = fullName
+        session['phone'] = phone
+        session['email'] = email
+        session['cccd'] = cccd
+
+        # Chuyển sang bước tiếp theo
+        return redirect('thongtindatve')
+    # Lấy thông tin từ session nếu đã được lưu
+    hangGhe = session.get('hangGhe', '')
+    fullName = session.get('fullName', '')
+    phone = session.get('phone', '')
+    email = session.get('email', '')
+    cccd = session.get('cccd', '')
+    return render_template('datveonline.html', hangGhe=hangGhe, fullName=fullName, phone=phone, email=email, cccd=cccd)
+
+
+@app.route("/thongtindatve", methods=['GET', 'POST'])
+def thongtindatve():
+    return render_template('thongtindatve.html',
+                           fullName=session['fullName'],
+                           email=session['email'],
+                           cccd=session['cccd'])
 
 
 if __name__ == '__main__':
