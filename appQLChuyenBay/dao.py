@@ -1,4 +1,4 @@
-from models import NguoiDung, SanBay, ChuyenBay
+from models import NguoiDung
 from appQLChuyenBay import app, db
 import hashlib
 import cloudinary.uploader
@@ -39,17 +39,3 @@ def check_email_exists(email):
         return user is not None  # Trả về True nếu email tồn tại
     finally:
         session.close()
-
-
-
-def load_airport():
-    query = SanBay.query
-    return query.all()
-
-
-def load_flight(id_SanBayDen=None, id_SanBayDi=None, ngayDi=None):
-    query = ChuyenBay.query
-
-    if id_SanBayDen and id_SanBayDi and ngayDi:
-        query = query.filter(ChuyenBay.id_SanBayDen == id_SanBayDen and ChuyenBay.id_SanBayDi == id_SanBayDi and ChuyenBay.gio_Bay.date() == ngayDi)
-    return query.all()
