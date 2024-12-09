@@ -2,29 +2,31 @@
 {% block content %}
 
 <div id="formStep1" class="form-container active">
-    <div>
+    <form id="form1" method="POST" action="{{ url_for('datveonline') }}" name="form1">
+        <div>
         <h1 style="text-align: center; color: darkblue; background-color: lightblue; font-size: 20px; padding: 10px">
             THÔNG TIN VÉ BAY
         </h1>
         <div class="row">
             <div class="col-md-5 p-2" style="display: flex; align-items: center; gap: 10px;">
-                <div style="margin: 0; font-size: 16px; width: 40%"> Chọn loại hạng ghế:</div>
-                <select class="form-select" id="hangGhe" name="hangGhe">
-                    <option selected>Chọn hạng ghế</option>
-                    <option value="phothong">Phổ thông</option>
-                    <option value="phothongdatbiet">Phổ thông đặt biệt</option>
-                    <option value="thuonggia">Thương gia</option>
-                    <option value="hangnhat">Hạng nhất</option>
+                <div style="margin: 0; font-size: 16px; width: 40%" > Chọn loại hạng ghế:</div>
+                <select class="form-select form-control form-group" id="hangGhe" name="hangGhe">
+                    <option value="" selected>Chọn hạng ghế</option>
+                    <option value="Phổ thông">Phổ thông</option>
+                    <option value="Phổ thông đặt biệt">Phổ thông đặt biệt</option>
+                    <option value="Thương gia">Thương gia</option>
+                    <option value="Hạng nhất">Hạng nhất</option>
                 </select>
+                <div class="error-message" id="hangGheError"></div>
             </div>
         </div>
     </div>
     <h1 style="text-align: center; color: blue; background-color: lightblue; font-size: 20px; padding: 10px">
         THÔNG TIN HÀNH KHÁCH
     </h1>
-    <form id="form1" method="POST" action="{{ url_for('datveonline') }}">
         <div class="form-group">
-            <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Nhập họ và tên hành khách" required>
+            <input type="text" class="form-control" id="fullName" name="fullName"
+                   placeholder="Nhập họ và tên hành khách" required>
             <div class="error-message" id="fullNameError"></div>
         </div>
         <div class="form-group">
@@ -36,14 +38,48 @@
             <div class="error-message" id="emailError"></div>
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" id="cccd" name="cccd" placeholder="Nhập căn cước công dân:" required>
+            <input type="text" class="form-control" id="cccd" name="cccd" placeholder="Nhập căn cước công dân:"
+                   required>
             <div class="error-message" id="cccdError"></div>
         </div>
         <div class="button  -container">
-            <button type="submit" name="form1_submit" onclick="kiemTraThongTin(event, 2)" class="btn btn-primary" value="Tiep tuc">Tiếp tục</button>
+            <button type="submit" name="form1_submit" onclick="kiemTraThongTin(event, 2)" class="btn btn-primary"
+                    value="Tiep tuc">Tiếp tục
+            </button>
         </div>
     </form>
 </div>
-
+<!--<div id="formStep2" class="form-container">-->
+<!--    <h1 style="text-align: center; color: darkblue; background-color: lightblue; font-size: 20px; padding: 10px">-->
+<!--        CHỌN TIỆN ÍCH CHO CHUYẾN BAY-->
+<!--    </h1>-->
+<!--    <form id="form2">-->
+<!--        <div class="form-group">-->
+<!--            <input type="text" class="form-control" value=" Họ và tên hành khách:  {{ session['fullName'] }}" disabled>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <input type="text" class="form-control" value=" Số điên thoại:  {{ session['phone'] }}" disabled>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <input type="text" class="form-control" value=" Email:  {{ session['email'] }}" disabled>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <input type="text" class="form-control" value=" Căn cước công dân:  {{ session['cccd'] }}" disabled>-->
+<!--        </div>-->
+<!--        <input type="text" placeholder="Nhập CCCD" class="form-control"><br>-->
+<!--        <div class="button-container">-->
+<!--            <button type="button" onclick="nextForm(3)" class="btn btn-primary">Tiếp tục</button>-->
+<!--            <button type="button" onclick="prevForm(1)" class="btn btn-danger">Quay lại</button>-->
+<!--        </div>-->
+<!--    </form>-->
+<!--</div>-->
+<!--<div id="formStep3" class="form-container">-->
+<!--    <h2>HELLO {{fullName}}</h2>-->
+<!--    <p>Vui lòng kiểm tra thông tin trước khi gửi!</p>-->
+<!--    <div class="button-container">-->
+<!--        <button type="submit" class="btn btn-success">Hoàn tất</button>-->
+<!--        <button type="button" onclick="prevForm(2)" class="btn btn-danger">Quay lại</button>-->
+<!--    </div>-->
+<!--</div>-->
 
 {% endblock %}

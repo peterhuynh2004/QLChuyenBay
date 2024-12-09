@@ -50,14 +50,15 @@ def timkiemchuyenbay():
 @app.route("/datveonline", methods=['GET', 'POST'])
 def datveonline():
     if request.method == 'POST':
-
         # Lấy giá trị từ form
+        hangGhe = request.form.get('hangGhe')
         fullName = request.form.get('fullName')
         phone = request.form.get('phone')
         email = request.form.get('email')
         cccd = request.form.get('cccd')
 
         # Lưu thông tin vào session
+        session['hangGhe'] = hangGhe
         session['fullName'] = fullName
         session['phone'] = phone
         session['email'] = email
@@ -66,11 +67,12 @@ def datveonline():
         # Chuyển sang bước tiếp theo
         return redirect('thongtindatve')
     # Lấy thông tin từ session nếu đã được lưu
+    hangGhe = session.get('hangGhe', '')
     fullName = session.get('fullName', '')
     phone = session.get('phone', '')
     email = session.get('email', '')
     cccd = session.get('cccd', '')
-    return render_template('datveonline.html', fullName=fullName, phone=phone, email=email, cccd=cccd)
+    return render_template('datveonline.html',hangGhe=hangGhe, fullName=fullName, phone=phone, email=email, cccd=cccd)
 
 
 
