@@ -851,12 +851,5 @@ input.block-item{
     margin-top: 5px;
 }
 
- .form-container {
-    display: none;
-}
-.form-container.active {
-    display: block;
-}
-.button-container {
-    margin-top: 20px;
-}
+
+

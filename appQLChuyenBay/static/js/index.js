@@ -181,3 +181,7 @@ btnLeft.addEventListener('click', () => {
 // Đảm bảo vị trí slide không bị thay đổi khi resize màn hình
 window.addEventListener('resize', updateSlidePosition);
 
+
+
+
+
