@@ -25,7 +25,7 @@ class GioiTinh(GioiTinhEnum):
     Nu = 2
 
 
-class BaoCao(db.Model):
+class c(db.Model):
     __tablename__ = 'BaoCao'
     id_BaoCao = Column(Integer, primary_key=True, autoincrement=True)
     thoiGian = Column(DateTime, nullable=False)
@@ -82,9 +82,6 @@ class VeChuyenBay(db.Model):
     id_ChuyenBay = Column(Integer, ForeignKey('ChuyenBay.id_ChuyenBay'),
                           nullable=False)  # Khoá ngoại đến bảng ChuyenBay
 
-    # Quan hệ (relationship) với bảng khác
-    user = relationship('User', backref='ve_chuyen_bay')
-    chuyen_bay = relationship('ChuyenBay', backref='ve_chuyen_bay')
 
 class DiaChi(db.Model):
     __tablename__ = 'DiaChi'

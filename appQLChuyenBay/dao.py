@@ -1,4 +1,6 @@
-from models import NguoiDung
+import sqlite3
+
+from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole
 from appQLChuyenBay import app, db
 import hashlib
 import cloudinary.uploader
@@ -30,6 +32,11 @@ def get_user_by_id(user_id):
     return NguoiDung.query.get(user_id)  # Trả về None nếu không tìm thấy
 
 
+def get_san_bay():
+    # Truy vấn tất cả các sân bay
+    return SanBay.query.all()
+
+
 def check_email_exists(email):
     Session = sessionmaker(bind=db.engine)
     session = Session()
@@ -39,3 +46,13 @@ def check_email_exists(email):
         return user is not None  # Trả về True nếu email tồn tại
     finally:
         session.close()
+
+
+# Tạo cache enum cho việc đối chiếu
+role_map = {role.value: name for name, role in UserRole.__members__.items()}
+
+
+def get_all_user_roles(user_id):
+    user_roles = db.session.query(NguoiDung_VaiTro.ID_VaiTro).filter_by(ID_User=user_id).all()
+    role_ids = [role.ID_VaiTro for role in user_roles]
+    return [role_map.get(role_id) for role_id in role_ids if role_id in role_map]
