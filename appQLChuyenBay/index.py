@@ -13,8 +13,8 @@ from flask_login import login_user, logout_user
 def index():
     airport = dao.load_airport()
     if request.method == 'POST':
-        noiDi = request.form.get('noiDi')
-        noiDen = request.form.get('noiDen')
+        noiDi = request.form.get('idNoiDi')
+        noiDen = request.form.get('idNoiDen')
         ngayDi = request.form.get('Date')
         return redirect(url_for('timkiemchuyenbay', noiDi = noiDi, noiDen=noiDen, ngayDi=ngayDi ))
     return render_template('index.html', airport=airport)
@@ -133,14 +133,16 @@ def load_user(user_id):
 @app.route("/timkiemchuyenbay")
 def timkiemchuyenbay():
     airport = dao.load_airport()
-    id_SanBayDen = request.args.get('noiDi')
-    id_SanBayDi = request.args.get('noiDen')
+    id_SanBayDi = request.args.get('noiDi')
+    id_SanBayDen = request.args.get('noiDen')
     ngayDi = request.args.get('ngayDi')
-    flight = dao.load_flight(id_SanBayDen=id_SanBayDen, id_SanBayDi=id_SanBayDi, ngayDi=ngayDi)
-
-    return render_template('timkiemchuyenbay.html',
-                           airport=airport, flight=flight,
-                           id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen)
+    flight = dao.load_flight(noiDi=id_SanBayDi, noiDen=id_SanBayDen, ngayDi=ngayDi)
+    if len(flight) > 0:
+        tuyenBay = dao.load_TuyenBay(flight[0].id_TuyenBay)
+    else:
+        tuyenBay = 0
+    return render_template('timkiemchuyenbay.html',airport=airport, flight=flight,
+                           id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen, tuyenBay = tuyenBay)
 
 
 @app.route("/datveonline", methods=['GET', 'POST'])

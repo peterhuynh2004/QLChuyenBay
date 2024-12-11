@@ -824,16 +824,17 @@ input.block-item{
 }
 
 /*trang datve_online*/
+div#formStep1{
+    background-color: white;
+}
+
+
 .form-select{
     background-color: #cccccc;
     color: #ffffff;
     font-size: 18px;
     border-color: lightblue;
     border-width: 2px;
-}
-
-.datve_online{
-    font-size: 16px;
 }
 
 .form-control{
@@ -849,7 +850,18 @@ input.block-item{
     color: red;
     font-size: 0.9rem;
     margin-top: 5px;
+    font-size: 16px;
+    padding: 5px
 }
 
+ .form-container {
+    display: none;
+}
+.form-container.active {
+    display: block;
+}
+.button-container {
+    margin-top: 20px;
+}
 
 

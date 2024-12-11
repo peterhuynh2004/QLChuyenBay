@@ -4,26 +4,26 @@
 <div id="formStep1" class="form-container active">
     <form id="form1" method="POST" action="{{ url_for('datveonline') }}" name="form1">
         <div>
-        <h1 style="text-align: center; color: darkblue; background-color: lightblue; font-size: 20px; padding: 10px">
-            THÔNG TIN VÉ BAY
-        </h1>
-        <div class="row">
-            <div class="col-md-5 p-2" style="display: flex; align-items: center; gap: 10px;">
-                <div style="margin: 0; font-size: 16px; width: 40%" > Chọn loại hạng ghế:</div>
-                <select class="form-select form-control form-group" id="hangGhe" name="hangGhe">
-                    <option value="" selected>Chọn hạng ghế</option>
-                    <option value="Phổ thông">Phổ thông</option>
-                    <option value="Phổ thông đặt biệt">Phổ thông đặt biệt</option>
-                    <option value="Thương gia">Thương gia</option>
-                    <option value="Hạng nhất">Hạng nhất</option>
-                </select>
-                <div class="error-message" id="hangGheError"></div>
+            <h1 style="text-align: center; color: darkblue; background-color: lightblue; font-size: 20px; padding: 10px">
+                THÔNG TIN VÉ BAY
+            </h1>
+            <div class="row" style="width: 100%; margin: 0; padding-top: 9px ">
+                <div class="col-md-5 p-2" style="display: flex; align-items: center; gap: 10px; width: 100%">
+                    <div style=" font-size: 20px; width: 15%; padding-bottom: 12px; padding-left: 7px;"> Chọn loại hạng ghế:</div>
+                    <select class="form-select form-control form-group" id="hangGhe" name="hangGhe" style="width: 20%">
+                        <option value="" selected>Chọn hạng ghế</option>
+                        <option value="Phổ thông">Phổ thông</option>
+                        <option value="Phổ thông đặt biệt">Phổ thông đặt biệt</option>
+                        <option value="Thương gia">Thương gia</option>
+                        <option value="Hạng nhất">Hạng nhất</option>
+                    </select>
+                    <div class="error-message" id="hangGheError" style="width: 50%"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <h1 style="text-align: center; color: blue; background-color: lightblue; font-size: 20px; padding: 10px">
-        THÔNG TIN HÀNH KHÁCH
-    </h1>
+        <h1 style="text-align: center; color: blue; background-color: lightblue; font-size: 20px; padding: 10px">
+            THÔNG TIN HÀNH KHÁCH
+        </h1>
         <div class="form-group">
             <input type="text" class="form-control" id="fullName" name="fullName"
                    placeholder="Nhập họ và tên hành khách" required>

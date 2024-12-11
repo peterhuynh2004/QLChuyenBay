@@ -52,18 +52,19 @@
                                                                     <div class="block-text">
                                                                         <p class="block-label zoneX"
                                                                            style="padding-top: 3px;">Điểm đi</p>
-                                                                        <input required list="options_DiemDi" type="text"
+                                                                        <input required list="options_NoiDi" type="text"
                                                                                class="block-item dropdown-input"
                                                                                id="SanBayDi"
                                                                                placeholder="Điểm khởi hành" value="" name="noiDi">
 <!--                                                                        <ul id="dropdown-results" class="dropdown"></ul>-->
 <!--                                                                        <input list="options" id="combo-input"-->
 <!--                                                                               placeholder="Nhập hoặc chọn...">-->
-                                                                        <datalist id="options_DiemDi">
+                                                                        <datalist id="options_NoiDi">
                                                                             {% for a in airport %}
-                                                                                <option value="{{ a.DiaChi }}"> {{ a.DiaChi }} Sân bay {{ a.ten_SanBay }} </option>
+                                                                                <option data-id="{{ a.id_SanBay }} " value="{{ a.DiaChi }}"> {{ a.DiaChi }} Sân bay {{ a.ten_SanBay }} </option>
                                                                             {% endfor %}
                                                                         </datalist>
+                                                                        <input type="hidden" id="SanBayDi_id" name="idNoiDi">
                                                                     </div>
                                                                 </div>
                                                                 <i class="icon-formsearch-switch" id="btn-switch">
@@ -76,15 +77,16 @@
                                                                     <div class="block-text">
                                                                         <p class="block-label zoneX"
                                                                            style="padding-top: 3px;">Điểm đến</p>
-                                                                        <input required list="options_DiemDen" type="text"
+                                                                        <input required list="options_NoiDen" type="text"
                                                                                class="block-item dropdown-input"
                                                                                id="SanBayDen"
                                                                                placeholder="Điểm kết thúc" value="" name="noiDen">
-                                                                        <datalist id="options_DiemDen">
-                                                                            {% for a in airport %}
-                                                                                <option value="{{ a.id_SanBay }}" hidden>  {{ a.DiaChi }} Sân bay {{ a.ten_SanBay }} </option>
+                                                                        <datalist id="options_NoiDen">
+                                                                            {% for a in airport %}S
+                                                                                <option data-id="{{ a.id_SanBay }}" value="{{ a.DiaChi }}">  {{ a.DiaChi }} Sân bay {{ a.ten_SanBay }} </option>
                                                                             {% endfor %}
                                                                         </datalist>
+                                                                        <input type="hidden" id="SanBayDen_id" name="idNoiDen">
                                                                     </div>
                                                                 </div>
                                                             </div>

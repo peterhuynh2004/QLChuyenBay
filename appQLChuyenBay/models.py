@@ -253,7 +253,8 @@ class ThongTinHanhKhach(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
+        # db.drop_all()
 
         # airports = [
         #     {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
@@ -285,67 +286,117 @@ if __name__ == '__main__':
         #                   DiaChi=p['Tinh'])
         #     db.session.add(prod)
         # db.session.commit()
-
-        # flights = [
+        #
+        # tuyenbay_data = [
         #     {
-        #         # "id_SanBayDi": 1,
-        #         # "id_SanBayDen": 2,
-        #         # "id_TuyenBay": 1,
-        #         "gio_Bay": "2024-12-05 08:00:00",
-        #         "tG_Bay": "2024-12-05 09:30:00",
-        #         "GH1": 100,
-        #         "GH2": 120,
-        #         "GH1_DD": 50,
-        #         "GH2_DD": 70
+        #         "tenTuyen": "Côn Đảo - Phù Cát",
+        #         "id_SanBayDi": 1,
+        #         "id_SanBayDen": 2,
+        #         "doanhThu": 50000000,
+        #         "soLuotBay": 50,
+        #         "tyLe": 90
         #     },
         #     {
-        #         # "id_SanBayDi": 2,
-        #         # "id_SanBayDen": 3,
-        #         # "id_TuyenBay": 2,
-        #         "gio_Bay": "2024-12-05 10:00:00",
-        #         "tG_Bay": "2024-12-05 11:30:00",
-        #         "GH1": 90,
-        #         "GH2": 110,
-        #         "GH1_DD": 40,
-        #         "GH2_DD": 60
+        #         "tenTuyen": "Côn Đảo - Cà Mau",
+        #         "id_SanBayDi": 1,
+        #         "id_SanBayDen": 3,
+        #         "doanhThu": 20000000,
+        #         "soLuotBay": 30,
+        #         "tyLe": 85
         #     },
         #     {
-        #         # "id_SanBayDi": 3,
-        #         # "id_SanBayDen": 4,
-        #         # "id_TuyenBay": 3,
-        #         "gio_Bay": "2024-12-05 12:00:00",
-        #         "tG_Bay": "2024-12-05 13:30:00",
-        #         "GH1": 80,
-        #         "GH2": 100,
-        #         "GH1_DD": 30,
-        #         "GH2_DD": 50
+        #         "tenTuyen": "Phù Cát - Cần Thơ",
+        #         "id_SanBayDi": 2,
+        #         "id_SanBayDen": 4,
+        #         "doanhThu": 15000000,
+        #         "soLuotBay": 20,
+        #         "tyLe": 80
         #     },
         #     {
-        #         # "id_SanBayDi": 6,
-        #         # "id_SanBayDen": 7,
-        #         # "id_TuyenBay": 4,
-        #         "gio_Bay": "2024-12-05 14:00:00",
-        #         "tG_Bay": "2024-12-05 15:30:00",
-        #         "GH1": 60,
-        #         "GH2": 80,
-        #         "GH1_DD": 20,
-        #         "GH2_DD": 40
+        #         "tenTuyen": "Cà Mau - Buôn Ma Thuộc",
+        #         "id_SanBayDi": 3,
+        #         "id_SanBayDen": 5,
+        #         "doanhThu": 12000000,
+        #         "soLuotBay": 15,
+        #         "tyLe": 75
         #     },
         #     {
-        #         # "id_SanBayDi": 10,
-        #         # "id_SanBayDen": 12,
-        #         # "id_TuyenBay": 5,
-        #         "gio_Bay": "2024-12-05 16:00:00",
-        #         "tG_Bay": "2024-12-05 17:30:00",
-        #         "GH1": 120,
-        #         "GH2": 140,
-        #         "GH1_DD": 60,
-        #         "GH2_DD": 80
+        #         "tenTuyen": "Cần Thơ - Côn Đảo",
+        #         "id_SanBayDi": 4,
+        #         "id_SanBayDen": 1,
+        #         "doanhThu": 25000000,
+        #         "soLuotBay": 25,
+        #         "tyLe": 88
         #     }
         # ]
         #
-        # for f in flights:
-        #     flight = ChuyenBay(**f)
-        #     db.session.add(flight)
+        # for t in tuyenbay_data:
+        #     tuyenbay = TuyenBay(**t)
+        #     db.session.add(tuyenbay)
         #
         # db.session.commit()
+
+
+
+        flights = [
+            {
+                "id_TuyenBay": 1,
+                "gio_Bay": "2024-12-22 08:00:00",
+                "tG_Bay": "2024-12-22 09:30:00",
+                "GH1": 100,
+                "GH2": 120,
+                "GH1_DD": 50,
+                "GH2_DD": 70
+            },
+            {
+                "id_TuyenBay": 2,
+                "gio_Bay": "2024-12-22 10:00:00",
+                "tG_Bay": "2024-12-22 11:30:00",
+                "GH1": 90,
+                "GH2": 110,
+                "GH1_DD": 40,
+                "GH2_DD": 60
+            },
+            {
+                "id_TuyenBay": 3,
+                "gio_Bay": "2024-12-22 12:00:00",
+                "tG_Bay": "2024-12-22 13:30:00",
+                "GH1": 80,
+                "GH2": 100,
+                "GH1_DD": 30,
+                "GH2_DD": 50
+            },
+            {
+                "id_TuyenBay": 4,
+                "gio_Bay": "2024-12-22 14:00:00",
+                "tG_Bay": "2024-12-22 15:30:00",
+                "GH1": 60,
+                "GH2": 80,
+                "GH1_DD": 20,
+                "GH2_DD": 40
+            },
+            {
+                "id_TuyenBay": 5,
+                "gio_Bay": "2024-12-22 16:00:00",
+                "tG_Bay": "2024-12-22 17:30:00",
+                "GH1": 120,
+                "GH2": 140,
+                "GH1_DD": 60,
+                "GH2_DD": 80
+            },
+            {
+                "id_TuyenBay": 2,
+                "gio_Bay": "2024-12-22 16:00:00",
+                "tG_Bay": "2024-12-22 17:30:00",
+                "GH1": 120,
+                "GH2": 140,
+                "GH1_DD": 60,
+                "GH2_DD": 80
+            }
+        ]
+
+        for f in flights:
+            flight = ChuyenBay(**f)
+            db.session.add(flight)
+
+        db.session.commit()
