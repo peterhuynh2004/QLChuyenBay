@@ -1,0 +1,54 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+{% if current_user.is_authenticated %}
+<h1>Chào mừng {{ current_user.name }} đến với trang chủ dành cho quản trị viên</h1>
+{% else %}
+
+<div class="sign">
+    <div id="form-login" class="login-phara">
+        <div class="wrap login">
+            <form class="form-group" action="/login" method="POST">
+                <div>
+                    <div class="title">ĐĂNG NHẬP</div>
+                </div>
+                <!-- Email -->
+                <div class="input-box">
+                    <input
+                        type="email"
+                        id="mail-log"
+                        class="email-input"
+                        name="email"
+                        placeholder="Nhập địa chỉ email"
+                        required
+                    />
+                    <p class="form-error">Vui lòng nhập đúng email</p>
+                </div>
+                <!-- Password -->
+                <div class="input-box">
+                    <input
+                        type="password"
+                        id="pass-log"
+                        class="pass-input"
+                        name="password"
+                        placeholder="Nhập mật khẩu"
+                        required
+                    />
+                </div>
+                <!-- Forgot Password -->
+                <div class="remember-forgot">
+                    <a href="/forgot-password">Quên mật khẩu?</a>
+                </div>
+                <!-- Submit -->
+                <div class="submit">
+                    <button type="submit" class="buttonlogin">
+                        Đăng nhập
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,12 +1,22 @@
 import math
 from datetime import timedelta
+from dbm import error
+
+from click import password_option
+from flask import Flask, url_for
 from flask import render_template, request, redirect
+from sqlalchemy import except_
+
 import dao
 from appQLChuyenBay import app, login, mail
+from appQLChuyenBay import utils
 from flask_mail import Message
 import random
 from flask import session
 from flask_login import login_user, logout_user
+#Import moduls
+import utils
+import admin
 
 
 @app.route("/")
@@ -124,7 +134,24 @@ def load_user(user_id):
         print("Error loading user:", e)
         return None
 
+@app.route('/admin-login', methods=['POST'])
+def signin_admin():
+
+        username = request.form['username']
+        password = request.form['password']
+
+        user = utils.check_user(username = username, password = password)
+        if user:
+            login_user(user=user)
+            return redirect('/admin')
+        if not user:
+            return render_template('admin_login.html'
+                                   , err_msg="Tên đăng nhập hoặc mật khẩu không đúng")
+
 
 if __name__ == '__main__':
+
+
+
     with app.app_context():
         app.run(port=8000, debug=True)

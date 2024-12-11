@@ -1,4 +1,7 @@
 import random
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
 from sqlalchemy import Date  # Correct import
 from datetime import datetime
 from sqlalchemy.orm import relationship

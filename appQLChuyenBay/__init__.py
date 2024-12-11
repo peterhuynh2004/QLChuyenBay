@@ -15,7 +15,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:@localhost:3306/QL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["PAGE_SIZE"] = 8
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(app=app)
 
 login = LoginManager(app)
 
@@ -39,5 +39,3 @@ app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'
 
 # Khởi tạo Flask-Mail
 mail = Mail(app)
-
-admin = Admin(app=app, name='QUẢN TRỊ QUẢN LÝ CHUYẾN BAY', template_mode='bootstrap4')
