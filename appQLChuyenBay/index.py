@@ -1,6 +1,6 @@
 import math
 from datetime import timedelta
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, jsonify
 import dao
 from appQLChuyenBay import app, login, mail
 from flask_mail import Message
@@ -11,7 +11,7 @@ from flask_login import login_user, logout_user
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    airport = dao.load_airport()
+    airport = dao.get_san_bay()
     if request.method == 'POST':
         noiDi = request.form.get('idNoiDi')
         noiDen = request.form.get('idNoiDen')
@@ -19,6 +19,19 @@ def index():
         return redirect(url_for('timkiemchuyenbay', noiDi = noiDi, noiDen=noiDen, ngayDi=ngayDi ))
     return render_template('index.html', airport=airport)
 
+
+@app.route('/api/get_sanbay', methods=['GET'])
+def get_sanbay():
+    try:
+        sanbay_list = dao.get_san_bay()
+
+        # Trả về dữ liệu dưới dạng JSON
+        return jsonify([{
+            'ten_SanBay': sb.ten_SanBay +' ('+ sb.DiaChi +')'
+        } for sb in sanbay_list])
+    except Exception as e:
+        app.logger.error(f"Error fetching SanBay: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route("/trangchu")
 def trangchudangnhap():
@@ -35,6 +48,15 @@ def login_process():
         u = dao.auth_user(username=username, password=password)
         if u:
             login_user(u)
+
+            #Lấy id người dùng
+            user_id = u.id# Kiểm tra vai trò của người dùng
+            user_role = dao.get_user_role(user_id)
+            from appQLChuyenBay import models
+            if user_role == models.UserRole.NhanVien or user_role == models.UserRole.NguoiKiemDuyet or user_role == models.UserRole.NguoiQuanTri:  # So sánh với Enum  # Nếu vai trò là "Nhân Viên"
+                return redirect('/nhan_vien')
+
+            # Nếu không phải nhân viên, chuyển về trang chủ
             return redirect('/')
 
     return render_template('login.html')
@@ -96,11 +118,17 @@ def verify_otp():
 
     return render_template('xacthucotp.html', err_msg=err_msg)
 
+# @app.route("/ket_qua_tim_kiem")
+# def huongdandatcho():
+#     return render_template('huong_dan_dat_cho.html')
 
 @app.route("/huong_dan_dat_cho")
 def huongdandatcho():
     return render_template('huong_dan_dat_cho.html')
 
+@app.route("/nhan_vien")
+def nhanvien():
+    return render_template('nhan_vien.html')
 
 @app.route("/kiem_tra_ma")
 def kiemtrama():
