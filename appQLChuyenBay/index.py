@@ -160,7 +160,7 @@ def load_user(user_id):
 
 @app.route("/timkiemchuyenbay")
 def timkiemchuyenbay():
-    airport = dao.load_airport()
+    airport = dao.get_san_bay()
     id_SanBayDi = request.args.get('noiDi')
     id_SanBayDen = request.args.get('noiDen')
     ngayDi = request.args.get('ngayDi')
