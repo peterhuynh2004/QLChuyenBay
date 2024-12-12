@@ -16,7 +16,7 @@ from flask import session
 from flask_login import login_user, logout_user
 #Import moduls
 import utils
-import admin
+
 
 
 @app.route("/")

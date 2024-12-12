@@ -1,5 +1,5 @@
 from models import NguoiDung
-from appQLChuyenBay import app, db
+from appQLChuyenBay import  db
 import hashlib
 import cloudinary.uploader
 from sqlalchemy.orm import sessionmaker

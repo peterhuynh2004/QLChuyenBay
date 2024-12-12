@@ -1,0 +1,22 @@
+{
+  "chuyenBay": [
+    {
+      "maChuyenBay": "VN101",
+      "diemDi": "Hà Nội",
+      "diemDen": "Tp. Hồ Chí Minh",
+      "thoiGian": "2024-12-15T09:00:00"
+    },
+    {
+      "maChuyenBay": "VN202",
+      "diemDi": "Tp. Hồ Chí Minh",
+      "diemDen": "Bangkok",
+      "thoiGian": "2024-12-16T11:00:00"
+    },
+    {
+      "maChuyenBay": "VN303",
+      "diemDi": "Hà Nội",
+      "diemDen": "Singapore",
+      "thoiGian": "2024-12-17T13:00:00"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import os.path
 
-from flask import Flask
+from sqlalchemy import func
 from appQLChuyenBay import app
 import json
 
@@ -10,6 +10,11 @@ def read_json(path):
        return json.load(f)
 #Hàm tự động đóng
 
-def load_index():
-    return read_json(os.path.join(app.root_path, 'data/index.json'))
+def load_datachuyenbay():
+    return read_json(os.path.join(app.root_path,'data/datachuyenbay.json'))
 
+def load_datachuyenbaynoidia():
+    return read_json(os.path.join(app.root_path,'data/datachuyenbaynoidia.json'))
+
+def load_datachuyenbaynuocngoai():
+    return read_json(os.path.join(app.root_path,'data/datachuyenbaynuocngoai.json'))

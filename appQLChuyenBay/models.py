@@ -256,35 +256,47 @@ class ThongTinHanhKhach(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
 
-        # airports = [
-        #     {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
-        #     {"Sanbay": "Phù Cát", "Tinh": "Bình Định"},
-        #     {"Sanbay": "Cà Mau", "Tinh": "Cà Mau"},
-        #     {"Sanbay": "Cần Thơ", "Tinh": "Cần Thơ"},
-        #     {"Sanbay": "Buôn Ma Thuột", "Tinh": "Đắk Lắk"},
-        #     {"Sanbay": "Đà Nẵng", "Tinh": "Đà Nẵng"},
-        #     {"Sanbay": "Điện Biên Phủ", "Tinh": "Điện Biên"},
-        #     {"Sanbay": "Pleiku", "Tinh": "Gia Lai"},
-        #     {"Sanbay": "Cát Bi", "Tinh": "Hải Phòng"},
-        #     {"Sanbay": "Nội Bài", "Tinh": "Hà Nội"},
-        #     {"Sanbay": "Tân Sơn Nhất", "Tinh": "Thành phố Hồ Chí Minh"},
-        #     {"Sanbay": "Cam Ranh", "Tinh": "Khánh Hòa"},
-        #     {"Sanbay": "Rạch Giá", "Tinh": "Kiên Giang"},
-        #     {"Sanbay": "Phú Quốc", "Tinh": "Kiên Giang"},
-        #     {"Sanbay": "Liên Khương", "Tinh": "Lâm Đồng"},
-        #     {"Sanbay": "Vinh", "Tinh": "Nghệ An"},
-        #     {"Sanbay": "Tuy Hòa", "Tinh": "Phú Yên"},
-        #     {"Sanbay": "Đồng Hới", "Tinh": "Quảng Bình"},
-        #     {"Sanbay": "Chu Lai", "Tinh": "Quảng Nam"},
-        #     {"Sanbay": "Phú Bài", "Tinh": "Thừa Thiên Huế"},
-        #     {"Sanbay": "Thọ Xuân", "Tinh": "Thanh Hóa"},
-        #     {"Sanbay": "Vân Đồn", "Tinh": "Quảng Ninh"},
-        # ]
-        #
-        # for p in airports:
-        #     prod = SanBay(ten_SanBay=p['Sanbay'],
-        #                   DiaChi=p['Tinh'])
-        #     db.session.add(prod)
-        # db.session.commit()
+
+        airports = [
+            {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
+            {"Sanbay": "Phù Cát", "Tinh": "Bình Định"},
+            {"Sanbay": "Cà Mau", "Tinh": "Cà Mau"},
+            {"Sanbay": "Cần Thơ", "Tinh": "Cần Thơ"},
+            {"Sanbay": "Buôn Ma Thuột", "Tinh": "Đắk Lắk"},
+            {"Sanbay": "Đà Nẵng", "Tinh": "Đà Nẵng"},
+            {"Sanbay": "Điện Biên Phủ", "Tinh": "Điện Biên"},
+            {"Sanbay": "Pleiku", "Tinh": "Gia Lai"},
+            {"Sanbay": "Cát Bi", "Tinh": "Hải Phòng"},
+            {"Sanbay": "Nội Bài", "Tinh": "Hà Nội"},
+            {"Sanbay": "Tân Sơn Nhất", "Tinh": "Thành phố Hồ Chí Minh"},
+            {"Sanbay": "Cam Ranh", "Tinh": "Khánh Hòa"},
+            {"Sanbay": "Rạch Giá", "Tinh": "Kiên Giang"},
+            {"Sanbay": "Phú Quốc", "Tinh": "Kiên Giang"},
+            {"Sanbay": "Liên Khương", "Tinh": "Lâm Đồng"},
+            {"Sanbay": "Vinh", "Tinh": "Nghệ An"},
+            {"Sanbay": "Tuy Hòa", "Tinh": "Phú Yên"},
+            {"Sanbay": "Đồng Hới", "Tinh": "Quảng Bình"},
+            {"Sanbay": "Chu Lai", "Tinh": "Quảng Nam"},
+            {"Sanbay": "Phú Bài", "Tinh": "Thừa Thiên Huế"},
+            {"Sanbay": "Thọ Xuân", "Tinh": "Thanh Hóa"},
+            {"Sanbay": "Vân Đồn", "Tinh": "Quảng Ninh"},
+        ]
+
+        for p in airports:
+            prod = SanBay(ten_SanBay=p['Sanbay'],
+                          DiaChi=p['Tinh'])
+            db.session.add(prod)
+        db.session.commit()
+
+        u = NguoiDung(
+            HoTen="admin",
+            Email="admingmail.com",
+            SDT="0123456789",
+            TenDangNhap="admin",
+            MatKhau=str(hashlib.md5("admin".strip().encode('utf-8')).hexdigest()),
+            GioiTinh=GioiTinh.Nam
+        )
+        db.session.add(u)
+        db.session.commit()
