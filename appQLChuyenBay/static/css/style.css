@@ -334,6 +334,7 @@ a {
 }
 .box-left{
     width:65%;
+    margin-bottom: 10px;
 }
 
 .giauudai{
@@ -868,13 +869,68 @@ input.block-item{
     font-size: 15px;
     margin-bottom:5px;
     color: red;
-<<<<<<< HEAD
     font-size: 0.9rem;
     margin-top: 5px;
 }
 
-
-
-=======
+.btn.btn-danger{
+    width: 120px;
 }
->>>>>>> a9cf6b2122253dcf86f44fbdf39271ded235a571
+
+.key.row{
+    align-items: center;
+}
+
+.seat-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 10px;
+    }
+
+.seat {
+      width: 40px;
+      height: 40px;
+      margin: 5px;
+      text-align: center;
+      line-height: 40px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+.first-class {
+      background-color: #FFD700; /* Màu vàng cho hạng nhất */
+    }
+
+.economy-class {
+      background-color: #ADD8E6; /* Màu xanh cho hạng phổ thông */
+    }
+
+.seating-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+.seat-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+}
+
+.tieudebanve{
+    text-align: center;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+input[type="number"] {
+    width: 100px; /* Tăng chiều rộng */
+    height: 30px; /* Tăng chiều cao */
+    padding: 5px; /* Tăng khoảng cách bên trong */
+    font-size: 16px; /* Tăng kích thước chữ */
+    border-radius: 5px; /* Tùy chỉnh bo góc nếu cần */
+    border: 1px solid #ccc; /* Viền ô nhập liệu */
+}

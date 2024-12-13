@@ -1,0 +1,74 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-4 tieudebanve">
+      Sơ đồ máy bay
+    </div>
+    <div class="col-sm-8">
+        <div class="tieudebanve" style="display: inline-block;">Số lượng vé muốn mua: </div>
+        <input type="number" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <div id="airplane-seating" class="seating-container"></div>
+    </div>
+    <div class="col-sm-8">
+      <div class="tieudebanve">Thông tin hành khách</div>
+    </div>
+  </div>
+
+  <script>
+    function createSeatMap(firstClassSeats, economyClassSeats) {
+      const container = document.getElementById('airplane-seating');
+
+      // Container cho ghế hạng nhất
+      const firstClassContainer = document.createElement('div');
+      firstClassContainer.className = 'seat-row';
+      container.appendChild(firstClassContainer);
+
+      // Tạo ghế hạng nhất
+      const firstClassColumns = Math.ceil(firstClassSeats / 4);
+      for (let i = 0; i < 4; i++) {
+        const column = document.createElement('div');
+        column.className = 'seat-column';
+        for (let j = 0; j < firstClassColumns; j++) {
+          const seatNumber = j * 4 + i + 1;
+          if (seatNumber > firstClassSeats) break;
+          const seat = document.createElement('button');
+          seat.className = 'seat first-class';
+          seat.textContent = `F${seatNumber}`;
+          column.appendChild(seat);
+        }
+        firstClassContainer.appendChild(column);
+      }
+
+      // Container cho ghế hạng phổ thông
+      const economyClassContainer = document.createElement('div');
+      economyClassContainer.className = 'seat-row';
+      container.appendChild(economyClassContainer);
+
+      // Tạo ghế hạng phổ thông
+      const economyClassColumns = Math.ceil(economyClassSeats / 4);
+      for (let i = 0; i < 4; i++) {
+        const column = document.createElement('div');
+        column.className = 'seat-column';
+        for (let j = 0; j < economyClassColumns; j++) {
+          const seatNumber = j * 4 + i + 1;
+          if (seatNumber > economyClassSeats) break;
+          const seat = document.createElement('button');
+          seat.className = 'seat economy-class';
+          seat.textContent = `E${seatNumber}`;
+          column.appendChild(seat);
+        }
+        economyClassContainer.appendChild(column);
+      }
+    }
+
+    // Ví dụ với n = 8 ghế hạng nhất và m = 12 ghế hạng phổ thông
+    const n = 8;
+    const m = 12;
+    createSeatMap(n, m);
+  </script>
+{% endblock  %}

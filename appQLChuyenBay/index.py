@@ -1,5 +1,5 @@
 import math
-from datetime import timedelta
+from datetime import timedelta, datetime
 from flask import render_template, request, redirect, url_for, jsonify
 import dao
 from appQLChuyenBay import app, login, mail
@@ -9,9 +9,25 @@ from flask import session
 from flask_login import login_user, logout_user
 
 
+
 @app.route("/")
 def index():
-    return render_template('index.html')
+    # Lấy danh sách chuyến bay sắp cất cánh
+    flights = dao.get_upcoming_flights()
+
+    flight_info = []
+    for flight in flights:
+        # Lấy tên tuyến bay từ ID_TuyenBay
+        route = dao.get_route_name_by_id(flight.id_TuyenBay)
+
+        if route:
+            # Lưu thông tin chuyến bay vào danh sách flight_info
+            flight_info.append({
+                "hành_trình": route.tenTuyen,
+                "thời_gian": flight.gio_Bay.strftime('%d-%m-%Y %H:%M'),  # Giả sử gioBay là kiểu datetime
+            })
+
+    return render_template('index.html',flights=flight_info)
 
 
 
@@ -120,6 +136,16 @@ def verify_otp():
 @app.route("/huong_dan_dat_cho")
 def huongdandatcho():
     return render_template('huong_dan_dat_cho.html')
+
+@app.route("/ban_ve")
+def banve():
+    first_class_seats = 8  # Số ghế hạng nhất
+    economy_class_seats = 12  # Số ghế hạng phổ thông
+    return render_template(
+        'ban_ve.html',
+        first_class_seats=first_class_seats,
+        economy_class_seats=economy_class_seats
+    )
 
 @app.route("/nhan_vien")
 def nhanvien():

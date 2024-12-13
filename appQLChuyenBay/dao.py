@@ -1,6 +1,7 @@
 import sqlite3
+from datetime import datetime
 
-from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay
+from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay
 from appQLChuyenBay import app, db
 import hashlib
 import cloudinary.uploader
@@ -52,16 +53,31 @@ def check_email_exists(email):
 role_map = {role.value: name for name, role in UserRole.__members__.items()}
 
 
-
 def get_all_user_roles(user_id):
     user_roles = db.session.query(NguoiDung_VaiTro.ID_VaiTro).filter_by(ID_User=user_id).all()
     role_ids = [role.ID_VaiTro for role in user_roles]
     return [role_map.get(role_id) for role_id in role_ids if role_id in role_map]
 
+
 def load_flight(noiDi=None, noiDen=None, ngayDi=None):
     query = ChuyenBay.query
 
     if noiDi and noiDen and ngayDi:
-        query = query.filter(ChuyenBay.id_SanBayDen == noiDen and ChuyenBay.id_SanBayDi ==noiDi and ChuyenBay.gio_Bay.date() == ngayDi)
+        query = query.filter(
+            ChuyenBay.id_SanBayDen == noiDen and ChuyenBay.id_SanBayDi == noiDi and ChuyenBay.gio_Bay.date() == ngayDi)
     return query.all()
 
+
+# Hàm lấy các chuyến bay sắp cất cánh
+def get_upcoming_flights():
+    # Truy vấn các chuyến bay có thời gian bay lớn hơn thời gian hiện tại
+    flights = db.session.query(ChuyenBay).filter(ChuyenBay.gio_Bay > datetime.now()).order_by(ChuyenBay.gio_Bay).limit(
+        10).all()
+    return flights
+
+
+# Hàm lấy tên tuyến bay từ id_TuyenBay
+def get_route_name_by_id(route_id):
+    # Truy vấn tên tuyến bay từ bảng TuyenBay
+    route = db.session.query(TuyenBay.tenTuyen).filter(TuyenBay.id_TuyenBay == route_id).first()
+    return route
