@@ -5,71 +5,73 @@
     <div class="col-md-">
         <div class="pad3">
             <h1 style="font-size: 28px; margin-bottom:10px;">Danh sách chuyến bay</h1>
-            <div class="row custom-row-gap">
-                <div class="diemdi">
-                    <div class="block-text">
-                        <p class="block-label zoneX"
-                           style="padding-top: 3px;">Điểm đi</p>
-                        <input required type="text"
-                               class="block-item dropdown-input"
-                               id="SanBayDi"
-                               placeholder="Điểm khởi hành" value="">
-                        <ul id="dropdown-results" class="dropdown"></ul>
+            <form id="search-form" method="post" class="search-form" action="/apidanhsachchuyenbay">
+                <div class="row custom-row-gap">
+                    <div class="diemdi">
+                        <div class="block-text">
+                            <p class="block-label zoneX"
+                               style="padding-top: 3px;">Điểm đi</p>
+                            <input required type="text"
+                                   class="block-item dropdown-input"
+                                   id="SanBayDi"
+                                   placeholder="Điểm khởi hành" value="">
+                            <ul id="dropdown-results" class="dropdown"></ul>
+                        </div>
                     </div>
-                </div>
-                <div class="diemden" style="float: left; width: 226px;">
-                    <div class="block-text">
-                        <p class="block-label zoneX"
-                           style="padding-top: 3px;">Điểm đến</p>
-                        <input required type="text"
-                               class="block-item dropdown-input"
-                               id="SanBayDen"
-                               placeholder="Điểm đến" value="">
-                        <ul id="dropdown-results-den" class="dropdown"></ul>
+                    <div class="diemden" style="float: left; width: 226px;">
+                        <div class="block-text">
+                            <p class="block-label zoneX"
+                               style="padding-top: 3px;">Điểm đến</p>
+                            <input required type="text"
+                                   class="block-item dropdown-input"
+                                   id="SanBayDen"
+                                   placeholder="Điểm đến" value="">
+                            <ul id="dropdown-results-den" class="dropdown"></ul>
+                        </div>
                     </div>
-                </div>
+                        <div class="col-xs-6xx"
+                             style="float: left; width: 225px; ">
+                            <div class="block-text">
+                                <p class="block-label zoneX"
+                                   style="padding-top: 3px;">Ngày đi</p>
+                                <input required type="date"
+                                       class="block-item  hasDatepicker"
+                                       id="ThoiGian" name="Date"
+                                       placeholder="Ngày đi">
+                            </div>
+                    </div>
                     <div class="col-xs-6xx"
                          style="float: left; width: 225px; ">
                         <div class="block-text">
                             <p class="block-label zoneX"
-                               style="padding-top: 3px;">Ngày đi</p>
-                            <input required type="date"
-                                   class="block-item  hasDatepicker"
-                                   id="ThoiGian" name="Date"
-                                   placeholder="Ngày đi">
+                               style="padding-top: 3px;">Ghế hạng 1</p>
+                            <input required type="text"
+                                   class="block-item SLNguoiLon"
+                                   id="GH1" name="SLNguoiLon"
+                                   value="0" title="Ghế hạng 1" style="left: 30px;">
+                            <span class="signa plus">+</span>
+                            <span class="signa minus">-</span>
                         </div>
-                </div>
-                <div class="col-xs-6xx"
-                     style="float: left; width: 225px; ">
-                    <div class="block-text">
-                        <p class="block-label zoneX"
-                           style="padding-top: 3px;">Ghế hạng 1</p>
-                        <input required type="text"
-                               class="block-item SLNguoiLon"
-                               id="GH1" name="SLNguoiLon"
-                               value="0" title="Ghế hạng 1" style="left: 30px;">
-                        <span class="signa plus">+</span>
-                        <span class="signa minus">-</span>
+                    </div>
+                    <div class="col-xs-6xx"
+                         style="float: left; width: 225px; ">
+                        <div class="block-text">
+                            <p class="block-label zoneX"
+                               style="padding-top: 3px;">Ghế hạng 2</p>
+                            <input required type="text"
+                                   class="block-item SLNguoiLon"
+                                   id="GH2" name="SLNguoiLon"
+                                   value="0" title="Ghế hạng 2" style="left: 30px;">
+                            <span class="signa plus">+</span>
+                            <span class="signa minus">-</span>
+                        </div>
+                    </div>
+                    <!-- Thêm nút tìm kiếm -->
+                    <div class="col-xs-6xx" style="float: left; width: 225px; margin-top: 5px;">
+                        <button class="btn btn-primary" id="btn-search">Tìm kiếm</button>
                     </div>
                 </div>
-                <div class="col-xs-6xx"
-                     style="float: left; width: 225px; ">
-                    <div class="block-text">
-                        <p class="block-label zoneX"
-                           style="padding-top: 3px;">Ghế hạng 2</p>
-                        <input required type="text"
-                               class="block-item SLNguoiLon"
-                               id="GH2" name="SLNguoiLon"
-                               value="0" title="Ghế hạng 2" style="left: 30px;">
-                        <span class="signa plus">+</span>
-                        <span class="signa minus">-</span>
-                    </div>
-                </div>
-                <!-- Thêm nút tìm kiếm -->
-                <div class="col-xs-6xx" style="float: left; width: 225px; margin-top: 5px;">
-                    <button class="btn btn-primary" id="btn-search" onclick="searchFlights()">Tìm kiếm</button>
-                </div>
-            </div>
+            </form>
         </div>
         <div>
             <div class="container mt-3">

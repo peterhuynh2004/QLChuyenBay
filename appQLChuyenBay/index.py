@@ -29,6 +29,20 @@ def index():
 
     return render_template('index.html',flights=flight_info)
 
+@app.route('/apidanhsachchuyenbay', methods=['POST'])
+def api_danhsachchuyenbay():
+    data = request.json
+    san_bay_di = data.get('SanBayDi')
+    san_bay_den = data.get('SanBayDen')
+    thoi_gian = data.get('ThoiGian')
+    gh1 = data.get('GH1')
+    gh2 = data.get('GH2')
+
+    # Gọi hàm DAO để lấy danh sách chuyến bay
+    flights = dao.get_flights(san_bay_di, san_bay_den, thoi_gian, gh1, gh2)
+
+    # Chuyển đổi thành JSON để trả về
+    return jsonify(flights)
 
 
 @app.route('/api/get_sanbay', methods=['GET'])
