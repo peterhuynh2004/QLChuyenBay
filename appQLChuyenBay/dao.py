@@ -1,8 +1,11 @@
-from models import NguoiDung, SanBay, ChuyenBay
+import sqlite3
+
+from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay
 from appQLChuyenBay import app, db
 import hashlib
 import cloudinary.uploader
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
 
 
 def auth_user(username, password):
@@ -30,6 +33,11 @@ def get_user_by_id(user_id):
     return NguoiDung.query.get(user_id)  # Trả về None nếu không tìm thấy
 
 
+def get_san_bay():
+    # Truy vấn tất cả các sân bay
+    return SanBay.query.all()
+
+
 def check_email_exists(email):
     Session = sessionmaker(bind=db.engine)
     session = Session()
@@ -41,15 +49,32 @@ def check_email_exists(email):
         session.close()
 
 
+# Tạo cache enum cho việc đối chiếu
+role_map = {role.value: name for name, role in UserRole.__members__.items()}
 
-def load_airport():
-    query = SanBay.query
-    return query.all()
 
+
+def get_all_user_roles(user_id):
+    user_roles = db.session.query(NguoiDung_VaiTro.ID_VaiTro).filter_by(ID_User=user_id).all()
+    role_ids = [role.ID_VaiTro for role in user_roles]
+    return [role_map.get(role_id) for role_id in role_ids if role_id in role_map]
 
 def load_flight(noiDi=None, noiDen=None, ngayDi=None):
     query = ChuyenBay.query
-
     if noiDi and noiDen and ngayDi:
-        query = query.filter(ChuyenBay.id_SanBayDen == id_SanBayDen and ChuyenBay.id_SanBayDi == id_SanBayDi and ChuyenBay.gio_Bay.date() == ngayDi)
+        query = query.join(TuyenBay).filter(
+            and_(
+                TuyenBay.id_SanBayDi == noiDi,
+                TuyenBay.id_SanBayDen == noiDen,
+                db.func.date(ChuyenBay.gio_Bay) == ngayDi  # Sử dụng `db.func.date` để lấy phần ngày
+            )
+        )
     return query.all()
+
+
+def load_TuyenBay(flight=None):
+    query = TuyenBay.query
+    if flight:
+        query = query.filter(TuyenBay.id_TuyenBay == flight)
+    return query.all()
+

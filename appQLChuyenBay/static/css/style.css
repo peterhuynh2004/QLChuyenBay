@@ -9,6 +9,7 @@ html {
 
 body {
     font-family: "Lato", sans-serif;
+    background-color: #e9e9e9;
 }
 
 :root {
@@ -824,32 +825,78 @@ input.block-item{
 }
 
 /*trang datve_online*/
+div#formStep1{
+    background-color: white;
+}
+
+
 .form-select{
     background-color: #cccccc;
     color: #ffffff;
     font-size: 18px;
     border-color: lightblue;
     border-width: 2px;
+.head-title3 {
+    color: #fe5815;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0 0 5px;
 }
 
-.datve_online{
-    font-size: 16px;
+.wraphuongdan{
+    background: #ffffff none repeat scroll 0 0;
+    border-bottom: 0 solid #dddede;
+    border-radius: 16px 0 4px 4px;
+    border-top: 3px solid #fe5815;
+    color: black;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    margin: 22px auto 12px;
+    min-height: 489px;
+    padding: 6px 20px 20px;
+    position: relative;
+    background-color:white;
+}
+
+.index_nv{
+    width: 255px;
+    display: inline-block;
 }
 
 .form-control{
     padding: 10px;
     font-size: 16px;
+.wrap_nv{
+    margin: 10px;
 }
 
-.form-group {
-    margin-bottom: 1rem;
+.imgnv{
+    background-color: white;
+    margin: auto;
 }
 
-.error-message {
+.card-title{
+    font-size: 20px;
+}
+
+.card-text{
+    font-size: 15px;
+    margin-bottom:5px;
     color: red;
     font-size: 0.9rem;
     margin-top: 5px;
+    font-size: 16px;
+    padding: 5px
 }
 
+ .form-container {
+    display: none;
+}
+.form-container.active {
+    display: block;
+}
+.button-container {
+    margin-top: 20px;
+}
 
 
