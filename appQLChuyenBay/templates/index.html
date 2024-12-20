@@ -234,10 +234,21 @@
                         <span class="col-sm-3 period">Thời gian bay*</span>
                         <span class="col-sm-1 datngay"></span>
                     </div>
+                    {% for flight in flights %}
+                    <div class="key row">
+                        <span class="col-sm-4 dest">{{ flight.hành_trình }}</span>
+                        <span class="col-sm-2 price">VND</span>
+                        <span class="col-sm-3 period">{{ flight.thời_gian }}</span>
+                        <span class="col-sm-1 datngay">
+                            <button type="button" class="btn btn-danger">Đặt ngay</button>
+                        </span>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="col-sm-6"></div>
         </div>
     </div>
 </div>
+
 {% endblock %}

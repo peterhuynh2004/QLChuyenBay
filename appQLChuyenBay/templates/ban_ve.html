@@ -1,0 +1,218 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-4 tieudebanve">
+      Sơ đồ máy bay
+    </div>
+    <div class="col-sm-8">
+        <div class="tieudebanve" style="display: inline-block;">Số lượng vé muốn mua: </div>
+        <input type="number" id="ticket-count" min="1" />
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-sm-4">
+      <div id="airplane-seating" class="seating-container"></div>
+    </div>
+    <div class="col-sm-8">
+      <form class="form-group" action="/ban_ve" method="POST">
+        <div class="tieudebanve">Thông tin hành khách</div>
+        <div id="passenger-info" class="mt-3"></div>
+        <div class="mt-3" id="action-buttons" style="display: none;">
+          <button id="confirm-btn" class="btn btn-primary">Xác nhận đặt vé</button>
+          <button id="save-draft-btn" class="btn btn-secondary">Lưu nháp</button>
+          <button id="cancel-btn" class="btn btn-danger">Hủy chọn</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .seat.locked {
+      background-color: #d3d3d3; /* Màu xám cho ghế đã khóa */
+      cursor: not-allowed;
+    }
+
+    .seat.selected {
+      background-color: #90ee90; /* Màu xanh lá cho ghế được chọn */
+    }
+  </style>
+
+  <script>
+    function createSeatMap(firstClassSeats, economyClassSeats) {
+      const container = document.getElementById('airplane-seating');
+
+      // Container cho ghế hạng nhất
+      const firstClassContainer = document.createElement('div');
+      firstClassContainer.className = 'seat-row';
+      container.appendChild(firstClassContainer);
+
+      // Tạo ghế hạng nhất
+      const firstClassColumns = Math.ceil(firstClassSeats / 4);
+      for (let i = 0; i < 4; i++) {
+        const column = document.createElement('div');
+        column.className = 'seat-column';
+        for (let j = 0; j < firstClassColumns; j++) {
+          const seatNumber = j * 4 + i + 1;
+          if (seatNumber > firstClassSeats) break;
+          const seat = document.createElement('button');
+          seat.className = 'seat first-class';
+          seat.textContent = `F${seatNumber}`;
+          seat.addEventListener('click', handleSeatSelection);
+          column.appendChild(seat);
+        }
+        firstClassContainer.appendChild(column);
+      }
+
+      // Container cho ghế hạng phổ thông
+      const economyClassContainer = document.createElement('div');
+      economyClassContainer.className = 'seat-row';
+      container.appendChild(economyClassContainer);
+
+      // Tạo ghế hạng phổ thông
+      const economyClassColumns = Math.ceil(economyClassSeats / 4);
+      for (let i = 0; i < 4; i++) {
+        const column = document.createElement('div');
+        column.className = 'seat-column';
+        for (let j = 0; j < economyClassColumns; j++) {
+          const seatNumber = j * 4 + i + 1;
+          if (seatNumber > economyClassSeats) break;
+          const seat = document.createElement('button');
+          seat.className = 'seat economy-class';
+          seat.textContent = `E${seatNumber}`;
+          seat.addEventListener('click', handleSeatSelection);
+          column.appendChild(seat);
+        }
+        economyClassContainer.appendChild(column);
+      }
+    }
+
+    function handleSeatSelection(event) {
+      const seat = event.target;
+      const selectedSeats = document.querySelectorAll('.seat.selected');
+      const ticketCount = parseInt(document.getElementById('ticket-count').value, 10);
+
+      // Ngăn không cho chọn ghế đã bị khóa
+      if (seat.classList.contains('locked') && !seat.classList.contains('selected')) {
+        alert('Ghế này đã được khóa.');
+        return;
+      }
+
+      if (seat.classList.contains('selected')) {
+        // Bỏ chọn ghế
+        seat.classList.remove('selected');
+        seat.classList.remove('locked');
+      } else if (selectedSeats.length < ticketCount) {
+        // Chọn ghế mới
+        seat.classList.add('selected');
+        seat.classList.add('locked');
+      } else {
+        alert('Bạn không thể chọn nhiều hơn số lượng vé đã nhập.');
+      }
+
+      updatePassengerInfo();
+      toggleActionButtons();
+    }
+
+    function updatePassengerInfo() {
+      const selectedSeats = document.querySelectorAll('.seat.selected');
+      const passengerInfoContainer = document.getElementById('passenger-info');
+      passengerInfoContainer.innerHTML = '';
+
+      selectedSeats.forEach((seat, index) => {
+        const passengerForm = document.createElement('div');
+        passengerForm.className = 'mb-3';
+        passengerForm.innerHTML = `
+          <label for="passenger-${index + 1}" class="hanhkhach">Hành khách ${index + 1}:</label>
+          <input type="text" id="passenger-${index + 1}" class="form-control textthongtin" placeholder="Nhập tên hành khách">
+          <input
+            type="text"
+            id="id-passenger-${index + 1}"
+            class="form-control textthongtin"
+            placeholder="Nhập CMND/CCCD"
+            pattern="\d*"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input
+            type="text"
+            id="phone-passenger-${index + 1}"
+            class="form-control textthongtin"
+            placeholder="Nhập số điện thoại"
+            pattern="\d*"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input
+            type="text"
+            class="form-control textthongtin"
+            value="Hạng ghế: ${seat.classList.contains('first-class') ? 'Hạng nhất' : 'Phổ thông'}"
+            readonly>
+          <input
+            type="text"
+            class="form-control textthongtin"
+            value="Số ghế: ${seat.textContent}"
+            readonly>
+          <input
+            type="text"
+            class="form-control textthongtin"
+            value="Giá tiền: ${seat.classList.contains('first-class') ? '1,500,000 VND' : '500,000 VND'}"
+            readonly>
+        `;
+        passengerInfoContainer.appendChild(passengerForm);
+      });
+    }
+
+    function toggleActionButtons() {
+      const selectedSeats = document.querySelectorAll('.seat.selected');
+      const actionButtons = document.getElementById('action-buttons');
+      actionButtons.style.display = selectedSeats.length > 0 ? 'block' : 'none';
+    }
+
+    // Event listeners for buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('confirm-btn').addEventListener('click', () => {
+      const ticketCount = parseInt(document.getElementById('ticket-count').value, 10);
+      const selectedSeats = document.querySelectorAll('.seat.selected');
+      const passengerForms = document.querySelectorAll('#passenger-info .mb-3');
+
+      // Kiểm tra nếu số lượng ghế đã chọn không đủ
+      if (selectedSeats.length !== ticketCount) {
+        alert(`Bạn cần chọn đủ ${ticketCount} ghế! Hiện tại bạn đã chọn ${selectedSeats.length} ghế.`);
+        return;
+      }
+
+      // Kiểm tra thông tin hành khách
+      for (let i = 0; i < passengerForms.length; i++) {
+        const nameInput = passengerForms[i].querySelector(`input[placeholder="Nhập tên hành khách"]`);
+        const idInput = passengerForms[i].querySelector(`input[placeholder="Nhập CMND/CCCD"]`);
+        const phoneInput = passengerForms[i].querySelector(`input[placeholder="Nhập số điện thoại"]`);
+
+        if (!nameInput.value.trim() || !idInput.value.trim() || !phoneInput.value.trim()) {
+          alert(`Hãy điền đầy đủ thông tin cho Hành khách ${i + 1}.`);
+          return;
+        }
+      }
+
+      // Nếu kiểm tra thành công
+      alert('Đặt vé thành công!');
+      // Bạn có thể thêm logic lưu dữ liệu hoặc xử lý tiếp ở đây
+      });
+
+
+      document.getElementById('save-draft-btn').addEventListener('click', () => {
+        alert('Lưu nháp thành công!');
+      });
+
+      document.getElementById('cancel-btn').addEventListener('click', () => {
+        const selectedSeats = document.querySelectorAll('.seat.selected');
+        selectedSeats.forEach(seat => {
+          seat.classList.remove('selected', 'locked');
+        });
+        document.getElementById('passenger-info').innerHTML = '';
+        alert('Hủy chọn ghế thành công!');
+      });
+    });
+
+    // Ví dụ với n = 8 ghế hạng nhất và m = 12 ghế hạng phổ thông
+    const n = 8;
+    const m = 12;
+    createSeatMap(n, m);
+  </script>
+{% endblock  %}
