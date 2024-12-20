@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime
 from flask_sqlalchemy import pagination
 from sqlalchemy import func
-
+from sqlalchemy import text
 from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay, SBayTrungGian
 from appQLChuyenBay import app, db
 import hashlib
@@ -122,3 +122,72 @@ def get_filtered_flights(san_bay_di=None, san_bay_den=None, thoi_gian=None, gh1=
 
     # Trả về kết quả với phân trang
     return query.paginate(page=page, per_page=per_page)
+
+
+def get_flights(san_bay_di, san_bay_den, thoi_gian, gh1, gh2):
+    # Chuyển đổi 'thoi_gian' từ dạng chuỗi sang đối tượng datetime
+    thoi_gian_date = datetime.strptime(thoi_gian, '%Y-%m-%d')
+
+    # Tạo truy vấn SQL
+    query = text("""
+        SELECT 
+            TuyenBay.tenTuyen,
+            ChuyenBay.gio_Bay, 
+            ChuyenBay.GH1 - ChuyenBay.GH1_DD AS ghe_hang_1_con_trong,
+            ChuyenBay.GH2 - ChuyenBay.GH2_DD AS ghe_hang_2_con_trong,
+            ChuyenBay.id_TuyenBay,
+            ChuyenBay.GH1,
+            ChuyenBay.GH2
+        FROM TuyenBay
+        JOIN ChuyenBay ON TuyenBay.id_TuyenBay = ChuyenBay.id_TuyenBay
+        WHERE TuyenBay.id_SanBayDi = :san_bay_di
+          AND TuyenBay.id_SanBayDen = :san_bay_den
+          AND ChuyenBay.gio_Bay >= :thoi_gian
+          AND (ChuyenBay.GH1 - ChuyenBay.GH1_DD) >= :gh1
+          AND (ChuyenBay.GH2 - ChuyenBay.GH2_DD) >= :gh2
+    """)
+
+    # Thực thi truy vấn và lấy kết quả dưới dạng dictionary
+    result = db.session.execute(query, {
+        'san_bay_di': san_bay_di,
+        'san_bay_den': san_bay_den,
+        'thoi_gian': thoi_gian_date,
+        'gh1': gh1,
+        'gh2': gh2
+    }).mappings()  # Trả về kết quả dưới dạng dictionary
+
+    # Chuyển kết quả thành danh sách dict
+    flights = []
+    for row in result:
+        flights.append({
+            "id": row['id_TuyenBay'],  # Truy cập bằng tên cột
+            "hành_trình": row['tenTuyen'],
+            "thời_gian": row['gio_Bay'].strftime('%Y-%m-%d'),
+            "ghế_hạng_1_còn_trống": row['ghe_hang_1_con_trong'],
+            "GH1": row['GH1'],
+            "ghế_hạng_2_còn_trống": row['ghe_hang_2_con_trong'],
+            "GH2": row['GH2'],
+            "sân_bay_trung_gian": "N/A",  # Tạm thời để giá trị mặc định
+        })
+
+    return flights
+
+def get_id_san_bay(ten_san_bay_full):
+    """
+    Tách chuỗi để lấy tên sân bay và dùng nó truy vấn lấy id_SanBay từ bảng SanBay.
+    :param ten_san_bay_full: Chuỗi định dạng "sb.ten_SanBay (sb.DiaChi)"
+    :return: id_SanBay nếu tìm thấy, None nếu không tìm thấy
+    """
+    # Tách chuỗi để lấy ten_SanBay
+    ten_san_bay = ten_san_bay_full.split('(')[0].strip()
+
+    # Truy vấn để lấy id_SanBay
+    query = text("""
+        SELECT id_SanBay
+        FROM SanBay
+        WHERE ten_SanBay = :ten_san_bay
+    """)
+    result = db.session.execute(query, {'ten_san_bay': ten_san_bay}).fetchone()
+
+    # Trả về id nếu tìm thấy, None nếu không
+    return result[0] if result else None  # Truy cập cột đầu tiên (id_SanBay) qua chỉ mục

@@ -29,20 +29,33 @@ def index():
 
     return render_template('index.html',flights=flight_info)
 
-@app.route('/apidanhsachchuyenbay', methods=['POST'])
+@app.route('/api/danhsachchuyenbay', methods=['POST'])
 def api_danhsachchuyenbay():
-    data = request.json
-    san_bay_di = data.get('SanBayDi')
-    san_bay_den = data.get('SanBayDen')
-    thoi_gian = data.get('ThoiGian')
-    gh1 = data.get('GH1')
-    gh2 = data.get('GH2')
+    data = request.get_json()  # Nhận dữ liệu JSON từ yêu cầu POST
+    print(data)  # Debug dữ liệu
 
-    # Gọi hàm DAO để lấy danh sách chuyến bay
-    flights = dao.get_flights(san_bay_di, san_bay_den, thoi_gian, gh1, gh2)
+    # Lấy id sân bay đi và đến
+    id_NoiDi = dao.get_id_san_bay(data.get('SanBayDi'))
+    id_NoiDen = dao.get_id_san_bay(data.get('SanBayDen'))
 
-    # Chuyển đổi thành JSON để trả về
-    return jsonify(flights)
+    if data and id_NoiDi is not None and id_NoiDen is not None:
+        # Gán giá trị cho các biến
+        san_bay_di = id_NoiDi
+        san_bay_den = id_NoiDen
+        thoi_gian = data.get('ThoiGian')
+        gh1 = int(data.get('GH1', 0))  # Đảm bảo gh1 là số nguyên
+        gh2 = int(data.get('GH2', 0))  # Đảm bảo gh2 là số nguyên
+        print(f"Searching flights with: {san_bay_di}, {san_bay_den}, {thoi_gian}, {gh1}, {gh2}")  # Debug
+
+        # Lấy danh sách chuyến bay
+        flights = dao.get_flights(san_bay_di, san_bay_den, thoi_gian, gh1, gh2)
+
+        # Trả về kết quả dưới dạng JSON
+        return jsonify(flights), 200
+    else:
+        return jsonify({"error": "Invalid input or unknown airport"}), 400
+
+
 
 
 @app.route('/api/get_sanbay', methods=['GET'])
@@ -193,37 +206,6 @@ def danhsachchuyenbay():
 
     return render_template('danhsachchuyenbay.html', flights=flight_info, pagination=flights)
 
-@app.route("/api/danhsachchuyenbay", methods=["POST"])
-def api_danhsachchuyenbay():
-    data = request.json
-    noi_di = data.get('SanBayDi', None)
-    noi_den = data.get('SanBayDen', None)
-    thoi_gian = data.get('ThoiGian', None)
-    gh1 = data.get('GH1', None)
-    gh2 = data.get('GH2', None)
-
-    # Gọi hàm DAO để lọc chuyến bay
-    flights = dao.get_filtered_flights(noi_di, noi_den, thoi_gian, gh1, gh2, page=1, per_page=10)
-
-    # Chuyển dữ liệu chuyến bay thành JSON
-    result = []
-    for flight in flights.items:
-        route = dao.get_route_name_by_id(flight.id_TuyenBay)
-        sân_bay_trung_gian = dao.get_route_sanbaytrunggian_by_id(flight.id)
-
-        if route:
-            result.append({
-                "id": flight.id,
-                "hành_trình": route.tenTuyen,
-                "thời_gian": flight.gio_Bay.strftime('%d-%m-%Y %H:%M'),
-                "ghế_hạng_1_còn_trống": flight.GH1_con,
-                "ghế_hạng_2_còn_trống": flight.GH2_con,
-                "GH1": flight.GH1,
-                "GH2": flight.GH2,
-                "sân_bay_trung_gian": ', '.join(sân_bay_trung_gian),
-            })
-
-    return jsonify(result)
 
 @app.route("/ban_ve", methods=['get', 'post'])
 def banve():
