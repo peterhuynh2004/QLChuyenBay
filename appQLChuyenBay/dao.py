@@ -1,7 +1,9 @@
 import sqlite3
 from datetime import datetime
+from flask_sqlalchemy import pagination
+from sqlalchemy import func
 
-from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay
+from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay, SBayTrungGian
 from appQLChuyenBay import app, db
 import hashlib
 import cloudinary.uploader
@@ -68,6 +70,17 @@ def load_flight(noiDi=None, noiDen=None, ngayDi=None):
     return query.all()
 
 
+def load_flights_paginated(page=1, per_page=10):
+    query = ChuyenBay.query
+    return query.paginate(page=page, per_page=per_page, error_out=False)
+
+def get_route_sanbaytrunggian_by_id(route_id):
+    route = db.session.query(SBayTrungGian.ID_SanBay).filter(SBayTrungGian.ID_ChuyenBay == route_id).all()
+
+    for r in route:
+        rou = db.session.query(SanBay.ten_SanBay).filter(SanBay.id_SanBay == r).first()
+    return route
+
 # Hàm lấy các chuyến bay sắp cất cánh
 def get_upcoming_flights():
     # Truy vấn các chuyến bay có thời gian bay lớn hơn thời gian hiện tại
@@ -81,3 +94,31 @@ def get_route_name_by_id(route_id):
     # Truy vấn tên tuyến bay từ bảng TuyenBay
     route = db.session.query(TuyenBay.tenTuyen).filter(TuyenBay.id_TuyenBay == route_id).first()
     return route
+
+
+def get_SanBayTrungGian_name_by_id(id_ChuyenBay):
+    results = (
+        db.session.query(SanBay.ten_SanBay)
+        .join(SBayTrungGian, SBayTrungGian.ID_SanBay == SanBay.id_SanBay)
+        .filter(SBayTrungGian.ID_SanBay == id_ChuyenBay)
+        .all()
+    )
+    # Trả về danh sách tên sân bay
+    return [result.ten_SanBay for result in results]
+
+def get_filtered_flights(san_bay_di=None, san_bay_den=None, thoi_gian=None, gh1=None, gh2=None, page=1, per_page=10):
+    query = ChuyenBay.query.join(TuyenBay)
+
+    if san_bay_di:
+        query = query.filter(TuyenBay.id_SanBayDi == san_bay_di)
+    if san_bay_den:
+        query = query.filter(TuyenBay.id_SanBayDen == san_bay_den)
+    if thoi_gian:
+        query = query.filter(db.func.date(ChuyenBay.gio_Bay) == thoi_gian)  # Sử dụng db.func.date để lọc theo ngày
+    if gh1:
+        query = query.filter(ChuyenBay.GH1 >= int(gh1))
+    if gh2:
+        query = query.filter(ChuyenBay.GH2 >= int(gh2))
+
+    # Trả về kết quả với phân trang
+    return query.paginate(page=page, per_page=per_page)

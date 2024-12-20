@@ -137,7 +137,81 @@ def verify_otp():
 def huongdandatcho():
     return render_template('huong_dan_dat_cho.html')
 
-@app.route("/ban_ve")
+@app.route("/chuc_nang")
+def chucnang():
+    return render_template('chuc_nang.html')
+
+@app.route("/lap_lich_chuyen_bay")
+def laplichchuyenbay():
+    return render_template('lap_lich_chuyen_bay.html')
+
+from dao import get_filtered_flights
+
+@app.route("/danhsachchuyenbay")
+def danhsachchuyenbay():
+    # Lấy tham số từ yêu cầu GET
+    san_bay_di = request.args.get('SanBayDi', None)
+    san_bay_den = request.args.get('SanBayDen', None)
+    thoi_gian = request.args.get('ThoiGian', None)
+    gh1 = request.args.get('GH1', None)
+    gh2 = request.args.get('GH2', None)
+
+    # Gọi hàm từ dao để lấy danh sách chuyến bay
+    page = request.args.get('page', 1, type=int)
+    flights = get_filtered_flights(san_bay_di, san_bay_den, thoi_gian, gh1, gh2, page=page, per_page=10)
+
+    flight_info = []
+    for flight in flights.items:
+        route = dao.get_route_name_by_id(flight.id_TuyenBay)
+        sân_bay_trung_gian = dao.get_route_sanbaytrunggian_by_id(flight.id_ChuyenBay)
+
+        if route:
+            flight_info.append({
+                "id": flight.id_ChuyenBay,
+                "hành_trình": route.tenTuyen,
+                "thời_gian": flight.gio_Bay.strftime('%d-%m-%Y %H:%M'),
+                "ghế_hạng_1_còn_trống": flight.GH1_DD,
+                "ghế_hạng_2_còn_trống": flight.GH2_DD,
+                "GH1": flight.GH1,
+                "GH2": flight.GH2,
+                "sân_bay_trung_gian": ', '.join(sân_bay_trung_gian),
+            })
+
+    return render_template('danhsachchuyenbay.html', flights=flight_info, pagination=flights)
+
+@app.route("/api/danhsachchuyenbay", methods=["POST"])
+def api_danhsachchuyenbay():
+    data = request.json
+    noi_di = data.get('SanBayDi', None)
+    noi_den = data.get('SanBayDen', None)
+    thoi_gian = data.get('ThoiGian', None)
+    gh1 = data.get('GH1', None)
+    gh2 = data.get('GH2', None)
+
+    # Gọi hàm DAO để lọc chuyến bay
+    flights = dao.get_filtered_flights(noi_di, noi_den, thoi_gian, gh1, gh2, page=1, per_page=10)
+
+    # Chuyển dữ liệu chuyến bay thành JSON
+    result = []
+    for flight in flights.items:
+        route = dao.get_route_name_by_id(flight.id_TuyenBay)
+        sân_bay_trung_gian = dao.get_route_sanbaytrunggian_by_id(flight.id)
+
+        if route:
+            result.append({
+                "id": flight.id,
+                "hành_trình": route.tenTuyen,
+                "thời_gian": flight.gio_Bay.strftime('%d-%m-%Y %H:%M'),
+                "ghế_hạng_1_còn_trống": flight.GH1_con,
+                "ghế_hạng_2_còn_trống": flight.GH2_con,
+                "GH1": flight.GH1,
+                "GH2": flight.GH2,
+                "sân_bay_trung_gian": ', '.join(sân_bay_trung_gian),
+            })
+
+    return jsonify(result)
+
+@app.route("/ban_ve", methods=['get', 'post'])
 def banve():
     first_class_seats = 8  # Số ghế hạng nhất
     economy_class_seats = 12  # Số ghế hạng phổ thông
