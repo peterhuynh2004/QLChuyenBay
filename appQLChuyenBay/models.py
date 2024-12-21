@@ -329,6 +329,7 @@ if __name__ == '__main__':
         # db.session.add_all([tuyenbay1, tuyenbay2, tuyenbay3, tuyenbay4])
         # db.session.commit()
 
+
         # data sân bay
         # airports = [
         #     {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
@@ -359,4 +360,160 @@ if __name__ == '__main__':
         #     prod = SanBay(ten_SanBay=p['Sanbay'],
         #                   DiaChi=p['Tinh'])
         #     db.session.add(prod)
+        # db.session.commit()
+
+        # tuyenbay_data = [
+        #     {
+        #         "tenTuyen": "Côn Đảo - Phù Cát",
+        #         "id_SanBayDi": 1,
+        #         "id_SanBayDen": 2,
+        #         "doanhThu": 50000000,
+        #         "soLuotBay": 50,
+        #         "tyLe": 90
+        #     },
+        #     {
+        #         "tenTuyen": "Côn Đảo - Cà Mau",
+        #         "id_SanBayDi": 1,
+        #         "id_SanBayDen": 3,
+        #         "doanhThu": 20000000,
+        #         "soLuotBay": 30,
+        #         "tyLe": 85
+        #     },
+        #     {
+        #         "tenTuyen": "Phù Cát - Cần Thơ",
+        #         "id_SanBayDi": 2,
+        #         "id_SanBayDen": 4,
+        #         "doanhThu": 15000000,
+        #         "soLuotBay": 20,
+        #         "tyLe": 80
+        #     },
+        #     {
+        #         "tenTuyen": "Cà Mau - Buôn Ma Thuộc",
+        #         "id_SanBayDi": 3,
+        #         "id_SanBayDen": 5,
+        #         "doanhThu": 12000000,
+        #         "soLuotBay": 15,
+        #         "tyLe": 75
+        #     },
+        #     {
+        #         "tenTuyen": "Cần Thơ - Côn Đảo",
+        #         "id_SanBayDi": 4,
+        #         "id_SanBayDen": 1,
+        #         "doanhThu": 25000000,
+        #         "soLuotBay": 25,
+        #         "tyLe": 88
+        #     }
+        # ]
+        #
+        # for t in tuyenbay_data:
+        #     tuyenbay = TuyenBay(**t)
+        #     db.session.add(tuyenbay)
+        #
+        # db.session.commit()
+
+
+        # flights = [
+        #     {
+        #         "id_TuyenBay": 1,
+        #         "gio_Bay": "2024-12-22 08:00:00",
+        #         "tG_Bay": "2024-12-22 09:30:00",
+        #         "GH1": 100,
+        #         "GH2": 120,
+        #         "GH1_DD": 50,
+        #         "GH2_DD": 70
+        #     },
+        #     {
+        #         "id_TuyenBay": 2,
+        #         "gio_Bay": "2024-12-22 10:00:00",
+        #         "tG_Bay": "2024-12-22 11:30:00",
+        #         "GH1": 90,
+        #         "GH2": 110,
+        #         "GH1_DD": 40,
+        #         "GH2_DD": 60
+        #     },
+        #     {
+        #         "id_TuyenBay": 3,
+        #         "gio_Bay": "2024-12-22 12:00:00",
+        #         "tG_Bay": "2024-12-22 13:30:00",
+        #         "GH1": 80,
+        #         "GH2": 100,
+        #         "GH1_DD": 30,
+        #         "GH2_DD": 50
+        #     },
+        #     {
+        #         "id_TuyenBay": 4,
+        #         "gio_Bay": "2024-12-22 14:00:00",
+        #         "tG_Bay": "2024-12-22 15:30:00",
+        #         "GH1": 60,
+        #         "GH2": 80,
+        #         "GH1_DD": 20,
+        #         "GH2_DD": 40
+        #     },
+        #     {
+        #         "id_TuyenBay": 5,
+        #         "gio_Bay": "2024-12-22 16:00:00",
+        #         "tG_Bay": "2024-12-22 17:30:00",
+        #         "GH1": 120,
+        #         "GH2": 140,
+        #         "GH1_DD": 60,
+        #         "GH2_DD": 80
+        #     },
+        #     {
+        #         "id_TuyenBay": 2,
+        #         "gio_Bay": "2024-12-22 16:00:00",
+        #         "tG_Bay": "2024-12-22 17:30:00",
+        #         "GH1": 120,
+        #         "GH2": 140,
+        #         "GH1_DD": 60,
+        #         "GH2_DD": 80
+        #     }
+        # ]
+        #
+        # for f in flights:
+        #     flight = ChuyenBay(**f)
+        #     db.session.add(flight)
+        #
+        # db.session.commit
+
+        # địa chỉ
+        # diachi1 = DiaChi(ChiTiet="Số 1, Đường A", TenDuong="Đường A", QuanHuyen="Quận 1",
+        #                  TinhTP="Thành phố Hồ Chí Minh")
+        # diachi2 = DiaChi(ChiTiet="Số 2, Đường B", TenDuong="Đường B", QuanHuyen="Quận 2", TinhTP="Hà Nội")
+        # db.session.add_all([diachi1, diachi2])
+        # db.session.commit()
+
+        # data Người Dùng
+        # nguoidung1 = NguoiDung(HoTen="Nguyễn Văn A", Email="nguyenvana@example.com", SDT=123456789,
+        #                        TenDangNhap="nguyenvana", MatKhau="password123", GioiTinh="Nam", DiaChi=1)
+        # nguoidung2 = NguoiDung(HoTen="Trần Thị B", Email="tranthib@example.com", SDT=987654321, TenDangNhap="tranthib",
+        #                        MatKhau="password456", GioiTinh="Nữ", DiaChi=2)
+        # db.session.add_all([nguoidung1, nguoidung2])
+        # db.session.commit()
+
+        # data Bảng giá vé
+        # banggiave1 = BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=1, ID_SanBayDen=11, ID_PhuThu=None,
+        #                        ID_QuyDinhVe=None)
+        # banggiave2 = BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=2, ID_SanBayDen=10, ID_PhuThu=None,
+        #                        ID_QuyDinhVe=None)
+        # db.session.add_all([banggiave1, banggiave2])
+        # db.session.commit()
+
+        # data NguoiDung_VaiTro
+        # nguoidung_vaitro1 = NguoiDung_VaiTro(ID_User=1, ID_VaiTro=UserRole.NhanVien)
+        # nguoidung_vaitro2 = NguoiDung_VaiTro(ID_User=2, ID_VaiTro=UserRole.NguoiQuanTri)
+        # db.session.add_all([nguoidung_vaitro1, nguoidung_vaitro2])
+        # db.session.commit()
+
+        # data ThongTinHanhKhach
+        # thongtinhk1 = ThongTinHanhKhach(HoTen="Nguyễn Văn A", CCCD="123456789012", SDT="123456789", ID_User=2)
+        # thongtinhk2 = ThongTinHanhKhach(HoTen="Trần Thị B", CCCD="987654321098", SDT="987654321", ID_User=2)
+        # db.session.add_all([thongtinhk1, thongtinhk2])
+        # db.session.commit()
+
+        # data Vé Chuyến bay
+        # vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
+        #                            thoiGianDat=datetime.utcnow(), id_user=1, id_ChuyenBay=1)
+        # vechuyenbay2 = VeChuyenBay(giaVe=2500000, maThongTin=2, hangVe=1, soGhe=10, giaHanhLy=600000,
+        #                            thoiGianDat=datetime.utcnow(), id_user=2, id_ChuyenBay=2)
+        # db.session.add_all([vechuyenbay1, vechuyenbay2])
         # db.session.commit()
