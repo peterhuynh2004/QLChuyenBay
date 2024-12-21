@@ -4,7 +4,6 @@ from urllib.parse import quote
 from flask_login import LoginManager, current_user
 import cloudinary
 from flask_mail import Mail, Message
-from flask_admin import Admin
 from datetime import timedelta
 
 
@@ -42,5 +41,3 @@ app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'
 # Khởi tạo Flask-Mail
 mail = Mail(app)
 
-#Khởi tạo amdin
-admin = Admin(app=app, name='QUẢN TRỊ QUẢN LÝ CHUYẾN BAY', template_mode='bootstrap4')

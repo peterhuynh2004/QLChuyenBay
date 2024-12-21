@@ -12,6 +12,7 @@ from appQLChuyenBay import app, login, mail
 from appQLChuyenBay import utils
 from flask_mail import Message
 import random
+from flask import render_template
 from flask import session
 from flask_login import login_user, logout_user
 #Import moduls
@@ -112,6 +113,10 @@ def kiemtrama():
     return render_template('kiem_tra_ma.html')
 
 
+@app.route('/admin/')
+def admin():
+    return render_template('admin.html')
+
 @login.user_loader
 def load_user(user_id):
     try:
@@ -134,24 +139,23 @@ def load_user(user_id):
         print("Error loading user:", e)
         return None
 
-@app.route('/admin-login', methods=['POST'])
-def signin_admin():
+# @app.route('/admin-login', methods=['POST'])
+# def signin_admin():
+#
+#         username = request.form['username']
+#         password = request.form['password']
+#
+#         user = utils.check_user(username = username, password = password)
+#         if user:
+#             login_user(user=user)
+#             return redirect('/admin')
+#         if not user:
+#             return render_template('admin_login.html'
+#                                    , err_msg="Tên đăng nhập hoặc mật khẩu không đúng")
 
-        username = request.form['username']
-        password = request.form['password']
 
-        user = utils.check_user(username = username, password = password)
-        if user:
-            login_user(user=user)
-            return redirect('/admin')
-        if not user:
-            return render_template('admin_login.html'
-                                   , err_msg="Tên đăng nhập hoặc mật khẩu không đúng")
 
 
 if __name__ == '__main__':
-
-
-
     with app.app_context():
         app.run(port=8000, debug=True)
