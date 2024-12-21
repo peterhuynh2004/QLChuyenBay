@@ -288,37 +288,6 @@ btnLeft.addEventListener('click', () => {
 // Đảm bảo vị trí slide không bị thay đổi khi resize màn hình
 window.addEventListener('resize', updateSlidePosition);
 
-
-//tìm kiếm chuyến bay trang index
-//Hàm lấy id_ChuyenBay do sử dụng datalist nên cần viết hàm lấy id chuyến bay
-function handleInput(inputId, datalistId, hiddenInputId) {
-    const input = document.getElementById(inputId);
-    const datalist = document.getElementById(datalistId);
-    const hiddenInput = document.getElementById(hiddenInputId);
-
-    input.addEventListener('input', function () {
-        const options = datalist.querySelectorAll('option');
-        let selectedID = '';
-
-        options.forEach(option => {
-            if (option.value === input.value) {
-                selectedID = option.getAttribute('data-id');
-            }
-        });
-
-        if (selectedID) {
-            hiddenInput.value = selectedID;
-            console.log(`ID được chọn (${inputId}):`, selectedID);
-        } else {
-            hiddenInput.value = '';
-        }
-    });
-}
-
-// Gọi hàm cho từng trường
-handleInput('SanBayDi', 'options_NoiDi', 'SanBayDi_id');
-handleInput('SanBayDen', 'options_NoiDen', 'SanBayDen_id');
-
 //kiểm tra thông tin trang đặt vé
 function kiemTraThongTin(event, nextStep) {
     // Ngăn chặn hành vi mặc định của form (gửi form và tải lại trang)
@@ -378,5 +347,6 @@ function kiemTraThongTin(event, nextStep) {
         document.getElementById('form1').submit(); // Di chuyển đến bước tiếp theo
     }
 }
+
 
 

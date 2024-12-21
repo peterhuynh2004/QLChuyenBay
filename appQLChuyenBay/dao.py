@@ -75,6 +75,12 @@ def load_flight(noiDi=None, noiDen=None, ngayDi=None):
     return query.all()
 
 
+def get_id_San_Bay(tenSanBay=None):
+    query = SanBay.query.with_entities(SanBay.id_SanBay) #chỉ truy suất cột id
+    if tenSanBay:
+        query = query.filter(SanBay.ten_SanBay.__eq__(tenSanBay))
+    return query.scalar()
+
 def load_TuyenBay(flight=None):
     query = TuyenBay.query
     if flight:

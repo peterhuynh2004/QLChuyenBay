@@ -263,7 +263,7 @@ class ThongTinHanhKhach(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
         # db.drop_all()
 
         # data sân bay
@@ -344,10 +344,9 @@ if __name__ == '__main__':
         # for t in tuyenbay_data:
         #     tuyenbay = TuyenBay(**t)
         #     db.session.add(tuyenbay)
-        #
         # db.session.commit()
-
-
+        #
+        #
         # flights = [
         #     {
         #         "id_TuyenBay": 1,
@@ -408,25 +407,24 @@ if __name__ == '__main__':
         # for f in flights:
         #     flight = ChuyenBay(**f)
         #     db.session.add(flight)
-        #
-        # db.session.commit
+        # db.session.commit()
 
-        # địa chỉ
+        # # địa chỉ
         # diachi1 = DiaChi(ChiTiet="Số 1, Đường A", TenDuong="Đường A", QuanHuyen="Quận 1",
         #                  TinhTP="Thành phố Hồ Chí Minh")
         # diachi2 = DiaChi(ChiTiet="Số 2, Đường B", TenDuong="Đường B", QuanHuyen="Quận 2", TinhTP="Hà Nội")
         # db.session.add_all([diachi1, diachi2])
         # db.session.commit()
-
-        # data Người Dùng
+        #
+        # # data Người Dùng
         # nguoidung1 = NguoiDung(HoTen="Nguyễn Văn A", Email="nguyenvana@example.com", SDT=123456789,
         #                        TenDangNhap="nguyenvana", MatKhau="password123", GioiTinh="Nam", DiaChi=1)
         # nguoidung2 = NguoiDung(HoTen="Trần Thị B", Email="tranthib@example.com", SDT=987654321, TenDangNhap="tranthib",
         #                        MatKhau="password456", GioiTinh="Nữ", DiaChi=2)
         # db.session.add_all([nguoidung1, nguoidung2])
         # db.session.commit()
-
-        # data Bảng giá vé
+        #
+        # # data Bảng giá vé
         # banggiave1 = BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=1, ID_SanBayDen=11, ID_PhuThu=None,
         #                        ID_QuyDinhVe=None)
         # banggiave2 = BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=2, ID_SanBayDen=10, ID_PhuThu=None,
@@ -446,14 +444,14 @@ if __name__ == '__main__':
         # db.session.add_all([thongtinhk1, thongtinhk2])
         # db.session.commit()
 
-        # data Vé Chuyến bay
-        # vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
-        #                            thoiGianDat=datetime.utcnow(), id_user=1, id_ChuyenBay=1)
-        # vechuyenbay2 = VeChuyenBay(giaVe=2500000, maThongTin=2, hangVe=1, soGhe=10, giaHanhLy=600000,
-        #                            thoiGianDat=datetime.utcnow(), id_user=2, id_ChuyenBay=2)
-        # db.session.add_all([vechuyenbay1, vechuyenbay2])
-        # db.session.commit()
-
+        # # data Vé Chuyến bay
+        vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
+                                   thoiGianDat=datetime.utcnow(), id_user=1, id_ChuyenBay=1)
+        vechuyenbay2 = VeChuyenBay(giaVe=2500000, maThongTin=2, hangVe=1, soGhe=10, giaHanhLy=600000,
+                                   thoiGianDat=datetime.utcnow(), id_user=2, id_ChuyenBay=2)
+        db.session.add_all([vechuyenbay1, vechuyenbay2])
+        db.session.commit()
+        #
 
 
 
@@ -481,36 +479,4 @@ if __name__ == '__main__':
         # tuyenbay4 = TuyenBay(tenTuyen="Cần Thơ - Phú Quốc", id_SanBayDi=4, id_SanBayDen=14, doanhThu=35000000,
         #                      soLuotBay=80, tyLe=80)
         # db.session.add_all([tuyenbay1, tuyenbay2, tuyenbay3, tuyenbay4])
-        # db.session.commit()
-
-        # data sân bay
-        # airports = [
-        #     {"Sanbay": "Côn Đảo", "Tinh": "Bà Rịa – Vũng Tàu"},
-        #     {"Sanbay": "Phù Cát", "Tinh": "Bình Định"},
-        #     {"Sanbay": "Cà Mau", "Tinh": "Cà Mau"},
-        #     {"Sanbay": "Cần Thơ", "Tinh": "Cần Thơ"},
-        #     {"Sanbay": "Buôn Ma Thuột", "Tinh": "Đắk Lắk"},
-        #     {"Sanbay": "Đà Nẵng", "Tinh": "Đà Nẵng"},
-        #     {"Sanbay": "Điện Biên Phủ", "Tinh": "Điện Biên"},
-        #     {"Sanbay": "Pleiku", "Tinh": "Gia Lai"},
-        #     {"Sanbay": "Cát Bi", "Tinh": "Hải Phòng"},
-        #     {"Sanbay": "Nội Bài", "Tinh": "Hà Nội"},
-        #     {"Sanbay": "Tân Sơn Nhất", "Tinh": "Thành phố Hồ Chí Minh"},
-        #     {"Sanbay": "Cam Ranh", "Tinh": "Khánh Hòa"},
-        #     {"Sanbay": "Rạch Giá", "Tinh": "Kiên Giang"},
-        #     {"Sanbay": "Phú Quốc", "Tinh": "Kiên Giang"},
-        #     {"Sanbay": "Liên Khương", "Tinh": "Lâm Đồng"},
-        #     {"Sanbay": "Vinh", "Tinh": "Nghệ An"},
-        #     {"Sanbay": "Tuy Hòa", "Tinh": "Phú Yên"},
-        #     {"Sanbay": "Đồng Hới", "Tinh": "Quảng Bình"},
-        #     {"Sanbay": "Chu Lai", "Tinh": "Quảng Nam"},
-        #     {"Sanbay": "Phú Bài", "Tinh": "Thừa Thiên Huế"},
-        #     {"Sanbay": "Thọ Xuân", "Tinh": "Thanh Hóa"},
-        #     {"Sanbay": "Vân Đồn", "Tinh": "Quảng Ninh"},
-        # ]
-        #
-        # for p in airports:
-        #     prod = SanBay(ten_SanBay=p['Sanbay'],
-        #                   DiaChi=p['Tinh'])
-        #     db.session.add(prod)
         # db.session.commit()

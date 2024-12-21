@@ -4,8 +4,8 @@
 <div class="container mt-2 datve_online">
     <!-- Danh sách chuyến bay -->
     <div class="mt-5">
+        <h2 class="mb-4 text-center title" style="padding: 10px; background-color: lightblue" >Danh sách chuyến bay <span style="padding: 5px; color: red; background-color: yellow"> Tuyến: {{ SanBayDi }} - {{ SanBayDen }} </span> </h2>
         {% if flight %}
-        <h2 class="mb-4 text-center title" style="padding: 10px; background-color: lightblue" >Danh sách chuyến bay <span style="padding: 5px; color: red; background-color: yellow"> {{ tuyenBay[0].tenTuyen }} </span> </h2>
         <div id="flight-list" class="table-responsive">
             <table class="table table-success" style="text-align: center">
                 <thead class="table-info">
@@ -39,7 +39,7 @@
             </table>
         </div>
         {% else %}
-        <div class="alert alert-info">Không có chuyến bay nào phù hợp!</div>
+        <div class="alert alert-info" style="font-size: 26px; color: red">Không có chuyến bay nào phù hợp!</div>
         {% endif %}
     </div>
 </div>

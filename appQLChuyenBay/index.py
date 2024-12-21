@@ -9,14 +9,9 @@ from flask import session
 from flask_login import login_user, logout_user
 
 
-@app.route("/", methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        noiDi = request.form.get('idNoiDi')
-        noiDen = request.form.get('idNoiDen')
-        ngayDi = request.form.get('Date')
-        return redirect(url_for('timkiemchuyenbay', noiDi = noiDi, noiDen=noiDen, ngayDi=ngayDi ))
 
+@app.route("/", methods=['get', 'post'])
+def index():
     # Lấy danh sách chuyến bay sắp cất cánh
     flights = dao.get_upcoming_flights()
 
@@ -33,6 +28,8 @@ def index():
             })
 
     return render_template('index.html',flights=flight_info)
+
+
 
 @app.route('/api/get_sanbay', methods=['GET'])
 def get_sanbay():
@@ -259,16 +256,15 @@ def load_user(user_id):
 @app.route("/timkiemchuyenbay")
 def timkiemchuyenbay():
     airport = dao.get_san_bay()
-    id_SanBayDi = request.args.get('noiDi')
-    id_SanBayDen = request.args.get('noiDen')
-    ngayDi = request.args.get('ngayDi')
+    SanBayDi = request.args.get('NoiDi').split('(')[0].strip()
+    SanBayDen = request.args.get('NoiDen').split('(')[0].strip()
+    ngayDi = request.args.get('Date')
+    id_SanBayDi = dao.get_id_San_Bay(SanBayDi)
+    id_SanBayDen = dao.get_id_san_bay(SanBayDen)
     flight = dao.load_flight(noiDi=id_SanBayDi, noiDen=id_SanBayDen, ngayDi=ngayDi)
-    if len(flight) > 0:
-        tuyenBay = dao.load_TuyenBay(flight[0].id_TuyenBay)
-    else:
-        tuyenBay = 0
-    return render_template('timkiemchuyenbay.html',airport=airport, flight=flight,
-                           id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen, tuyenBay = tuyenBay)
+    return render_template('timkiemchuyenbay.html',
+                           airport=airport, flight=flight,
+                           SanBayDi=SanBayDi, SanBayDen=SanBayDen, id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen, ngayDi=ngayDi)
 
 
 @app.route("/datveonline", methods=['GET', 'POST'])
