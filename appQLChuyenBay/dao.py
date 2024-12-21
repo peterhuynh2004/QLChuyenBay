@@ -8,6 +8,7 @@ from appQLChuyenBay import app, db
 import hashlib
 import cloudinary.uploader
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
 
 
 def auth_user(username, password):
@@ -63,10 +64,21 @@ def get_all_user_roles(user_id):
 
 def load_flight(noiDi=None, noiDen=None, ngayDi=None):
     query = ChuyenBay.query
-
     if noiDi and noiDen and ngayDi:
-        query = query.filter(
-            ChuyenBay.id_SanBayDen == noiDen and ChuyenBay.id_SanBayDi == noiDi and ChuyenBay.gio_Bay.date() == ngayDi)
+        query = query.join(TuyenBay).filter(
+            and_(
+                TuyenBay.id_SanBayDi == noiDi,
+                TuyenBay.id_SanBayDen == noiDen,
+                db.func.date(ChuyenBay.gio_Bay) == ngayDi  # Sử dụng `db.func.date` để lấy phần ngày
+            )
+        )
+    return query.all()
+
+
+def load_TuyenBay(flight=None):
+    query = TuyenBay.query
+    if flight:
+        query = query.filter(TuyenBay.id_TuyenBay == flight)
     return query.all()
 
 

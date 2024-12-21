@@ -289,6 +289,94 @@ btnLeft.addEventListener('click', () => {
 window.addEventListener('resize', updateSlidePosition);
 
 
+//tìm kiếm chuyến bay trang index
+//Hàm lấy id_ChuyenBay do sử dụng datalist nên cần viết hàm lấy id chuyến bay
+function handleInput(inputId, datalistId, hiddenInputId) {
+    const input = document.getElementById(inputId);
+    const datalist = document.getElementById(datalistId);
+    const hiddenInput = document.getElementById(hiddenInputId);
 
+    input.addEventListener('input', function () {
+        const options = datalist.querySelectorAll('option');
+        let selectedID = '';
+
+        options.forEach(option => {
+            if (option.value === input.value) {
+                selectedID = option.getAttribute('data-id');
+            }
+        });
+
+        if (selectedID) {
+            hiddenInput.value = selectedID;
+            console.log(`ID được chọn (${inputId}):`, selectedID);
+        } else {
+            hiddenInput.value = '';
+        }
+    });
+}
+
+// Gọi hàm cho từng trường
+handleInput('SanBayDi', 'options_NoiDi', 'SanBayDi_id');
+handleInput('SanBayDen', 'options_NoiDen', 'SanBayDen_id');
+
+//kiểm tra thông tin trang đặt vé
+function kiemTraThongTin(event, nextStep) {
+    // Ngăn chặn hành vi mặc định của form (gửi form và tải lại trang)
+    event.preventDefault();
+    // Tạo 1 biến giữ trạng thái thông tin hợp lệ
+    let isValid = true;
+    // Kiểm tra hạng ghế:
+    const hangGhe = document.getElementById('hangGhe');
+    const hangGheError = document.getElementById('hangGheError');
+    if (hangGhe.value.trim() === '') {
+        hangGheError.textContent = 'Vui lòng chọn hạng ghế của bạn!'
+        isValid = false;
+    } else{
+        hangGheError.textContent = '';
+    }
+    // Kiểm tra họ và tên
+    const fullName = document.getElementById('fullName');
+    const fullNameError = document.getElementById('fullNameError');
+    if (fullName.value.trim() === '') {
+        fullNameError.textContent = 'Họ và tên không được để trống.';
+        isValid = false;
+    } else {
+        fullNameError.textContent = '';
+    }
+    // Kiểm tra số điện thoại
+    const phone = document.getElementById('phone');
+    const phoneError = document.getElementById('phoneError');
+    const phoneRegex = /^[0-9]{10}$/; // Sử dụng biểu thức chính quy để kiểm tra định dạng số điện thoại
+    if (!phoneRegex.test(phone.value)) {
+        phoneError.textContent = 'Số điện thoại phải là 10 chữ số.';
+        isValid = false;
+    } else {
+        phoneError.textContent = '';
+    }
+    // Kiểm tra email
+    const email = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.value)) {
+        emailError.textContent = 'Email không hợp lệ.';
+        isValid = false;
+    } else {
+        emailError.textContent = '';
+    }
+    // Kiểm tra căn cước công dân (CCCD)
+    const cccd = document.getElementById('cccd');
+    const cccdError = document.getElementById('cccdError');
+    const cccdRegex = /^[0-9]{12}$/;
+    if (!cccdRegex.test(cccd.value)) {
+        cccdError.textContent = 'CCCD phải là 12 chữ số.';
+        isValid = false;
+    } else {
+        cccdError.textContent = '';
+    }
+    // Nếu tất cả thông tin hợp lệ, di chuyển sang bước tiếp theo
+    if (isValid) {
+        document.getElementById('form1').submit(); // Di chuyển đến bước tiếp theo
+    }
+}
 
 
