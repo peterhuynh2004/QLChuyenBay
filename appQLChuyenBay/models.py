@@ -61,7 +61,7 @@ class ChuyenBay(db.Model):
     id_ChuyenBay = Column(Integer, primary_key=True, autoincrement=True)
     id_TuyenBay = Column(Integer, ForeignKey('TuyenBay.id_TuyenBay'))
     gio_Bay = Column(DateTime)
-    tG_Bay = Column(DateTime)
+    tG_Bay = Column(Integer)
     GH1 = Column(Integer)
     GH2 = Column(Integer)
     GH1_DD = Column(Integer)
@@ -216,17 +216,13 @@ class BangGiaVe(db.Model):
     ID_SanBayDi = Column(Integer, ForeignKey('SanBay.id_SanBay'), nullable=False)  # Khóa ngoại đến bảng SanBay
     ID_SanBayDen = Column(Integer, ForeignKey('SanBay.id_SanBay'), nullable=False)  # Khóa ngoại đến bảng SanBay
     ID_PhuThu = Column(Integer, ForeignKey('PhuThuDacBiet.ID'), nullable=True)  # Khóa ngoại đến bảng PhuThuDacBiet
-    ID_QuyDinhVe = Column(Integer, ForeignKey('QuyDinhVe.ID_QuyDinh'), nullable=True)  # Khóa ngoại đến bảng QuyDinhVe
-
+    Gia_Ve = Column(Integer,nullable=False)
     # Quan hệ với bảng SanBay
     san_bay_di = relationship('SanBay', foreign_keys=[ID_SanBayDi])
     san_bay_den = relationship('SanBay', foreign_keys=[ID_SanBayDen])
 
     # Quan hệ với bảng PhuThuDacBiet
     phu_thu = relationship('PhuThuDacBiet', backref='bang_gia_ve')
-
-    # Quan hệ với bảng QuyDinhVe
-    quy_dinh_ve = relationship('QuyDinhVe', backref='bang_gia_ve')
 
     # Đảm bảo không có sự kết hợp trùng lặp giữa SanBayDi, SanBayDen và LoaiHangGhe
     __table_args__ = (

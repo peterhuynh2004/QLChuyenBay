@@ -1,8 +1,10 @@
 import json
 import sqlite3
 from datetime import datetime
+from enum import Enum
 from mailbox import Message
 import re
+from multiprocessing import connection
 
 from flask import session, current_app
 from flask_sqlalchemy import pagination
@@ -24,16 +26,26 @@ def auth_user(username, password):
 
 
 def add_user(name, email, password, avatar):
+    # Mã hóa mật khẩu
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
 
-    u = NguoiDung(HoTen=name, TenDangNhap=email, Email=email, MatKhau=password,
-                  Avt='u.avatar')
+    # Tạo đối tượng người dùng mới
+    u = NguoiDung(HoTen=name, TenDangNhap=email, Email=email, MatKhau=password, Avt='u.avatar')
 
+    # Upload avatar nếu có
     if avatar:
         res = cloudinary.uploader.upload(avatar)
         u.avatar = res.get('secure_url')
 
+    # Lưu người dùng vào cơ sở dữ liệu
     db.session.add(u)
+    db.session.commit()
+
+    # Sau khi commit, ID_User của u sẽ có giá trị
+    role = NguoiDung_VaiTro(ID_User=u.ID_User, ID_VaiTro=UserRole.NguoiDung)
+
+    # Lưu vai trò của người dùng
+    db.session.add(role)
     db.session.commit()
 
 
@@ -81,11 +93,10 @@ def load_flights_paginated(page=1, per_page=10):
     return query.paginate(page=page, per_page=per_page, error_out=False)
 
 def get_route_sanbaytrunggian_by_id(route_id):
-    route = db.session.query(SBayTrungGian.ID_SanBay).filter(SBayTrungGian.ID_ChuyenBay == route_id).all()
-
-    for r in route:
-        rou = db.session.query(SanBay.ten_SanBay).filter(SanBay.id_SanBay == r).first()
+    # Lấy danh sách sân bay trung gian theo ID chuyến bay
+    route = db.session.query(SanBay.ten_SanBay).join(SBayTrungGian, SBayTrungGian.ID_SanBay == SanBay.id_SanBay).filter(SBayTrungGian.ID_ChuyenBay == route_id).all()
     return route
+
 
 # Hàm lấy các chuyến bay sắp cất cánh
 def get_upcoming_flights():
@@ -101,6 +112,10 @@ def get_route_name_by_id(route_id):
     route = db.session.query(TuyenBay.tenTuyen).filter(TuyenBay.id_TuyenBay == route_id).first()
     return route
 
+
+def get_user_role(user_id):
+    role = db.session.query(NguoiDung_VaiTro.ID_VaiTro).filter(NguoiDung_VaiTro.ID_User == user_id).all()
+    return role
 
 def get_SanBayTrungGian_name_by_id(id_ChuyenBay):
     results = (
@@ -354,3 +369,117 @@ def format_seats_info(data):
     except json.JSONDecodeError as e:
         print(f"Lỗi khi phân tích chuỗi JSON: {e}")
         return None
+
+
+def checkrole(user_roles):
+    # Danh sách các vai trò cần kiểm tra
+    valid_roles = {UserRole.NhanVien, UserRole.NguoiKiemDuyet, UserRole.NguoiQuanTri}
+
+    # Kiểm tra nếu user_roles là một danh sách, so sánh từng phần tử
+    if isinstance(user_roles, list):
+        for role in user_roles:
+            # So sánh giá trị bên trong ENUM
+            if role[0] in valid_roles:  # role[0] là giá trị thực tế của ENUM
+                return True
+        return False
+
+    # Nếu user_roles là một giá trị đơn lẻ, so sánh trực tiếp
+    return user_roles[0] in valid_roles  # So sánh giá trị của ENUM
+
+
+def change_user_role(user_roles):
+    # Nếu user_roles là một danh sách, xử lý từng phần tử trong danh sách
+    if isinstance(user_roles, list):
+        # Duyệt qua danh sách và lấy tên của mỗi giá trị Enum
+        return [role[0].name if isinstance(role[0], Enum) else None for role in user_roles]
+
+    # Nếu user_roles là một giá trị đơn lẻ, trả về tên của phần tử đó
+    elif isinstance(user_roles, tuple) and isinstance(user_roles[0], Enum):
+        return [user_roles[0].name]
+
+    # Trả về danh sách trống nếu không phải kiểu Enum
+    return []
+
+
+def get_all_tuyen_bay():
+    return TuyenBay.query.all()
+
+
+def get_id_TuyenBay(flight_duration):
+    id_TuyenBay = db.session.query(TuyenBay.id_TuyenBay).filter(TuyenBay.tenTuyen == flight_duration).first()
+    return id_TuyenBay[0]
+
+
+def save_ChuyenBay(flight_date, flight_duration, first_class_seats, economy_class_seats, id_TuyenBay):
+    try:
+        print("Debug: Đang lưu chuyến bay với thông tin sau:")
+        print(f"- Ngày giờ bay: {flight_date}")
+        print(f"- Thời gian bay: {flight_duration} phút")
+        print(f"- Số ghế hạng 1: {first_class_seats}")
+        print(f"- Số ghế hạng 2: {economy_class_seats}")
+        print(f"- ID tuyến bay: {id_TuyenBay}")
+
+        flight = ChuyenBay(
+            gio_Bay=flight_date,
+            tG_Bay=flight_duration,
+            GH1=first_class_seats,
+            GH2=economy_class_seats,
+            id_TuyenBay=id_TuyenBay
+        )
+
+        db.session.add(flight)
+        db.session.commit()  # Lưu chuyến bay vào database
+
+        print("Debug: Chuyến bay đã được lưu thành công. ID chuyến bay:", flight.id_ChuyenBay)
+        return flight
+    except Exception as e:
+        print("Error: Xảy ra lỗi khi lưu chuyến bay.")
+        print(str(e))
+        db.session.rollback()  # Quay lại trạng thái trước khi lỗi xảy ra
+        raise e
+
+
+def save_sbbaytrunggian(intermediate_airports, flight):
+    try:
+        print("Debug: Đang lưu các sân bay trung gian cho chuyến bay ID:", flight.id_ChuyenBay)
+
+        for idx, airport in enumerate(intermediate_airports):
+            print(f"Debug: Sân bay trung gian {idx + 1}:")
+            print(f"- Thời gian dừng: {airport['duration']} phút")
+            print(f"- Ghi chú: {airport['notes']}")
+            print(f"- ID sân bay: {airport['id']}")
+
+            intermediate_airport = SBayTrungGian(
+                ThoiGianDung=airport['duration'],
+                GhiChu=airport['notes'],
+                ID_ChuyenBay=flight.id_ChuyenBay,
+                ID_SanBay=getID_SanBay(airport['id'])
+            )
+            db.session.add(intermediate_airport)
+
+        db.session.commit()  # Lưu tất cả sân bay trung gian vào database
+        print("Debug: Các sân bay trung gian đã được lưu thành công.")
+    except Exception as e:
+        print("Error: Xảy ra lỗi khi lưu các sân bay trung gian.")
+        print(str(e))
+        db.session.rollback()  # Quay lại trạng thái trước khi lỗi xảy ra
+        raise e
+
+
+def extract_ten_SanBay(full_string):
+    """
+    Tách tên sân bay từ chuỗi có định dạng 'ten_SanBay (DiaChi)'
+
+    Args:
+        full_string (str): Chuỗi chứa thông tin sân bay và địa chỉ.
+
+    Returns:
+        str: Tên sân bay (ten_SanBay).
+    """
+    if '(' in full_string:
+        return full_string.split(' (')[0]  # Lấy phần trước dấu '('
+    return full_string  # Nếu không có dấu '(', trả về chuỗi ban đầu
+
+def getID_SanBay(param):
+    ID_SanBay = db.session.query(SanBay.id_SanBay).filter(SanBay.ten_SanBay == extract_ten_SanBay(param)).first()
+    return ID_SanBay[0]
