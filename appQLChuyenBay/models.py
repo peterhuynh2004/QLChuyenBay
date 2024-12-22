@@ -66,7 +66,15 @@ class ChuyenBay(db.Model):
     GH2 = Column(Integer)
     GH1_DD = Column(Integer)
     GH2_DD = Column(Integer)
+    ghes_dadat = Column(String)  # Thêm thuộc tính để lưu các ghế đã đặt
 
+    def them_ghes_dadat(self, list_seats):
+        # Cập nhật danh sách ghế đã đặt (danh sách ghế được truyền vào là danh sách các ghế như 'F1', 'E10', ...)
+        self.ghes_dadat = ','.join(list_seats)
+
+    def lay_ghes_dadat(self):
+        # Lấy danh sách ghế đã đặt dưới dạng một danh sách (ví dụ: ['F1', 'E10'])
+        return self.ghes_dadat.split(',')
 
 class VeChuyenBay(db.Model):
     __tablename__ = 'VeChuyenBay'

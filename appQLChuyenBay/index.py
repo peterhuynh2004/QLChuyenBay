@@ -1,6 +1,7 @@
+import json
 import math
 from datetime import timedelta, datetime
-from flask import render_template, request, redirect, url_for, jsonify
+from flask import render_template, request, redirect, url_for, jsonify, flash, current_app
 import dao
 from appQLChuyenBay import app, login, mail
 from flask_mail import Message
@@ -207,14 +208,20 @@ def danhsachchuyenbay():
     return render_template('danhsachchuyenbay.html', flights=flight_info, pagination=flights)
 
 
-@app.route("/ban_ve", methods=['get', 'post'])
-def banve():
-    first_class_seats = 8  # Số ghế hạng nhất
-    economy_class_seats = 12  # Số ghế hạng phổ thông
+@app.route('/ban_ve/<int:id_chuyen_bay>', methods=['get', 'post'])
+def banve(id_chuyen_bay):
+    session['id_chuyen_bay'] = id_chuyen_bay
+    flight = dao.get_flight_by_id(id_chuyen_bay)
+    print(flight['GH1'])
+    print(flight['GH2'])
+    print(flight['ghe_dadat'])
+    first_class_seats = flight['GH1']  # Số ghế hạng nhất
+    economy_class_seats = flight['GH2']  # Số ghế hạng phổ thông
     return render_template(
         'ban_ve.html',
         first_class_seats=first_class_seats,
-        economy_class_seats=economy_class_seats
+        economy_class_seats=economy_class_seats,
+        flight=flight  # Truyền flight vào template
     )
 
 @app.route("/nhan_vien")
@@ -297,6 +304,79 @@ def thongtindatve():
                            email=session['email'],
                            cccd=session['cccd'])
 
+@app.route('/thanhtoanbangtienmat', methods=['GET'])
+def thanh_toan_bang_tien_mat():
+    try:
+        # Lấy dữ liệu từ URL
+        seats_info = request.args.get('seats')
+        total_cost = request.args.get('totalCost')
+        passengerinfo = request.args.get('passengerInfo')
+
+        # Kiểm tra và chuyển đổi dữ liệu JSON
+        seats_info = json.loads(seats_info) if seats_info else []
+        passengerinfo = json.loads(passengerinfo) if passengerinfo else []
+
+        # Kết hợp thông tin ghế và hành khách nếu số lượng khớp nhau
+        if len(seats_info) != len(passengerinfo):
+            raise ValueError("Số lượng ghế và hành khách không khớp.")
+
+        combined_info = [
+            {
+                "seat": seat,
+                "passenger": passenger
+            }
+            for seat, passenger in zip(seats_info, passengerinfo)
+        ]
+
+        # Trả về template với thông tin đã xử lý
+        return render_template(
+            'thanhtoantienmat.html',
+            total_cost=total_cost,
+            combined_info=combined_info
+        )
+    except (ValueError, json.JSONDecodeError) as e:
+        # Xử lý lỗi và hiển thị thông báo
+        return f"Lỗi trong quá trình xử lý dữ liệu: {str(e)}", 400
+
+@app.route('/confirm-payment', methods=['POST'])
+def confirm_payment():
+    if request.method == 'POST':
+        try:
+            # Nhận chuỗi JSON từ form
+            seats_info = request.form['seats-info']
+            #id_user = session.get('id_user')   # Lấy id_user từ session
+            id_user =2
+            # Lưu thông tin thanh toán vào cơ sở dữ liệu
+
+            # Lưu thông tin vé
+            if dao.save_ticket_info( id_user, seats_info):
+                flash('Thanh toán thành công! Thông tin vé đã được lưu.')
+                session['seats_info'] = seats_info  # Lưu dữ liệu vào session
+            else:
+                flash('Lỗi khi lưu thông tin vé.')
+
+        except Exception as e:
+            print("Lỗi trong quá trình xử lý: ", e)
+            flash('Đã xảy ra lỗi trong quá trình thanh toán.')
+
+        return redirect(url_for('thanhtoanthanhcong'))  # Trang xác nhận thanh toán thành công
+
+@app.route('/thanhtoanthanhcong', methods=['GET', 'POST'])
+def thanhtoanthanhcong():
+    seats_info = session.get('seats_info')  # Lấy dữ liệu từ session
+    id_ChuyenBay = session.get('id_chuyen_bay')
+    if seats_info:
+        if isinstance(seats_info, str):
+            # Nếu dữ liệu là chuỗi, thử chuyển thành dictionary (nếu có thể)
+            # Lưu ý: nếu chuỗi này không phải JSON hợp lệ, bạn cần xử lý trường hợp này.
+            seats_info = eval(
+                seats_info)  # Chỉ nên dùng eval khi bạn chắc chắn dữ liệu hợp lệ (cẩn thận với lỗi bảo mật)
+        tenTuyen = dao.get_TuyenBay(id_ChuyenBay);
+        return render_template('thanhtoanthanhcong.html', seats_info=seats_info, tenTuyen=tenTuyen)
+    else:
+        flash('Không tìm thấy thông tin vé.')
+        return redirect(url_for('index'))  # Chuyển hướng về trang chủ hoặc trang khác nếu không có dữ liệu
+    return render_template('thanhtoanthanhcong.html')
 
 if __name__ == '__main__':
     with app.app_context():

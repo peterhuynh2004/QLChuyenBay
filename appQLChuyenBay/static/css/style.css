@@ -71,6 +71,16 @@ a {
     border-radius: 15px;
 }
 
+.card-body{
+    display: flex;
+}
+
+.card-body p{
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    width: 80%;
+}
 .pro {
     display: flex;
     cursor: pointer;
@@ -963,4 +973,8 @@ input[type="number"] {
 
 .card-body .card-text{
     font-size: 20px !important;
+}
+
+.imgnv .card-body{
+    display: block;
 }
