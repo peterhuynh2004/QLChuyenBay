@@ -1,10 +1,16 @@
+import json
 import sqlite3
 from datetime import datetime
+from mailbox import Message
+import re
+
+from flask import session, current_app
 from flask_sqlalchemy import pagination
 from sqlalchemy import func
 from sqlalchemy import text
-from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay, SBayTrungGian
-from appQLChuyenBay import app, db
+from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay, SBayTrungGian, VeChuyenBay, \
+    ThongTinHanhKhach
+from appQLChuyenBay import app, db, mail
 import hashlib
 import cloudinary.uploader
 from sqlalchemy.orm import sessionmaker
@@ -209,3 +215,160 @@ def get_id_san_bay(ten_san_bay_full):
 
     # Trả về id nếu tìm thấy, None nếu không
     return result[0] if result else None  # Truy cập cột đầu tiên (id_SanBay) qua chỉ mục
+
+def get_TuyenBay(id_ChuyenBay):
+    # Thực hiện truy vấn và lấy tên tuyến bay tương ứng với id_ChuyenBay
+    tuyenbay = db.session.query(TuyenBay.tenTuyen) \
+        .join(ChuyenBay, TuyenBay.id_TuyenBay == ChuyenBay.id_TuyenBay) \
+        .filter(ChuyenBay.id_ChuyenBay == id_ChuyenBay) \
+        .first()
+
+    if tuyenbay:
+        return tuyenbay[0]  # Lấy tên tuyến bay (vì first() trả về tuple)
+    else:
+        return None  # Trường hợp không có dữ liệu, trả về None
+
+def get_flight_by_id(id_chuyen_bay):
+    # Truy vấn dữ liệu từ bảng ChuyenBay và TuyenBay
+    flight = db.session.query(
+        TuyenBay.tenTuyen,
+        ChuyenBay.gio_Bay,
+        ChuyenBay.GH1 - ChuyenBay.GH1_DD,
+        ChuyenBay.GH2 - ChuyenBay.GH2_DD,
+        ChuyenBay.GH1,
+        ChuyenBay.GH2,
+        ChuyenBay.ghes_dadat,
+    ).join(ChuyenBay, TuyenBay.id_TuyenBay == ChuyenBay.id_TuyenBay) \
+     .filter(ChuyenBay.id_ChuyenBay == id_chuyen_bay).first()
+
+    if flight:
+        # Trả về thông tin chuyến bay dưới dạng dictionary
+        return {
+            'id': id_chuyen_bay,
+            'hành_trình': flight.tenTuyen,
+            'thời_gian': flight.gio_Bay.strftime('%Y-%m-%d %H:%M'),
+            'ghế_hạng_1_còn_trống': flight[2],  # Số ghế hạng 1 còn trống
+            'GH1': flight[4],
+            'ghế_hạng_2_còn_trống': flight[3],  # Số ghế hạng 2 còn trống
+            'GH2': flight[5],
+            'ghe_dadat': flight[6],
+            'sân_bay_trung_gian': 'N/A'  # Tạm thời, có thể thay đổi sau
+        }
+    else:
+        return None
+
+
+def save_ticket_info(user_id, seats_info):
+    try:
+        current_app.logger.info("Bắt đầu lưu thông tin vé và hành khách.")
+        current_app.logger.info(f"Dữ liệu đầu vào user_id: {user_id}")
+
+        # Nếu seats_info là một chuỗi, có thể không cần json.loads nữa, chỉ cần xác nhận nó là dictionary hoặc list
+        if isinstance(seats_info, str):
+            # Nếu dữ liệu là chuỗi, thử chuyển thành dictionary (nếu có thể)
+            # Lưu ý: nếu chuỗi này không phải JSON hợp lệ, bạn cần xử lý trường hợp này.
+            seats_info = eval(
+                seats_info)  # Chỉ nên dùng eval khi bạn chắc chắn dữ liệu hợp lệ (cẩn thận với lỗi bảo mật)
+
+        current_app.logger.info(f"Dữ liệu sau khi xử lý seats_info: {seats_info}")
+
+        # Kiểm tra session
+        id_chuyen_bay = session.get('id_chuyen_bay')
+        if not id_chuyen_bay:
+            current_app.logger.error("Không tìm thấy 'id_chuyen_bay' trong session.")
+            return False
+
+        current_app.logger.info(f"ID Chuyến bay: {id_chuyen_bay}")
+
+        # Bắt đầu xử lý từng ghế và hành khách
+        for idx, seat_passenger in enumerate(seats_info, start=1):
+            current_app.logger.info(f"Xử lý ghế và hành khách thứ {idx}: {seat_passenger}")
+
+            # Lưu thông tin hành khách
+            passenger = seat_passenger['passenger']
+            current_app.logger.info(f"Dữ liệu hành khách: {passenger}")
+
+            passenger_record = ThongTinHanhKhach(
+                HoTen=passenger['name'],
+                CCCD=passenger['cccd'],
+                SDT=passenger['phone'],
+                ID_User=user_id
+            )
+            db.session.add(passenger_record)
+            db.session.commit()  # Lưu và lấy ID
+            passenger_id = passenger_record.ID_HanhKhach
+            current_app.logger.info(f"Lưu hành khách thành công với ID: {passenger_id}")
+
+            # Lưu thông tin vé
+            seat = seat_passenger['seat']
+            current_app.logger.info(f"Dữ liệu ghế: {seat}")
+
+            ticket = VeChuyenBay(
+                maThongTin=passenger_id,
+                giaVe=seat['price'],
+                hangVe=1 if seat['class'] == 'Hạng nhất' else 2,
+                soGhe=seat['seatNumber'],
+                giaHanhLy=0,
+                thoiGianDat=datetime.now(),
+                id_user=user_id,
+                id_ChuyenBay=id_chuyen_bay
+            )
+            db.session.add(ticket)
+            current_app.logger.info(f"Lưu vé thành công cho ghế: {seat['seatNumber']}")
+
+            # Cập nhật `ghes_dadat`
+            chuyen_bay = ChuyenBay.query.get(id_chuyen_bay)
+            if chuyen_bay:
+                current_app.logger.info(f"Trước khi cập nhật ghes_dadat: {chuyen_bay.ghes_dadat}")
+                if chuyen_bay.ghes_dadat:
+                    chuyen_bay.ghes_dadat += f",{seat['seatNumber']}"
+                else:
+                    chuyen_bay.ghes_dadat = seat['seatNumber']
+
+                if seat['class'] == 'Hạng nhất':
+                    chuyen_bay.GH1_DD += 1  # Tăng GH1_DD nếu là ghế hạng nhất
+                else:
+                    chuyen_bay.GH2_DD += 1  # Tăng GH2_DD nếu không phải ghế hạng nhất
+
+                db.session.add(chuyen_bay)
+                current_app.logger.info(f"Sau khi cập nhật ghes_dadat: {chuyen_bay.ghes_dadat}")
+            else:
+                current_app.logger.error(f"Không tìm thấy chuyến bay với ID: {id_chuyen_bay}")
+
+        # Commit tất cả thay đổi
+        db.session.commit()
+        current_app.logger.info("Lưu tất cả thông tin vé và hành khách thành công.")
+        return True
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Lỗi xảy ra: {e}")
+        return False
+
+def format_seats_info(data):
+    """
+    Hàm này nhận chuỗi dữ liệu gốc và chuyển đổi thành định dạng JSON hợp lệ.
+    """
+    # Thay thế tất cả dấu '+' bằng dấu cách
+    data = data.replace('+', ' ')
+
+    # Loại bỏ dấu chấm trong số tiền (1.500.000 VNĐ -> 1500000 VNĐ)
+    data = re.sub(r'(\d+)\.(\d+)\.(\d+)', r'\1\2\3', data)
+
+    # Đảm bảo tất cả các thuộc tính trong chuỗi JSON đều có dấu nháy kép
+    # Thêm dấu nháy kép xung quanh các tên thuộc tính như seatNumber, price
+    data = re.sub(r'(\w+):', r'"\1":', data)
+
+    # Đảm bảo rằng giá trị của các chuỗi như class, name cũng được bao quanh bởi dấu nháy kép
+    data = re.sub(r'("class":|, "name":|, "cccd":|, "phone":)(\w+)', r'\1"\2"', data)
+
+    # Giải quyết phần passengerInfo nếu cần thiết, đảm bảo mọi chuỗi trong đó đều hợp lệ
+    data = re.sub(r'(\[.*?\])', lambda m: m.group(0).replace('\'', '"'), data)
+
+    # Thử phân tích chuỗi thành JSON hợp lệ
+    try:
+        formatted_data = json.loads(data)  # Chuyển đổi thành JSON hợp lệ
+        return formatted_data
+    except json.JSONDecodeError as e:
+        print(f"Lỗi khi phân tích chuỗi JSON: {e}")
+        return None

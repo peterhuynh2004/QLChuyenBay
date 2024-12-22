@@ -71,6 +71,16 @@ a {
     border-radius: 15px;
 }
 
+.card-body{
+    display: flex;
+}
+
+.card-body p{
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    width: 80%;
+}
 .pro {
     display: flex;
     cursor: pointer;
@@ -870,9 +880,6 @@ div#formStep1{
     display: inline-block;
 }
 
-.form-control{
-    padding: 10px;
-    font-size: 16px;
 .wrap_nv{
     margin: 10px;
 }
@@ -892,18 +899,6 @@ div#formStep1{
     color: red;
     font-size: 0.9rem;
     margin-top: 5px;
-    font-size: 16px;
-    padding: 5px
-}
-
- .form-container {
-    display: none;
-}
-.form-container.active {
-    display: block;
-}
-.button-container {
-    margin-top: 20px;
 }
 
 .btn.btn-danger{
@@ -991,6 +986,10 @@ input[type="number"] {
 
 .card-body .card-text{
     font-size: 20px !important;
+}
+
+.imgnv .card-body{
+    display: block;
 }
 
 /* CSS cho lỗi thông báo */
