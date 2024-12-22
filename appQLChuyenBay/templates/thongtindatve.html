@@ -1,28 +1,30 @@
-{% extends 'layout/base.html' %}
+ {% extends 'layout/base.html' %}
 
 {% block content %}
-<div>
+<div style="background-color: white">
     <div class="form-group">
-        <h1 class="display-3 text-center" style="background-color: #CEEFFA; color: #0D706E; font-style: italic"> Thông tin khách hàng </h1>
-        <div class="form-group">
-            <input type="text" class="form-control" value="Hạng ghế: {{ session['hangGhe'] }}" disabled>
+        <h1 class="display-3 text-center" style="background-color: #CEEFFA; color: #0D706E; font-style: italic"> Thông tin khách hàng</h1>
+        <p class="display-6" > Hạng ghế: {{ session['hangGhe'] }} </p>
+        {% if session['veNguoiLon'] %}
+        <div class="display-6" style="background-color: #0D706E; color: #CEEFFA; font-style: italic"> Thông tin vé người lớn</div>
+        {% for i in range(0, veNguoiLon) %}
+        <div class="form-group" style="font-size:20px; padding: 10px">
+            <hr>
+            <div>Hành khách {{ i + 1 }} </div>
+            <div clasa="form-control">
+                <p>Số điện thoại: {{ session['phone'][i] }} </p>
+                <p>Họ và tên hành khách {{ session['fullNameNguoiLon'][i] }} </p>
+                <p>Căn cước công dân: {{ session['cccd'][i] }} </p>
+                <p>Ngày tháng năm sinh: {{ session['ngaySinhNguoiLon'][i] }} </p>
+                <p>email {{ session['email'][i] }} </p>
+            </div>
         </div>
-        <div class="form-group">
-            <input type="text" class="form-control" value=" Họ và tên hành khách:  {{ session['fullName'] }}" disabled>
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" value=" Số điên thoại:  {{ session['phone'] }}" disabled>
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" value=" Email:  {{ session['email'] }}" disabled>
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" value=" Căn cước công dân:  {{ session['cccd'] }}" disabled>
-        </div>
-        <div>
-            
-        </div>
+        {% endfor %}
+        {% endif %}
     </div>
 </div>
+ <form action="POST">
+     <button class="btn btn-success" type="submit"> Đặt vé </button>
+ </form>
 
 {% endblock %}

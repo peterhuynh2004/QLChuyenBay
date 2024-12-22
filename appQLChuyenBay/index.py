@@ -259,6 +259,12 @@ def timkiemchuyenbay():
     SanBayDi = request.args.get('NoiDi').split('(')[0].strip()
     SanBayDen = request.args.get('NoiDen').split('(')[0].strip()
     ngayDi = request.args.get('Date')
+    veNguoiLon = request.args.get('SLNguoiLon')
+    veTreEm = request.args.get('SLTreEm')
+    veEmBe = request.args.get('SLEmBe')
+    session['veNguoiLon'] = veNguoiLon
+    session['veTreEm'] = veTreEm
+    session['veEmBe'] = veEmBe
     id_SanBayDi = dao.get_id_San_Bay(SanBayDi)
     id_SanBayDen = dao.get_id_san_bay(SanBayDen)
     flight = dao.load_flight(noiDi=id_SanBayDi, noiDen=id_SanBayDen, ngayDi=ngayDi)
@@ -272,35 +278,37 @@ def datveonline():
     if request.method == 'POST':
         # Lấy giá trị từ form
         hangGhe = request.form.get('hangGhe')
-        fullName = request.form.get('fullName')
-        phone = request.form.get('phone')
-        email = request.form.get('email')
-        cccd = request.form.get('cccd')
-
+        fullNameNguoiLon = []
+        phone = []
+        email = []
+        ngaySinhNguoiLon = []
+        cccd = []
+        for i in range(int(session['veNguoiLon'])):
+            fullNameNguoiLon.append(request.form.getlist(f'fullNameNguoiLon[{i}]'))
+            phone.append(request.form.getlist(f'phone[{i}]'))
+            email.append(request.form.getlist(f'email[{i}]'))
+            ngaySinhNguoiLon.append(request.form.getlist(f'ngaySinhNguoiLon[{i}]'))
+            cccd.append(request.form.getlist(f'cccd[{i}]'))
         # Lưu thông tin vào session
         session['hangGhe'] = hangGhe
-        session['fullName'] = fullName
+        session['fullNameNguoiLon'] = fullNameNguoiLon
         session['phone'] = phone
         session['email'] = email
         session['cccd'] = cccd
-
+        session['ngaySinhNguoiLon'] = ngaySinhNguoiLon
         # Chuyển sang bước tiếp theo
         return redirect('thongtindatve')
-    # Lấy thông tin từ session nếu đã được lưu
-    hangGhe = session.get('hangGhe', '')
-    fullName = session.get('fullName', '')
-    phone = session.get('phone', '')
-    email = session.get('email', '')
-    cccd = session.get('cccd', '')
-    return render_template('datveonline.html', hangGhe=hangGhe, fullName=fullName, phone=phone, email=email, cccd=cccd)
+    return render_template('datveonline.html', veNguoiLon=int(session['veNguoiLon']), veTreEm=int(session['veTreEm']), veEmBe=int(session['veEmBe']))
 
 
 @app.route("/thongtindatve", methods=['GET', 'POST'])
 def thongtindatve():
+    fullNameNguoiLon = session.get('fullNameNguoiLon',[])
     return render_template('thongtindatve.html',
-                           fullName=session['fullName'],
-                           email=session['email'],
-                           cccd=session['cccd'])
+                           veNguoiLon=int(session['veNguoiLon']),
+                           veTreEm=int(session['veTreEm']),
+                           veEmBe=int(session['veEmBe']),
+                           fullNameNguoiLon=fullNameNguoiLon)
 
 
 if __name__ == '__main__':

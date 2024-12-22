@@ -992,3 +992,22 @@ input[type="number"] {
 .card-body .card-text{
     font-size: 20px !important;
 }
+
+/* CSS cho lỗi thông báo */
+.error-message {
+    color: red; /* Màu chữ đỏ để nổi bật lỗi */
+    font-size: 14px; /* Kích thước chữ vừa phải */
+    margin-top: 5px; /* Khoảng cách trên so với trường nhập liệu */
+    font-weight: bold; /* In đậm để dễ nhận diện */
+}
+
+/* Đảm bảo không làm ảnh hưởng layout khi không có lỗi */
+.error-message:empty {
+    display: none; /* Ẩn khi không có nội dung lỗi */
+}
+
+/* Tùy chọn thêm cho form nhập liệu khi có lỗi */
+.form-control.error {
+    border-color: red; /* Viền màu đỏ cho trường có lỗi */
+    background-color: #fff5f5; /* Nền nhạt để cảnh báo */
+}
