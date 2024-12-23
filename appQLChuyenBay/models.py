@@ -272,7 +272,7 @@ class ThongTinHanhKhach(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
         # db.drop_all()
 
         # data sân bay
@@ -312,41 +312,161 @@ if __name__ == '__main__':
         #         "tenTuyen": "Côn Đảo - Phù Cát",
         #         "id_SanBayDi": 1,
         #         "id_SanBayDen": 2,
-        #         "doanhThu": 50000000,
-        #         "soLuotBay": 50,
-        #         "tyLe": 90
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
         #     },
         #     {
-        #         "tenTuyen": "Côn Đảo - Cà Mau",
-        #         "id_SanBayDi": 1,
-        #         "id_SanBayDen": 3,
-        #         "doanhThu": 20000000,
-        #         "soLuotBay": 30,
-        #         "tyLe": 85
-        #     },
-        #     {
-        #         "tenTuyen": "Phù Cát - Cần Thơ",
+        #         "tenTuyen": "Phù Cát - Bình Định",
         #         "id_SanBayDi": 2,
-        #         "id_SanBayDen": 4,
-        #         "doanhThu": 15000000,
-        #         "soLuotBay": 20,
-        #         "tyLe": 80
+        #         "id_SanBayDen": 3,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
         #     },
         #     {
-        #         "tenTuyen": "Cà Mau - Buôn Ma Thuộc",
+        #         "tenTuyen": "Cà Mau - Cà Mau",
         #         "id_SanBayDi": 3,
-        #         "id_SanBayDen": 5,
-        #         "doanhThu": 12000000,
-        #         "soLuotBay": 15,
-        #         "tyLe": 75
+        #         "id_SanBayDen": 4,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
         #     },
         #     {
-        #         "tenTuyen": "Cần Thơ - Côn Đảo",
+        #         "tenTuyen": "Cần Thơ - Cần Thơ",
         #         "id_SanBayDi": 4,
+        #         "id_SanBayDen": 6,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Đà Nẵng - Đà Nẵng",
+        #         "id_SanBayDi": 6,
+        #         "id_SanBayDen": 10,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Nội Bài - Hà Nội",
+        #         "id_SanBayDi": 10,
+        #         "id_SanBayDen": 11,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Tân Sơn Nhất - Thành phố Hồ Chí Minh",
+        #         "id_SanBayDi": 11,
+        #         "id_SanBayDen": 14,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Phú Quốc - Kiên Giang",
+        #         "id_SanBayDi": 14,
+        #         "id_SanBayDen": 19,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Chu Lai - Quảng Nam",
+        #         "id_SanBayDi": 19,
+        #         "id_SanBayDen": 22,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Vân Đồn - Quảng Ninh",
+        #         "id_SanBayDi": 22,
         #         "id_SanBayDen": 1,
-        #         "doanhThu": 25000000,
-        #         "soLuotBay": 25,
-        #         "tyLe": 88
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Cà Mau - Phú Cát",
+        #         "id_SanBayDi": 3,
+        #         "id_SanBayDen": 2,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Cần Thơ - Cà Mau",
+        #         "id_SanBayDi": 4,
+        #         "id_SanBayDen": 3,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Đà Nẵng - Cần Thơ",
+        #         "id_SanBayDi": 6,
+        #         "id_SanBayDen": 4,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Tân Sơn Nhất - Đà Nẵng",
+        #         "id_SanBayDi": 11,
+        #         "id_SanBayDen": 6,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Phú Quốc - Tân Sơn Nhất",
+        #         "id_SanBayDi": 14,
+        #         "id_SanBayDen": 11,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Chu Lai - Phú Quốc",
+        #         "id_SanBayDi": 19,
+        #         "id_SanBayDen": 14,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Vân Đồn - Chu Lai",
+        #         "id_SanBayDi": 22,
+        #         "id_SanBayDen": 19,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Phù Cát - Vân Đồn",
+        #         "id_SanBayDi": 2,
+        #         "id_SanBayDen": 22,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Cà Mau - Đà Nẵng",
+        #         "id_SanBayDi": 3,
+        #         "id_SanBayDen": 6,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
+        #     },
+        #     {
+        #         "tenTuyen": "Cần Thơ - Tân Sơn Nhất",
+        #         "id_SanBayDi": 4,
+        #         "id_SanBayDen": 11,
+        #         "doanhThu": 0,
+        #         "soLuotBay": 0,
+        #         "tyLe": 0
         #     }
         # ]
         #
@@ -425,7 +545,7 @@ if __name__ == '__main__':
         # db.session.add_all([diachi1, diachi2])
         # db.session.commit()
         #
-        # # data Người Dùng
+        # data Người Dùng
         # nguoidung1 = NguoiDung(HoTen="Nguyễn Văn A", Email="nguyenvana@example.com", SDT=123456789,
         #                        TenDangNhap="nguyenvana", MatKhau="password123", GioiTinh="Nam", DiaChi=1)
         # nguoidung2 = NguoiDung(HoTen="Trần Thị B", Email="tranthib@example.com", SDT=987654321, TenDangNhap="tranthib",
@@ -434,11 +554,88 @@ if __name__ == '__main__':
         # db.session.commit()
         #
         # # data Bảng giá vé
-        # banggiave1 = BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=1, ID_SanBayDen=11, ID_PhuThu=None,
-        #                        ID_QuyDinhVe=None)
-        # banggiave2 = BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=2, ID_SanBayDen=10, ID_PhuThu=None,
-        #                        ID_QuyDinhVe=None)
-        # db.session.add_all([banggiave1, banggiave2])
+        # banggiave_data = [
+        #     # Côn Đảo - Phù Cát
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=1, ID_SanBayDen=2, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=1, ID_SanBayDen=2, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Phù Cát - Bình Định
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=2, ID_SanBayDen=3, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=2, ID_SanBayDen=3, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Cà Mau - Cà Mau
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=3, ID_SanBayDen=4, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=3, ID_SanBayDen=4, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Cần Thơ - Cần Thơ
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=4, ID_SanBayDen=6, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=4, ID_SanBayDen=6, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Đà Nẵng - Đà Nẵng
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=6, ID_SanBayDen=10, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=6, ID_SanBayDen=10, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Nội Bài - Hà Nội
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=10, ID_SanBayDen=11, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=10, ID_SanBayDen=11, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Tân Sơn Nhất - Thành phố Hồ Chí Minh
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=11, ID_SanBayDen=14, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=11, ID_SanBayDen=14, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Phú Quốc - Kiên Giang
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=14, ID_SanBayDen=19, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=14, ID_SanBayDen=19, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Chu Lai - Quảng Nam
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=19, ID_SanBayDen=22, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=19, ID_SanBayDen=22, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Vân Đồn - Quảng Ninh
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=22, ID_SanBayDen=1, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=22, ID_SanBayDen=1, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Cà Mau - Phú Cát
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=3, ID_SanBayDen=2, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=3, ID_SanBayDen=2, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Cần Thơ - Cà Mau
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=4, ID_SanBayDen=3, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=4, ID_SanBayDen=3, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Đà Nẵng - Cần Thơ
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=6, ID_SanBayDen=4, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=6, ID_SanBayDen=4, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Tân Sơn Nhất - Đà Nẵng
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=11, ID_SanBayDen=6, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=11, ID_SanBayDen=6, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Phú Quốc - Tân Sơn Nhất
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=14, ID_SanBayDen=11, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=14, ID_SanBayDen=11, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Chu Lai - Phú Quốc
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=19, ID_SanBayDen=14, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=19, ID_SanBayDen=14, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Vân Đồn - Chu Lai
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=22, ID_SanBayDen=19, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=22, ID_SanBayDen=19, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Phù Cát - Vân Đồn
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=2, ID_SanBayDen=22, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=2, ID_SanBayDen=22, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Cà Mau - Đà Nẵng
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=3, ID_SanBayDen=6, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=3, ID_SanBayDen=6, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #
+        #     # Cần Thơ - Tân Sơn Nhất
+        #     BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=4, ID_SanBayDen=11, ID_PhuThu=None, ID_QuyDinhVe=None),
+        #     BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=4, ID_SanBayDen=11, ID_PhuThu=None, ID_QuyDinhVe=None),
+        # ]
+        # db.session.add_all(banggiave_data)
         # db.session.commit()
 
         # data NguoiDung_VaiTro
@@ -454,12 +651,12 @@ if __name__ == '__main__':
         # db.session.commit()
 
         # # data Vé Chuyến bay
-        # vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
-        #                            thoiGianDat=datetime.utcnow(), id_user=1, id_ChuyenBay=1)
-        # vechuyenbay2 = VeChuyenBay(giaVe=2500000, maThongTin=2, hangVe=1, soGhe=10, giaHanhLy=600000,
-        #                            thoiGianDat=datetime.utcnow(), id_user=2, id_ChuyenBay=2)
-        # db.session.add_all([vechuyenbay1, vechuyenbay2])
-        # db.session.commit()
+        vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
+                                   thoiGianDat=datetime.utcnow(), id_user=1, id_ChuyenBay=3)
+        vechuyenbay2 = VeChuyenBay(giaVe=2500000, maThongTin=2, hangVe=1, soGhe=10, giaHanhLy=600000,
+                                   thoiGianDat=datetime.utcnow(), id_user=2, id_ChuyenBay=2)
+        db.session.add_all([vechuyenbay1, vechuyenbay2])
+        db.session.commit()
 
 
 
