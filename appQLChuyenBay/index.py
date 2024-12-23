@@ -7,7 +7,7 @@ from appQLChuyenBay import app, login, mail
 from flask_mail import Message
 import random
 from flask import session
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 
 
 @app.route("/")
@@ -92,6 +92,21 @@ def get_sanbay():
 def trangchudangnhap():
     name = request.args.get('user_name')
     return render_template('index.html')
+
+
+@app.route('/api/user/roles', methods=['GET'])
+def get_user_roles():
+    if current_user.is_authenticated:
+        user_id = current_user.ID_User  # Kiểm tra vai trò của người dùng
+        user_role = dao.get_user_role(user_id)
+        checkrole = dao.checkrole(user_role)
+
+        if checkrole:
+            return jsonify(True)  # Trả về True dưới dạng JSON
+
+    return jsonify(False)  # Trả về False nếu không có vai trò hợp lệ
+
+    return False
 
 
 @app.route("/login", methods=['get', 'post'])
@@ -192,19 +207,35 @@ def chucnang():
     if 'NhanVien' in user_role_change:
         return render_template('chuc_nang.html', user_role_change=user_role_change)
     else:
-        return render_template('/')
+        return render_template('index.html')
 
 
 @app.route("/lap_lich_chuyen_bay", endpoint="lap_lich_chuyen_bay", methods=["GET", "POST"])
 def laplichchuyenbay():
     if request.method == "POST":
         flight_date = request.form['flight_date']
-        print(flight_date)
         TuyenBay = request.form['TuyenBay']
-        # thoigianbay
         flight_duration = int(request.form['flight_duration'])
         first_class_seats = int(request.form['first_class_seats'])
         economy_class_seats = int(request.form['economy_class_seats'])
+
+        # Lấy các quy định từ bảng QuyDinhSanBay
+        quy_dinh = dao.get_quy_dinh_san_bay()
+
+        # Kiểm tra thời gian bay tối thiểu
+        thoi_gian_bay_toi_thieu = quy_dinh.ThoiGianBayToiThieu
+        if flight_duration < thoi_gian_bay_toi_thieu:
+            flash(f"Thời gian bay phải lớn hơn {thoi_gian_bay_toi_thieu} phút.", "error")
+            return render_template('lap_lich_chuyen_bay.html')
+
+        # Kiểm tra số lượng sân bay trung gian
+        san_bay_trung_gian_toi_da = quy_dinh.SanBayTrungGianToiDa
+        intermediate_airports = request.form.getlist('intermediate_airports')
+        if len(intermediate_airports) > san_bay_trung_gian_toi_da:
+            flash(f"Chỉ được phép thêm tối đa {san_bay_trung_gian_toi_da} sân bay trung gian.", "error")
+            return render_template('lap_lich_chuyen_bay.html')
+
+        # Lấy id tuyến bay
         id_TuyenBay = dao.get_id_TuyenBay(TuyenBay)
         flight = dao.save_ChuyenBay(flight_date=flight_date, flight_duration=flight_duration,
                                     first_class_seats=first_class_seats,
@@ -220,7 +251,22 @@ def laplichchuyenbay():
                 if len(intermediate_airports) <= index:
                     intermediate_airports.append({})
                 intermediate_airports[index][field] = value
-        luusbaytrunggian = dao.save_sbbaytrunggian(intermediate_airports=intermediate_airports, flight=flight)
+
+        # Kiểm tra thời gian dừng tại sân bay trung gian
+        thoi_gian_dung_toi_thieu = quy_dinh.ThoiGianDungToiThieu
+        thoi_gian_dung_toi_da = quy_dinh.ThoiGianDungToiDa
+        for airport in intermediate_airports:
+            thoi_gian_dung = int(airport.get("duration", 0))
+            if thoi_gian_dung < thoi_gian_dung_toi_thieu:
+                flash(f"Thời gian dừng tại sân bay trung gian phải lớn hơn {thoi_gian_dung_toi_thieu} phút.", "error")
+                return render_template('lap_lich_chuyen_bay.html')
+            if thoi_gian_dung > thoi_gian_dung_toi_da:
+                flash(f"Thời gian dừng tại sân bay trung gian không được vượt quá {thoi_gian_dung_toi_da} phút.",
+                      "error")
+                return render_template('lap_lich_chuyen_bay.html')
+
+                # Lưu sân bay trung gian
+                luusbaytrunggian = dao.save_sbbaytrunggian(intermediate_airports=intermediate_airports, flight=flight)
 
         return redirect(url_for('lap_lich_chuyen_bay'))
 
@@ -465,6 +511,7 @@ def quydinhve():
 def quydinhsanbay():
     return render_template('quydinhsanbay.html')
 
+
 @app.route('/api/quydinh/sanbay/<int:id>', methods=['GET'])
 def get_quy_dinh_san_bay(id):
     quy_dinh = dao.getquydinhsanbay(id)
@@ -479,6 +526,7 @@ def get_quy_dinh_san_bay(id):
         'ThoiGianDungToiDa': quy_dinh.ThoiGianDungToiDa,
     }), 200
 
+
 @app.route('/api/quydinh/sanbay/<int:id>', methods=['PUT'])
 def update_quy_dinh_san_bay(id):
     try:
@@ -487,11 +535,12 @@ def update_quy_dinh_san_bay(id):
         if not data:
             return jsonify({"message": "Không có dữ liệu gửi lên"}), 400
 
-        luutru = dao.thaydoiquydinhsanbay(id,data)
+        luutru = dao.thaydoiquydinhsanbay(id, data)
 
         return jsonify({"message": "Cập nhật quy định sân bay thành công"}), 200
     except Exception as e:
         return jsonify({"message": f"Có lỗi xảy ra: {str(e)}"}), 500
+
 
 # API Lấy thông tin quy định bán vé
 @app.route('/api/quydinh/banve/<int:id>', methods=['GET'])
@@ -502,16 +551,18 @@ def get_quy_dinh_ban_ve(id):
     else:
         return jsonify({"message": "Quy định không tồn tại"}), 404
 
+
 # API Cập nhật thông tin quy định bán vé
 @app.route('/api/quydinh/banve/<int:id>', methods=['PUT'])
 def update_quy_dinh_ban_ve(id):
     data = request.json
-    quy_dinh = dao.thaydoiquydinhbanve(id,data)
+    quy_dinh = dao.thaydoiquydinhbanve(id, data)
     try:
         if quy_dinh:
             return jsonify({"message": "Cập nhật quy định bán vé thành công"}), 200
     except Exception as e:
         return jsonify({"message": "Cập nhật thất bại", "error": str(e)}), 400
+
 
 # API Lấy thông tin quy định vé
 @app.route('/api/quydinh/ve/<int:id>', methods=['GET'])
@@ -521,18 +572,18 @@ def get_quy_dinh_ve(id):
         return quy_dinh
     return jsonify({"message": "Quy định không tồn tại"}), 404
 
+
 # API Cập nhật quy định vé
 @app.route('/api/quydinh/ve/<int:id>', methods=['PUT'])
 def update_quy_dinh_ve(id):
     data = request.json
-    quy_dinh = dao.setquydinhve(id,data)
+    quy_dinh = dao.setquydinhve(id, data)
 
     try:
         if quy_dinh:
             return jsonify({"message": "Cập nhật thành công"}), 200
     except Exception as e:
         return jsonify({"message": "Cập nhật thất bại", "error": str(e)}), 400
-
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from mailbox import Message
 import re
@@ -16,6 +16,7 @@ from appQLChuyenBay import app, db, mail
 import hashlib
 import cloudinary.uploader
 from sqlalchemy.orm import sessionmaker
+
 
 
 def auth_user(username, password):
@@ -42,7 +43,7 @@ def add_user(name, email, password, avatar):
     db.session.commit()
 
     # Sau khi commit, ID_User của u sẽ có giá trị
-    role = NguoiDung_VaiTro(ID_User=u.ID_User, ID_VaiTro=UserRole.NguoiDung)
+    role = NguoiDung_VaiTro(ID_User=u.ID_User, ID_VaiTro=UserRole.KhachHang)
 
     # Lưu vai trò của người dùng
     db.session.add(role)
@@ -140,6 +141,10 @@ def get_filtered_flights(san_bay_di=None, san_bay_den=None, thoi_gian=None, gh1=
         query = query.filter(ChuyenBay.GH1 >= int(gh1))
     if gh2:
         query = query.filter(ChuyenBay.GH2 >= int(gh2))
+
+    # Thêm ràng buộc chỉ trả về chuyến bay trước 4 giờ kể từ thời điểm hiện tại
+    four_hours_from_now = datetime.now() + timedelta(hours=4)
+    query = query.filter(ChuyenBay.gio_Bay <= four_hours_from_now)
 
     # Trả về kết quả với phân trang
     return query.paginate(page=page, per_page=per_page)
@@ -559,3 +564,7 @@ def setquydinhve(id, data):
 
         db.session.commit()
     return True
+
+def get_quy_dinh_san_bay():
+    quy_dinh = db.session.query(QuyDinhSanBay).filter(QuyDinhSanBay.ID_QuyDinh == 1).first()
+    return quy_dinh
