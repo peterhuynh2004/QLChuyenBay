@@ -13,6 +13,7 @@
     <div class="container">
         <!-- Aside section start -->
         <aside>
+            {% block sidebar %}
             <div class="top">
                 <div class="logo">
                     <h2> <span class="danger">FlySmart</span></h2>
@@ -32,10 +33,11 @@
                     <span class="material-symbols-outlined">person_outline</span>
                     <h3>Người Dùng</h3>
                 </a>
-                <a href="#">
-                    <span class="material-symbols-outlined">insights</span>
+               <a href="{{ url_for('thongkebaocao') }}?id=123">
+                 <span class="material-symbols-outlined">insights</span>
                     <h3>Thống Kê</h3>
-                </a>
+                    </a>
+
                 <a href="#">
                     <span class="material-symbols-outlined">mail_outline</span>
                     <h3>Thông Báo</h3>
@@ -66,9 +68,11 @@
                     <h3>Đăng Xuất</h3>
                 </a>
             </div>
+             {% endblock %}
         </aside>
         <!-- Main section start -->
         <main>
+            {% block content %}
             <h1>TỔNG QUAN</h1>
             <div class="date">
                <input type="datetime-local" id="realtime-calendar">
@@ -176,11 +180,13 @@
                 </table>
             </div>
 <!--            end recent order-->
+             {% endblock %}
         </main>
 <!--        End main section-->
         <!-- Right section start -->
         <div class="right">
             <div class="top">
+                {% block top_section %}
                 <button id="menu_bar">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
@@ -198,6 +204,7 @@
                         <img src="{{ url_for('static', filename='img/LeVietHaiQuan.jpg') }}" alt="Ảnh admin page :D">
                     </div>
                 </div>
+                {%  endblock %}
             </div>
 <!--            End top section-->
 <!--            Start Recent Updates section-->
@@ -289,11 +296,9 @@
 
 <!--        End right section-->
     </div>
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 FlySmart Admin Panel</p>
-    </footer>
+
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+  <!-- Footer -->
 </body>
 </html>

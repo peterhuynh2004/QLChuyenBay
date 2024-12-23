@@ -4,13 +4,13 @@ const menuBtn = document.querySelector('#menu_bar');
 const closeBtn = document.querySelector('#close_btn');
 const themeToggler = document.querySelector('.theme-toggler');
 
-menuBtn.addEventListener('click', () => {
-    sideMenu.style.display = "block";
-});
-
-closeBtn.addEventListener('click', () => {
-    sideMenu.style.display = "none";
-});
+//menuBtn.addEventListener('click', () => {
+//    sideMenu.style.display = "block";
+//});
+//
+//closeBtn.addEventListener('click', () => {
+//    sideMenu.style.display = "none";
+//});
 
  // Chuyển đổi Light/Dark Mode
     if (themeToggler) {
@@ -23,3 +23,4 @@ closeBtn.addEventListener('click', () => {
             if (span1) span1.classList.toggle('active');
             if (span2) span2.classList.toggle('active');
         });
+}

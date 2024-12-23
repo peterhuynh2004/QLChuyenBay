@@ -8,7 +8,7 @@ from flask import render_template, request, redirect
 from sqlalchemy import except_
 
 import dao
-from appQLChuyenBay import app, login, mail
+from appQLChuyenBay import app, login, mail, db #Thêm dòng database
 from appQLChuyenBay import utils
 from flask_mail import Message
 import random
@@ -17,6 +17,9 @@ from flask import session
 from flask_login import login_user, logout_user
 #Import moduls
 import utils
+# Import cần thiết để vẽ CharJS
+from sqlalchemy import func
+from models import TuyenBay
 
 
 
@@ -116,6 +119,29 @@ def kiemtrama():
 @app.route('/admin/')
 def admin():
     return render_template('admin.html')
+
+
+@app.route('/admin/thongkebaocao')
+def thongkebaocao():
+    # Tính tổng số tuyến bay
+    total_routes = TuyenBay.query.count()
+
+    # Tính tổng số lượt bay (nếu null thì trả về 0)
+    total_flights = db.session.query(func.sum(TuyenBay.soLuotBay)).scalar() or 0
+
+    # Tính tổng doanh thu (nếu null thì trả về 0)
+    total_revenue = db.session.query(func.sum(TuyenBay.doanhThu)).scalar() or 0
+
+    # Chuẩn bị label và values cho Chart.js
+    # Ví dụ 3 cột: [Tổng tuyến, Tổng lượt bay, Tổng doanh thu]
+    labels = ["Tổng tuyến bay", "Tổng lượt bay", "Tổng doanh thu"]
+    values = [total_routes, total_flights, total_revenue]
+
+    return render_template(
+        'thongkebaocao.html',
+        labels=labels,
+        values=values
+    )
 
 @login.user_loader
 def load_user(user_id):
