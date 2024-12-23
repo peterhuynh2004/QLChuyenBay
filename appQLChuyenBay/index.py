@@ -253,7 +253,6 @@ def danhsachchuyenbay():
         # Kết hợp các tên sân bay vào một chuỗi
         sân_bay_trung_gian = ', '.join(san_bay_trung_gian_list)
         if route:
-
             flight_info.append({
                 "id": flight.id_ChuyenBay,
                 "hành_trình": route.tenTuyen,
@@ -445,6 +444,95 @@ def thanhtoanthanhcong():
         flash('Không tìm thấy thông tin vé.')
         return redirect(url_for('index'))  # Chuyển hướng về trang chủ hoặc trang khác nếu không có dữ liệu
     return render_template('thanhtoanthanhcong.html')
+
+
+@app.route('/thaydoiquydinh')
+def thaydoiquydinh():
+    return render_template('thaydoiquydinh.html')
+
+
+@app.route('/quydinhbanve')
+def quydinhbanve():
+    return render_template('quydinhbanve.html')
+
+
+@app.route('/quydinhve')
+def quydinhve():
+    return render_template('quydinhve.html')
+
+
+@app.route('/quydinhsanbay')
+def quydinhsanbay():
+    return render_template('quydinhsanbay.html')
+
+@app.route('/api/quydinh/sanbay/<int:id>', methods=['GET'])
+def get_quy_dinh_san_bay(id):
+    quy_dinh = dao.getquydinhsanbay(id)
+    if not quy_dinh:
+        return jsonify({'message': 'Quy định không tồn tại'}), 404
+
+    return jsonify({
+        'SoLuongSanBay': quy_dinh.SoLuongSanBay,
+        'ThoiGianBayToiThieu': quy_dinh.ThoiGianBayToiThieu,
+        'SanBayTrungGianToiDa': quy_dinh.SanBayTrungGianToiDa,
+        'ThoiGianDungToiThieu': quy_dinh.ThoiGianDungToiThieu,
+        'ThoiGianDungToiDa': quy_dinh.ThoiGianDungToiDa,
+    }), 200
+
+@app.route('/api/quydinh/sanbay/<int:id>', methods=['PUT'])
+def update_quy_dinh_san_bay(id):
+    try:
+        # Lấy dữ liệu JSON từ yêu cầu
+        data = request.json
+        if not data:
+            return jsonify({"message": "Không có dữ liệu gửi lên"}), 400
+
+        luutru = dao.thaydoiquydinhsanbay(id,data)
+
+        return jsonify({"message": "Cập nhật quy định sân bay thành công"}), 200
+    except Exception as e:
+        return jsonify({"message": f"Có lỗi xảy ra: {str(e)}"}), 500
+
+# API Lấy thông tin quy định bán vé
+@app.route('/api/quydinh/banve/<int:id>', methods=['GET'])
+def get_quy_dinh_ban_ve(id):
+    quy_dinh = dao.getquydinhbanve(id)
+    if quy_dinh:
+        return quy_dinh
+    else:
+        return jsonify({"message": "Quy định không tồn tại"}), 404
+
+# API Cập nhật thông tin quy định bán vé
+@app.route('/api/quydinh/banve/<int:id>', methods=['PUT'])
+def update_quy_dinh_ban_ve(id):
+    data = request.json
+    quy_dinh = dao.thaydoiquydinhbanve(id,data)
+    try:
+        if quy_dinh:
+            return jsonify({"message": "Cập nhật quy định bán vé thành công"}), 200
+    except Exception as e:
+        return jsonify({"message": "Cập nhật thất bại", "error": str(e)}), 400
+
+# API Lấy thông tin quy định vé
+@app.route('/api/quydinh/ve/<int:id>', methods=['GET'])
+def get_quy_dinh_ve(id):
+    quy_dinh = dao.getquydinhve(id)
+    if quy_dinh:
+        return quy_dinh
+    return jsonify({"message": "Quy định không tồn tại"}), 404
+
+# API Cập nhật quy định vé
+@app.route('/api/quydinh/ve/<int:id>', methods=['PUT'])
+def update_quy_dinh_ve(id):
+    data = request.json
+    quy_dinh = dao.setquydinhve(id,data)
+
+    try:
+        if quy_dinh:
+            return jsonify({"message": "Cập nhật thành công"}), 200
+    except Exception as e:
+        return jsonify({"message": "Cập nhật thất bại", "error": str(e)}), 400
+
 
 
 if __name__ == '__main__':

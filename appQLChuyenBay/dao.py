@@ -6,12 +6,12 @@ from mailbox import Message
 import re
 from multiprocessing import connection
 
-from flask import session, current_app
+from flask import session, current_app, jsonify
 from flask_sqlalchemy import pagination
 from sqlalchemy import func
 from sqlalchemy import text
 from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay, SBayTrungGian, VeChuyenBay, \
-    ThongTinHanhKhach
+    ThongTinHanhKhach, QuyDinhSanBay, QuyDinhBanVe, QuyDinhVe
 from appQLChuyenBay import app, db, mail
 import hashlib
 import cloudinary.uploader
@@ -483,3 +483,79 @@ def extract_ten_SanBay(full_string):
 def getID_SanBay(param):
     ID_SanBay = db.session.query(SanBay.id_SanBay).filter(SanBay.ten_SanBay == extract_ten_SanBay(param)).first()
     return ID_SanBay[0]
+
+
+def getquydinhsanbay(id):
+    quy_dinh = db.session.query(QuyDinhSanBay).filter_by(ID_QuyDinh=id).first()
+    return quy_dinh
+
+
+def thaydoiquydinhsanbay(id, data):
+    # Tìm quy định sân bay trong database
+    quy_dinh_san_bay = QuyDinhSanBay.query.get(id)
+    if not quy_dinh_san_bay:
+        return jsonify({"message": "Không tìm thấy quy định"}), 404
+
+    # Cập nhật dữ liệu từ yêu cầu
+    quy_dinh_san_bay.SoLuongSanBay = data.get("SoLuongSanBay", quy_dinh_san_bay.SoLuongSanBay)
+    quy_dinh_san_bay.ThoiGianBayToiThieu = data.get("ThoiGianBayToiThieu", quy_dinh_san_bay.ThoiGianBayToiThieu)
+    quy_dinh_san_bay.SanBayTrungGianToiDa = data.get("SanBayTrungGianToiDa", quy_dinh_san_bay.SanBayTrungGianToiDa)
+    quy_dinh_san_bay.ThoiGianDungToiThieu = data.get("ThoiGianDungToiThieu", quy_dinh_san_bay.ThoiGianDungToiThieu)
+    quy_dinh_san_bay.ThoiGianDungToiDa = data.get("ThoiGianDungToiDa", quy_dinh_san_bay.ThoiGianDungToiDa)
+
+    # Lưu thay đổi vào database
+    db.session.commit()
+
+    return jsonify({"message": "Cập nhật quy định sân bay thành công"}), 200
+
+
+def getquydinhbanve(id):
+    quy_dinh = QuyDinhBanVe.query.get(id)
+    print(quy_dinh)
+    return jsonify({
+            "ThoiGianBatDauBan": quy_dinh.ThoiGianBatDauBan,
+            "ThoiGianKetThucBan": quy_dinh.ThoiGianKetThucBan
+        }), 200
+
+
+def thaydoiquydinhbanve(id, data):
+    quy_dinh = QuyDinhBanVe.query.get(id)
+
+    if not quy_dinh:
+        return jsonify({"message": "Quy định không tồn tại"}), 404
+
+    quy_dinh.ThoiGianBatDauBan = data.get("ThoiGianBatDauBan", quy_dinh.ThoiGianBatDauBan)
+    quy_dinh.ThoiGianKetThucBan = data.get("ThoiGianKetThucBan", quy_dinh.ThoiGianKetThucBan)
+
+    db.session.commit()
+    return jsonify({"message": "Cập nhật quy định bán vé thành công"}), 200
+
+
+def getquydinhve(id):
+    quy_dinh=QuyDinhVe.query.get(id)
+    if quy_dinh:
+        return jsonify({
+            "SoLuongHangGhe1": quy_dinh.SoLuongHangGhe1,
+            "SoLuongHangGhe2": quy_dinh.SoLuongHangGhe2,
+        }), 200
+
+
+def setquydinhve(id, data):
+    quy_dinh1=QuyDinhVe.query.get(id)
+
+    if not quy_dinh1:
+        return jsonify({"message": "Quy định không tồn tại"}), 404
+    else:
+        so_luong_1 = data.get("SoLuongHangGhe1")
+        so_luong_2 = data.get("SoLuongHangGhe2")
+
+        if so_luong_1 is None or int(so_luong_1) <= 0:
+            return jsonify({"message": "Số lượng hạng ghế 1 phải lớn hơn 0"}), 400
+        if so_luong_2 is None or int(so_luong_2) <= 0:
+            return jsonify({"message": "Số lượng hạng ghế 2 phải lớn hơn 0"}), 400
+
+        quy_dinh1.SoLuongHangGhe1 = so_luong_1
+        quy_dinh1.SoLuongHangGhe2 = so_luong_2
+
+        db.session.commit()
+    return True

@@ -46,7 +46,7 @@ $(document).ready(function () {
     });
 
     // Event delegation for selecting a dropdown item
-    $(document).on("click", ".dropdown li", function () {
+    $(document).on("click", ".dropdownn li", function () {
         const $dropdownItem = $(this);
         const airportText = $dropdownItem.text(); // Chuỗi 'ten_SanBay (DiaChi)'
 
@@ -62,13 +62,13 @@ $(document).ready(function () {
         }
         const $input = $dropdownItem.closest(".block-text").find(".block-item.dropdown-input");
         $input.val($dropdownItem.text());
-        $dropdownItem.closest(".dropdown").hide();
+        $dropdownItem.closest(".dropdownn").hide();
     });
 
     // Hide dropdown when clicking outside
     $(document).on("click", function (e) {
         if (!$(e.target).closest(".block-text").length) {
-            $(".dropdown").empty().hide();
+            $(".dropdownn").empty().hide();
         }
     });
 });

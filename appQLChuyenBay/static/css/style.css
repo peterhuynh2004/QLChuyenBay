@@ -1022,3 +1022,12 @@ input[type="number"] {
     background-color: floralwhite;
     margin-top: 35px;
 }
+
+#quy-dinh-san-bay-container div{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#save-button{
+    color: black;
+}

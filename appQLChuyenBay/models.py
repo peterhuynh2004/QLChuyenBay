@@ -184,7 +184,7 @@ class QuyDinhBanVe(QuyDinh):
         __tablename__ = 'QuyDinhBanVe'
         ID_QuyDinh = Column(Integer, ForeignKey('QuyDinh.ID_QuyDinh'), primary_key=True)
         ThoiGianBatDauBan = Column(Integer, nullable=False)  # Thời gian bắt đầu bán vé (ngày trước chuyến bay)
-        ThoiGianKetThucBan = Column(Integer,
+        ThoiGianKetThucBan = Column(Float,
                                     nullable=False)  # Thời gian kết thúc bán vé (ngày trước chuyến bay)
         __mapper_args__ = {
             'polymorphic_identity': 'QuyDinhBanVe'
@@ -267,14 +267,37 @@ class ThongTinHanhKhach(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
+        # Tạo dữ liệu cho QuyDinhBanVe
+        new_quy_dinh_ban_ve = QuyDinhBanVe(
+            TenQuyDinh="Quy định bán vé",
+            MoTa="Quy định về thời gian bắt đầu và kết thúc bán vé trước ngày bay.",
+            LoaiQuyDinh="QuyDinhBanVe",  # Phân biệt loại quy định
+            ThoiGianBatDauBan=30,  # Thời gian bắt đầu bán vé trước 30 ngày
+            ThoiGianKetThucBan=3  # Thời gian kết thúc bán vé trước 3 ngày
+        )
 
-        # data Bảng giá vé
-        banggiave1 = BangGiaVe(LoaiHangGhe='GH1', ID_SanBayDi=1, ID_SanBayDen=11, ID_PhuThu=None,
-                               ID_QuyDinhVe=None)
-        banggiave2 = BangGiaVe(LoaiHangGhe='GH2', ID_SanBayDi=2, ID_SanBayDen=10, ID_PhuThu=None,
-                               ID_QuyDinhVe=None)
-        db.session.add_all([banggiave1, banggiave2])
+        # Thêm dữ liệu vào cơ sở dữ liệu
+        db.session.add(new_quy_dinh_ban_ve)
         db.session.commit()
+
+        print("Đã tạo dữ liệu cho QuyDinhBanVe.")
+        # # Tạo dữ liệu cho quy định sân bay
+        # new_quy_dinh_san_bay = QuyDinhSanBay(
+        #     TenQuyDinh="Quy định về sân bay",
+        #     MoTa="Quy định liên quan đến số lượng sân bay, thời gian bay và dừng tại sân bay trung gian.",
+        #     LoaiQuyDinh="QuyDinhSanBay",  # Phân biệt loại quy định
+        #     SoLuongSanBay=10,  # Số lượng sân bay
+        #     ThoiGianBayToiThieu=30,  # Thời gian bay tối thiểu (phút)
+        #     SanBayTrungGianToiDa=2,  # Số lượng sân bay trung gian tối đa
+        #     ThoiGianDungToiThieu=20,  # Thời gian dừng tối thiểu (phút)
+        #     ThoiGianDungToiDa=30,  # Thời gian dừng tối đa (phút)
+        # )
+        #
+        # # Thêm dữ liệu vào cơ sở dữ liệu
+        # db.session.add(new_quy_dinh_san_bay)
+        # db.session.commit()
+        #
+        # print("Đã tạo dữ liệu cho quy định sân bay.")
 
         # data Vé Chuyến bay
         # vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
