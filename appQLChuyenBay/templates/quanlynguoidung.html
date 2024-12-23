@@ -29,6 +29,7 @@ Quản Lý Người Dùng
                 <th>Ngày Sinh</th>
                 <th>Giới Tính</th>
                 <th>Vai Trò</th>
+                <th>Chỉnh sửa vai trò</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,11 @@ Quản Lý Người Dùng
                 <td>{{ user.NgaySinh.strftime('%Y-%m-%d') if user.NgaySinh else 'N/A' }}</td>
                 <td>{{ user.GioiTinh.name }}</td>
                 <td>{{ ', '.join(user_roles[user.ID_User]) }}</td>
+               <td>
+                    <a href="{{ url_for('update_user_roles', user_id=user.ID_User) }}">
+                        <span class="material-symbols-outlined">edit_square</span>
+                    </a>
+</td>
             </tr>
             {% endfor %}
         </tbody>

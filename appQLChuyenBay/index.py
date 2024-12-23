@@ -7,6 +7,7 @@ from flask import Flask, url_for, flash
 from flask import render_template, request, redirect
 from flask.cli import routes_command
 from sqlalchemy import except_
+from sqlalchemy.testing.pickleable import User
 
 import dao
 from  dao import UserRole, update_user_roles, get_user_by_id, add_user
@@ -198,6 +199,12 @@ def quanlynguoidung():
     user_roles = {user.ID_User: [role.ID_VaiTro.name for role in user.roles] for user in users}
 
     return render_template('quanlynguoidung.html', users=users, user_roles=user_roles)
+
+@app.route('/update_user_roles/<int:user_id>', methods=['GET', 'POST'])
+def edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template('update_user_roles.html', user=user)
+
 
 @app.route('/admin/quanly')
 def quanly():
