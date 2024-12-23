@@ -807,7 +807,7 @@ input.block-item{
 #SanBayDi:focus{
     border-color: #007bff;
 }
-
+/*
 .dropdown {
     position: absolute;
     top: 100%;
@@ -825,7 +825,7 @@ input.block-item{
     margin: 0;
     border-radius: 0 0 4px 4px;
 }
-
+*/
 .dropdown li {
     padding: 10px;
     cursor: pointer;
@@ -839,6 +839,21 @@ input.block-item{
 .dropdown li:hover {
     background-color: #f8f9fa;
 }
+
+.dropdown1 li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown1 li:last-child {
+    border-bottom: none;
+}
+
+.dropdown1 li:hover {
+    background-color: #f8f9fa;
+}
+
 
 /*trang datve_online*/
 /* Container form */
@@ -1004,6 +1019,7 @@ hr {
     border-color: lightblue;
     border-width: 2px;
 }
+
 .head-title3 {
     color: #fe5815;
     font-size: 15px;
@@ -1141,6 +1157,46 @@ input[type="number"] {
 
 .imgnv .card-body{
     display: block;
+}
+
+
+.mb-3{
+    font-size:2.4rem;
+}
+
+.mb-3 *{
+    font-size:2.2rem;
+}
+
+/* Điều chỉnh để sân bay đi và sân bay đến lên cùng một dòng */
+.row-airports {
+    display: flex;
+    justify-content: space-between;
+}
+
+.row-airports .mb-3 {
+    width: 48%; /* Mỗi ô chiếm 48% chiều rộng của dòng */
+}
+
+#dropdown-results{
+    display: inline-table;
+    background-color: floralwhite;
+    margin-top: 35px;
+}
+
+#dropdown-results-den{
+    display: inline-table;
+    background-color: floralwhite;
+    margin-top: 35px;
+}
+
+#quy-dinh-san-bay-container div{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#save-button{
+    color: black;
 }
 
 /* CSS cho lỗi thông báo */

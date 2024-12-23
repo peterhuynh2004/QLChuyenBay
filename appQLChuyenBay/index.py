@@ -11,7 +11,9 @@ from appQLChuyenBay import app, login, mail, db
 from flask_mail import Message
 import random, datetime
 from flask import session
-from flask_login import login_user, logout_user
+
+from flask_login import login_user, logout_user, current_user
+
 from dotenv import load_dotenv
 
 
@@ -40,7 +42,51 @@ def index():
                 "thời_gian": flight.gio_Bay.strftime('%d-%m-%Y %H:%M'),  # Giả sử gioBay là kiểu datetime
             })
 
-    return render_template('index.html',flights=flight_info)
+    return render_template('index.html', flights=flight_info)
+
+
+@app.route('/api/danhsachchuyenbay', methods=['POST'])
+def api_danhsachchuyenbay():
+    data = request.get_json()  # Nhận dữ liệu JSON từ yêu cầu POST
+    print(data)  # Debug dữ liệu
+
+    # Lấy id sân bay đi và đến
+    id_NoiDi = dao.get_id_san_bay(data.get('SanBayDi'))
+    id_NoiDen = dao.get_id_san_bay(data.get('SanBayDen'))
+
+    if data and id_NoiDi is not None and id_NoiDen is not None:
+        # Gán giá trị cho các biến
+        san_bay_di = id_NoiDi
+        san_bay_den = id_NoiDen
+        thoi_gian = data.get('ThoiGian')
+        gh1 = int(data.get('GH1', 0))  # Đảm bảo gh1 là số nguyên
+        gh2 = int(data.get('GH2', 0))  # Đảm bảo gh2 là số nguyên
+        print(f"Searching flights with: {san_bay_di}, {san_bay_den}, {thoi_gian}, {gh1}, {gh2}")  # Debug
+
+        # Lấy danh sách chuyến bay
+        flights = dao.get_flights(san_bay_di, san_bay_den, thoi_gian, gh1, gh2)
+
+        # Trả về kết quả dưới dạng JSON
+        return jsonify(flights), 200
+    else:
+        return jsonify({"error": "Invalid input or unknown airport"}), 400
+
+
+@app.route('/api/get_tuyenbay', methods=['GET'])
+def api_get_tuyenbay():
+    try:
+        # Lấy danh sách tất cả các tuyến bay từ bảng TuyenBay
+        tuyen_bay_list = dao.get_all_tuyen_bay()  # Giả sử dao có phương thức này
+        # Trả về danh sách dưới dạng JSON
+        return jsonify([{
+            'tenTuyen': tb.tenTuyen,
+            'id_SanBayDi': tb.id_SanBayDi,
+            'id_SanBayDen': tb.id_SanBayDen,
+            'id_TuyenBay': tb.id_TuyenBay
+        } for tb in tuyen_bay_list])
+    except Exception as e:
+        app.logger.error(f"Error fetching SanBay: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 
 
@@ -51,16 +97,32 @@ def get_sanbay():
 
         # Trả về dữ liệu dưới dạng JSON
         return jsonify([{
-            'ten_SanBay': sb.ten_SanBay +' ('+ sb.DiaChi +')'
+            'ten_SanBay': sb.ten_SanBay + ' (' + sb.DiaChi + ')'
         } for sb in sanbay_list])
     except Exception as e:
         app.logger.error(f"Error fetching SanBay: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+
 @app.route("/trangchu")
 def trangchudangnhap():
     name = request.args.get('user_name')
     return render_template('index.html')
+
+
+@app.route('/api/user/roles', methods=['GET'])
+def get_user_roles():
+    if current_user.is_authenticated:
+        user_id = current_user.ID_User  # Kiểm tra vai trò của người dùng
+        user_role = dao.get_user_role(user_id)
+        checkrole = dao.checkrole(user_role)
+
+        if checkrole:
+            return jsonify(True)  # Trả về True dưới dạng JSON
+
+    return jsonify(False)  # Trả về False nếu không có vai trò hợp lệ
+
+    return False
 
 
 @app.route("/login", methods=['get', 'post'])
@@ -73,11 +135,11 @@ def login_process():
         if u:
             login_user(u)
 
-            #Lấy id người dùng
-            user_id = u.id# Kiểm tra vai trò của người dùng
+            # Lấy id người dùng
+            user_id = u.ID_User  # Kiểm tra vai trò của người dùng
             user_role = dao.get_user_role(user_id)
-            from appQLChuyenBay import models
-            if user_role == models.UserRole.NhanVien or user_role == models.UserRole.NguoiKiemDuyet or user_role == models.UserRole.NguoiQuanTri:  # So sánh với Enum  # Nếu vai trò là "Nhân Viên"
+            checkrole = dao.checkrole(user_role)
+            if checkrole:
                 return redirect('/nhan_vien')
 
             # Nếu không phải nhân viên, chuyển về trang chủ
@@ -89,6 +151,7 @@ def login_process():
 @app.route("/logout")
 def logout_process():
     logout_user()
+    session["user_role"] = ""
     return redirect('/login')
 
 
@@ -142,6 +205,7 @@ def verify_otp():
 
     return render_template('xacthucotp.html', err_msg=err_msg)
 
+
 # @app.route("/ket_qua_tim_kiem")
 # def huongdandatcho():
 #     return render_template('huong_dan_dat_cho.html')
@@ -150,15 +214,83 @@ def verify_otp():
 def huongdandatcho():
     return render_template('huong_dan_dat_cho.html')
 
+
 @app.route("/chuc_nang")
 def chucnang():
-    return render_template('chuc_nang.html')
+    user_id = session.get('_user_id')  # Kiểm tra vai trò của người dùng
+    user_role = dao.get_user_role(user_id)
+    user_role_change = dao.change_user_role(user_role)
+    if 'NhanVien' in user_role_change:
+        return render_template('chuc_nang.html', user_role_change=user_role_change)
+    else:
+        return render_template('index.html')
 
-@app.route("/lap_lich_chuyen_bay")
+
+@app.route("/lap_lich_chuyen_bay", endpoint="lap_lich_chuyen_bay", methods=["GET", "POST"])
 def laplichchuyenbay():
+    if request.method == "POST":
+        flight_date = request.form['flight_date']
+        TuyenBay = request.form['TuyenBay']
+        flight_duration = int(request.form['flight_duration'])
+        first_class_seats = int(request.form['first_class_seats'])
+        economy_class_seats = int(request.form['economy_class_seats'])
+
+        # Lấy các quy định từ bảng QuyDinhSanBay
+        quy_dinh = dao.get_quy_dinh_san_bay()
+
+        # Kiểm tra thời gian bay tối thiểu
+        thoi_gian_bay_toi_thieu = quy_dinh.ThoiGianBayToiThieu
+        if flight_duration < thoi_gian_bay_toi_thieu:
+            flash(f"Thời gian bay phải lớn hơn {thoi_gian_bay_toi_thieu} phút.", "error")
+            return render_template('lap_lich_chuyen_bay.html')
+
+        # Kiểm tra số lượng sân bay trung gian
+        san_bay_trung_gian_toi_da = quy_dinh.SanBayTrungGianToiDa
+        intermediate_airports = request.form.getlist('intermediate_airports')
+        if len(intermediate_airports) > san_bay_trung_gian_toi_da:
+            flash(f"Chỉ được phép thêm tối đa {san_bay_trung_gian_toi_da} sân bay trung gian.", "error")
+            return render_template('lap_lich_chuyen_bay.html')
+
+        # Lấy id tuyến bay
+        id_TuyenBay = dao.get_id_TuyenBay(TuyenBay)
+        flight = dao.save_ChuyenBay(flight_date=flight_date, flight_duration=flight_duration,
+                                    first_class_seats=first_class_seats,
+                                    economy_class_seats=economy_class_seats, id_TuyenBay=id_TuyenBay)
+
+        # Lấy thông tin sân bay trung gian
+        intermediate_airports = []
+        for key, value in request.form.items():
+            if key.startswith("intermediate_airports"):
+                parts = key.split("[")
+                index = int(parts[1].split("]")[0])
+                field = parts[2].split("]")[0]
+                if len(intermediate_airports) <= index:
+                    intermediate_airports.append({})
+                intermediate_airports[index][field] = value
+
+        # Kiểm tra thời gian dừng tại sân bay trung gian
+        thoi_gian_dung_toi_thieu = quy_dinh.ThoiGianDungToiThieu
+        thoi_gian_dung_toi_da = quy_dinh.ThoiGianDungToiDa
+        for airport in intermediate_airports:
+            thoi_gian_dung = int(airport.get("duration", 0))
+            if thoi_gian_dung < thoi_gian_dung_toi_thieu:
+                flash(f"Thời gian dừng tại sân bay trung gian phải lớn hơn {thoi_gian_dung_toi_thieu} phút.", "error")
+                return render_template('lap_lich_chuyen_bay.html')
+            if thoi_gian_dung > thoi_gian_dung_toi_da:
+                flash(f"Thời gian dừng tại sân bay trung gian không được vượt quá {thoi_gian_dung_toi_da} phút.",
+                      "error")
+                return render_template('lap_lich_chuyen_bay.html')
+
+                # Lưu sân bay trung gian
+                luusbaytrunggian = dao.save_sbbaytrunggian(intermediate_airports=intermediate_airports, flight=flight)
+
+        return redirect(url_for('lap_lich_chuyen_bay'))
+
     return render_template('lap_lich_chuyen_bay.html')
 
+
 from dao import get_filtered_flights
+
 
 @app.route("/danhsachchuyenbay")
 def danhsachchuyenbay():
@@ -177,7 +309,11 @@ def danhsachchuyenbay():
     for flight in flights.items:
         route = dao.get_route_name_by_id(flight.id_TuyenBay)
         sân_bay_trung_gian = dao.get_route_sanbaytrunggian_by_id(flight.id_ChuyenBay)
+        # Chuyển danh sách các đối tượng Row thành một danh sách các chuỗi
+        san_bay_trung_gian_list = [row.ten_SanBay for row in sân_bay_trung_gian]
 
+        # Kết hợp các tên sân bay vào một chuỗi
+        sân_bay_trung_gian = ', '.join(san_bay_trung_gian_list)
         if route:
             flight_info.append({
                 "id": flight.id_ChuyenBay,
@@ -187,7 +323,7 @@ def danhsachchuyenbay():
                 "ghế_hạng_2_còn_trống": flight.GH2_DD,
                 "GH1": flight.GH1,
                 "GH2": flight.GH2,
-                "sân_bay_trung_gian": ', '.join(sân_bay_trung_gian),
+                "sân_bay_trung_gian": sân_bay_trung_gian,
             })
 
     return render_template('danhsachchuyenbay.html', flights=flight_info, pagination=flights)
@@ -240,9 +376,14 @@ def banve(id_chuyen_bay):
         flight=flight  # Truyền flight vào template
     )
 
+
 @app.route("/nhan_vien")
 def nhanvien():
-    return render_template('nhan_vien.html')
+    user_id = session.get('_user_id')  # Kiểm tra vai trò của người dùng
+    user_role = dao.get_user_role(user_id)
+    user_role_change = dao.change_user_role(user_role)
+    return render_template('nhan_vien.html', user_role_change=user_role_change)
+
 
 @app.route("/kiem_tra_ma")
 def kiemtrama():
@@ -400,6 +541,7 @@ def thongtindatve():
     return render_template('thongtindatve.html', tenHangGhe=tenHangGhe, hanhKhach=hanhKhach, treEm=treEm, emBe=emBe)
 
 
+
 @app.route('/thanhtoanbangtienmat', methods=['GET'])
 def thanh_toan_bang_tien_mat():
     try:
@@ -434,18 +576,19 @@ def thanh_toan_bang_tien_mat():
         # Xử lý lỗi và hiển thị thông báo
         return f"Lỗi trong quá trình xử lý dữ liệu: {str(e)}", 400
 
+
 @app.route('/confirm-payment', methods=['POST'])
 def confirm_payment():
     if request.method == 'POST':
         try:
             # Nhận chuỗi JSON từ form
             seats_info = request.form['seats-info']
-            #id_user = session.get('id_user')   # Lấy id_user từ session
-            id_user =2
+            # id_user = session.get('id_user')   # Lấy id_user từ session
+            id_user = 2
             # Lưu thông tin thanh toán vào cơ sở dữ liệu
 
             # Lưu thông tin vé
-            if dao.save_ticket_info( id_user, seats_info):
+            if dao.save_ticket_info(id_user, seats_info):
                 flash('Thanh toán thành công! Thông tin vé đã được lưu.')
                 session['seats_info'] = seats_info  # Lưu dữ liệu vào session
             else:
@@ -475,6 +618,100 @@ def thanhtoanthanhcong():
         return redirect(url_for('index'))  # Chuyển hướng về trang chủ hoặc trang khác nếu không có dữ liệu
     return render_template('thanhtoanthanhcong.html')
 
+
+
+@app.route('/thaydoiquydinh')
+def thaydoiquydinh():
+    return render_template('thaydoiquydinh.html')
+
+
+@app.route('/quydinhbanve')
+def quydinhbanve():
+    return render_template('quydinhbanve.html')
+
+
+@app.route('/quydinhve')
+def quydinhve():
+    return render_template('quydinhve.html')
+
+
+@app.route('/quydinhsanbay')
+def quydinhsanbay():
+    return render_template('quydinhsanbay.html')
+
+
+@app.route('/api/quydinh/sanbay/<int:id>', methods=['GET'])
+def get_quy_dinh_san_bay(id):
+    quy_dinh = dao.getquydinhsanbay(id)
+    if not quy_dinh:
+        return jsonify({'message': 'Quy định không tồn tại'}), 404
+
+    return jsonify({
+        'SoLuongSanBay': quy_dinh.SoLuongSanBay,
+        'ThoiGianBayToiThieu': quy_dinh.ThoiGianBayToiThieu,
+        'SanBayTrungGianToiDa': quy_dinh.SanBayTrungGianToiDa,
+        'ThoiGianDungToiThieu': quy_dinh.ThoiGianDungToiThieu,
+        'ThoiGianDungToiDa': quy_dinh.ThoiGianDungToiDa,
+    }), 200
+
+
+@app.route('/api/quydinh/sanbay/<int:id>', methods=['PUT'])
+def update_quy_dinh_san_bay(id):
+    try:
+        # Lấy dữ liệu JSON từ yêu cầu
+        data = request.json
+        if not data:
+            return jsonify({"message": "Không có dữ liệu gửi lên"}), 400
+
+        luutru = dao.thaydoiquydinhsanbay(id, data)
+
+        return jsonify({"message": "Cập nhật quy định sân bay thành công"}), 200
+    except Exception as e:
+        return jsonify({"message": f"Có lỗi xảy ra: {str(e)}"}), 500
+
+
+# API Lấy thông tin quy định bán vé
+@app.route('/api/quydinh/banve/<int:id>', methods=['GET'])
+def get_quy_dinh_ban_ve(id):
+    quy_dinh = dao.getquydinhbanve(id)
+    if quy_dinh:
+        return quy_dinh
+    else:
+        return jsonify({"message": "Quy định không tồn tại"}), 404
+
+
+# API Cập nhật thông tin quy định bán vé
+@app.route('/api/quydinh/banve/<int:id>', methods=['PUT'])
+def update_quy_dinh_ban_ve(id):
+    data = request.json
+    quy_dinh = dao.thaydoiquydinhbanve(id, data)
+    try:
+        if quy_dinh:
+            return jsonify({"message": "Cập nhật quy định bán vé thành công"}), 200
+    except Exception as e:
+        return jsonify({"message": "Cập nhật thất bại", "error": str(e)}), 400
+
+
+# API Lấy thông tin quy định vé
+@app.route('/api/quydinh/ve/<int:id>', methods=['GET'])
+def get_quy_dinh_ve(id):
+    quy_dinh = dao.getquydinhve(id)
+    if quy_dinh:
+        return quy_dinh
+    return jsonify({"message": "Quy định không tồn tại"}), 404
+
+
+# API Cập nhật quy định vé
+@app.route('/api/quydinh/ve/<int:id>', methods=['PUT'])
+def update_quy_dinh_ve(id):
+    data = request.json
+    quy_dinh = dao.setquydinhve(id, data)
+
+    try:
+        if quy_dinh:
+            return jsonify({"message": "Cập nhật thành công"}), 200
+    except Exception as e:
+        return jsonify({"message": "Cập nhật thất bại", "error": str(e)}), 400
 
 @app.route("/thanhtoanonline", methods=['get', 'post'])
 def thanhtoanonline():
