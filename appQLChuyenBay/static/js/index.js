@@ -288,6 +288,84 @@ btnLeft.addEventListener('click', () => {
 // Đảm bảo vị trí slide không bị thay đổi khi resize màn hình
 window.addEventListener('resize', updateSlidePosition);
 
+// Kiểm tra thông tin trang đặt vé
+function kiemTraThongTin(event, nextStep) {
+    // Ngăn chặn hành vi mặc định của form
+    event.preventDefault();
+
+    // Tạo biến giữ trạng thái thông tin hợp lệ
+    let isValid = true;
+
+    // Kiểm tra từng trường nhập liệu dựa trên lớp CSS
+    const checkFields = (selector, errorSelector, validator, errorMessage) => {
+        const fields = document.querySelectorAll(selector);
+        const errors = document.querySelectorAll(errorSelector);
+
+        fields.forEach((field, index) => {
+            const value = field.value.trim();
+            if (!validator(value)) {
+                errors[index].textContent = errorMessage;
+                isValid = false;
+            } else {
+                errors[index].textContent = '';
+            }
+        });
+    };
+
+    // Kiểm tra hạng ghế
+    const hangGhe = document.getElementById('hangGhe');
+    const hangGheError = document.getElementById('hangGheError');
+    if (hangGhe.value.trim() === '') {
+        hangGheError.textContent = 'Vui lòng chọn hạng ghế của bạn!';
+        isValid = false;
+        alert("Vui lòng chọn hạng ghế của bạn!")
+    } else {
+        hangGheError.textContent = '';
+    }
+
+    // Kiểm tra họ và tên
+    checkFields(
+        '.form-control.fullName',
+        '.error-message.fullNameError',
+        value => value !== '',
+        'Họ và tên không được để trống.'
+    );
+
+    // Kiểm tra số điện thoại
+    checkFields(
+        '.form-control.phone',
+        '.error-message.phoneError',
+        value => /^[0-9]{10}$/.test(value),
+        'Số điện thoại phải là 10 chữ số.'
+    );
+
+    // Kiểm tra email
+    checkFields(
+        '.form-control.email',
+        '.error-message.emailError',
+        value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        'Email không hợp lệ.'
+    );
+
+    // Kiểm tra căn cước công dân (CCCD)
+    checkFields(
+        '.form-control.cccd',
+        '.error-message.cccdError',
+        value => /^[0-9]{12}$/.test(value),
+        'CCCD phải là 12 chữ số.'
+    );
+
+    // Nếu thông tin hợp lệ, tiến đến bước tiếp theo
+    if (isValid) {
+        document.getElementById('form1').submit(); // Gửi form hoặc di chuyển bước
+    }
+
+    if (!isValid) {
+        field.classList.add('error'); // Thêm lớp 'error'
+    } else {
+        field.classList.remove('error'); // Xóa lớp 'error'
+    }
+}
 
 
 

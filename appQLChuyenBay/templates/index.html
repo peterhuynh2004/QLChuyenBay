@@ -1,3 +1,4 @@
+
 {% extends 'layout/base.html' %}
 
 {% block content %}
@@ -43,7 +44,7 @@
                                 <div class="main-container center-block">
                                     <div class="col-md-">
                                         <div class="content-flight">
-                                            <form method="post" class="search-form" action="/">
+                                            <form method="get" class="search-form" action="{{ url_for('timkiemchuyenbay') }}">
                                                 <div class="pad3">
                                                     <div class="row custom-row-gap">
                                                         <div class="col-sm-3">
@@ -54,8 +55,8 @@
                                                                     <input required type="text"
                                                                            class="block-item dropdown-input"
                                                                            id="SanBayDi"
-                                                                           placeholder="Điểm khởi hành" value="">
-                                                                    <ul id="dropdown-results" class="dropdown"></ul>
+                                                                           placeholder="Điểm khởi hành" name="NoiDi">
+                                                                    <ul id="dropdown-results" class="dropdown" value=""></ul>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -67,7 +68,7 @@
                                                                     <input required type="text"
                                                                            class="block-item dropdown-input"
                                                                            id="SanBayDen"
-                                                                           placeholder="Điểm đến" value="">
+                                                                           placeholder="Điểm đến" value="" name="NoiDen" >
                                                                     <ul id="dropdown-results-den" class="dropdown"></ul>
                                                                 </div>
                                                             </div>

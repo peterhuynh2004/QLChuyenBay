@@ -16,6 +16,7 @@ from appQLChuyenBay import app, db, mail
 import hashlib
 import cloudinary.uploader
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
 
 
 
@@ -84,8 +85,27 @@ def load_flight(noiDi=None, noiDen=None, ngayDi=None):
     query = ChuyenBay.query
 
     if noiDi and noiDen and ngayDi:
-        query = query.filter(
-            ChuyenBay.id_SanBayDen == noiDen and ChuyenBay.id_SanBayDi == noiDi and ChuyenBay.gio_Bay.date() == ngayDi)
+        query = query.join(TuyenBay).filter(
+            and_(
+                TuyenBay.id_SanBayDi == noiDi,  # Lọc sân bay đi
+                TuyenBay.id_SanBayDen == noiDen,  # Lọc sân bay đến
+                db.func.date(ChuyenBay.gio_Bay) == ngayDi  # Lọc ngày bay
+            )
+        )
+    return query.all()
+
+
+
+def get_id_San_Bay(tenSanBay=None):
+    query = SanBay.query.with_entities(SanBay.id_SanBay) #chỉ truy suất cột id
+    if tenSanBay:
+        query = query.filter(SanBay.ten_SanBay.__eq__(tenSanBay))
+    return query.scalar()
+
+def load_TuyenBay(flight=None):
+    query = TuyenBay.query
+    if flight:
+        query = query.filter(TuyenBay.id_TuyenBay == flight)
     return query.all()
 
 
@@ -376,6 +396,7 @@ def format_seats_info(data):
         return None
 
 
+
 def checkrole(user_roles):
     # Danh sách các vai trò cần kiểm tra
     valid_roles = {UserRole.NhanVien, UserRole.NguoiKiemDuyet, UserRole.NguoiQuanTri}
@@ -568,3 +589,29 @@ def setquydinhve(id, data):
 def get_quy_dinh_san_bay():
     quy_dinh = db.session.query(QuyDinhSanBay).filter(QuyDinhSanBay.ID_QuyDinh == 1).first()
     return quy_dinh
+
+def save_customer_info(hoTen, cccd, sdt, id_user):
+    try:
+        new_customer = ThongTinHanhKhach(
+            HoTen=hoTen,
+            CCCD=cccd,
+            SDT=sdt,
+            ID_User=id_user
+        )
+        db.session.add(new_customer)
+        db.session.commit()
+        id_chuyenBay = session.get('maChuyenBay')
+        if id_chuyenBay:
+            chuyenBay = ChuyenBay.query.get(id_chuyenBay)
+            if chuyenBay:
+                if session['hangGhe'] == 1:
+                    chuyenBay.GH1_DD += session['tongGhe']
+                else:
+                    chuyenBay.GH2_DD += session['tongGhe']
+        db.session.add(chuyenBay)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()  # Rollback nếu có lỗi
+        print(f"Error: {str(e)}")
+
+
