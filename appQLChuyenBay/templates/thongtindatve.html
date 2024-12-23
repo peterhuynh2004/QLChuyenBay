@@ -1,30 +1,90 @@
  {% extends 'layout/base.html' %}
 
 {% block content %}
-<div style="background-color: white">
+<div id="formStep1" style="background-color: white">
     <div class="form-group">
-        <h1 class="display-3 text-center" style="background-color: #CEEFFA; color: #0D706E; font-style: italic"> Thông tin khách hàng</h1>
-        <p class="display-6" > Hạng ghế: {{ session['hangGhe'] }} </p>
-        {% if session['veNguoiLon'] %}
-        <div class="display-6" style="background-color: #0D706E; color: #CEEFFA; font-style: italic"> Thông tin vé người lớn</div>
-        {% for i in range(0, veNguoiLon) %}
-        <div class="form-group" style="font-size:20px; padding: 10px">
-            <hr>
-            <div>Hành khách {{ i + 1 }} </div>
-            <div clasa="form-control">
-                <p>Số điện thoại: {{ session['phone'][i] }} </p>
-                <p>Họ và tên hành khách {{ session['fullNameNguoiLon'][i] }} </p>
-                <p>Căn cước công dân: {{ session['cccd'][i] }} </p>
-                <p>Ngày tháng năm sinh: {{ session['ngaySinhNguoiLon'][i] }} </p>
-                <p>email {{ session['email'][i] }} </p>
-            </div>
-        </div>
-        {% endfor %}
-        {% endif %}
+         <table class="table table-hover table-striped" style="text-align: center; font-size: 18px">
+            <thead >
+              <tr>
+                <th>Họ và tên</th>
+                <th>Số điện thoại</th>
+                <th>Số CCCD</th>
+                <th>Ngày sinh</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            {% for khach in hanhKhach %}
+              <tr>
+                <td>{{ khach.fullName }}</td>
+                <td>{{ khach.phone }}</td>
+                <td>{{ khach.cccd }}</td>
+                <td>{{ khach.ngaySinh }}</td>
+                <td>{{ khach.email }}</td>
+              </tr>
+            {% endfor %}
+            {% if treEm %}
+            {% for khach in treEm %}
+              <tr>
+                <td>{{ khach.fullName }}</td>
+                <td></td>
+                <td></td>
+                <td>{{ khach.ngaySinh }}</td>
+                <td></td>
+              </tr>
+            {% endfor %}
+            {% endif %}
+            {% if emBe %}
+            {% for khach in emBe %}
+              <tr>
+                <td>{{ khach.fullName }}</td>
+                <td></td>
+                <td></td>
+                <td>{{ khach.ngaySinh }}</td>
+                <td></td>
+              </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+          </table>
     </div>
+    <form action="{{ url_for('thanhtoanonline') }}" method="post" >
+        <div class="button form-container">
+            <button id="prev" class="btn btn-warning" type="button"> Quay lại</button>
+            <button id="DatVe" class="btn btn-success" type="submit"> Đặt vé </button>
+            <button id="cancel" class="btn btn-danger" type="button"> Hủy </button>
+        </div>
+    </form>
 </div>
- <form action="POST">
-     <button class="btn btn-success" type="submit"> Đặt vé </button>
- </form>
+
+
+<style>
+    /* Đảm bảo cha bao quanh nút là container flex */
+    .form-container {
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc (nếu cần) */
+        gap: 10px; /* Khoảng cách giữa các nút */
+    }
+
+    /* Đảm bảo nút có cùng kích thước nếu cần */
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+</style>
+
+ <script>
+    // Xử lý nút "Quay lại"
+    document.getElementById('prev').addEventListener('click', function () {
+        window.history.back(); // Quay lại trang trước
+    });
+
+    // Xử lý nút "Hủy"
+    document.getElementById('cancel').addEventListener('click', function () {
+        window.location.href = '/'; // Quay về trang chủ
+    });
+</script>
 
 {% endblock %}

@@ -5,21 +5,21 @@
     <form id="form1" method="POST" action="{{ url_for('datveonline') }}" name="form1">
         <div>
             <h1 style="text-align: center; color: darkblue; background-color: lightblue; font-size: 20px; padding: 10px">
-                THÔNG TIN VÉ BAY
+                THÔNG TIN VÉ BAY CHUYẾN: FL{{  session['maChuyenBay'] }}
             </h1>
             <div class="row" style="width: 100%; margin: 0; padding-top: 9px ">
                 <div class="col-md-5 p-2" style="display: flex; align-items: center; gap: 10px; width: 100%">
-                    <div style=" font-size: 20px; width: 15%; padding-bottom: 12px; padding-left: 7px;"> Chọn loại hạng ghế:</div>
-                    <select class="form-select form-control form-group" id="hangGhe" name="hangGhe" style="width: 20%">
+                    <div style=" font-size: 20px; width: 25%; padding-bottom: 12px; padding-left: 7px;"> Chọn loại hạng ghế:</div>
+                    <select class="form-select form-control form-group" id="hangGhe" name="hangGhe" style="width: 30%">
                         <option value="" selected>Chọn hạng ghế</option>
-                        <option value="0">Phổ thông</option>
-                        <option value="1">Phổ thông đặt biệt</option>
-                        <option value="2">Thương gia</option>
-                        <option value="3">Hạng nhất</option>
+                        <option value="1">Hạng 1</option>
+                        <option value="2">Hạng 2</option>
+
                     </select>
-                    <p style="font-size: 20px"> Giá vé: </p>
-                    <div class="error-message" id="hangGheError" style="width: 50%"></div>
+                    <p style=" font-size: 20px; padding-bottom: 12px; padding-left: 7px;" > Giá vé: {{ amount }} </p>
+                    <input type="number" value="1000000" disabled>
                 </div>
+                <div class="error-message" id="hangGheError" style="width: 50%"></div>
             </div>
         </div>
 
@@ -29,7 +29,7 @@
             </h1>
             {% for v in range(0, veNguoiLon) %}
                 <h1 style="text-align: center; color: blue; background-color: lightblue; font-size: 20px; padding: 10px">
-                    THÔNG TIN HÀNH KHÁCH {{ v }}
+                    THÔNG TIN HÀNH KHÁCH {{ v + 1 }}
                 </h1>
                 <div>
                     <div class="form-group">
@@ -64,9 +64,9 @@
             <h1 style=" color: blue; background-color:#fdf0df; font-size: 20px; padding: 10px">
                         THÔNG TIN VÉ TRẺ EM
             </h1>
-            {% for v in range(1, veTreEm+1) %}
+            {% for v in range(0, veTreEm) %}
                 <h1 style="text-align: center; color: blue; background-color: lightblue; font-size: 20px; padding: 10px">
-                    THÔNG TIN HÀNH KHÁCH {{ v }}
+                    THÔNG TIN HÀNH KHÁCH {{ v + 1}}
                 </h1>
                 <div>
                     <div class="form-group">
@@ -87,9 +87,9 @@
         <h1 style=" color: blue; background-color:#fdf0df; font-size: 20px; padding: 10px">
                     THÔNG TIN VÉ EM BÉ
         </h1>
-            {% for v in range(1, veEmBe+1) %}
+            {% for v in range(0, veEmBe) %}
                 <h1 style="text-align: center; color: blue; background-color: lightblue; font-size: 20px; padding: 10px">
-                    THÔNG TIN HÀNH KHÁCH {{ v }}
+                    THÔNG TIN HÀNH KHÁCH {{ v + 1}}
                 </h1>
                 <div>
                     <div class="form-group">
@@ -105,11 +105,35 @@
                 </div>
             {% endfor %}
         {% endif %}
-        <div class="button  -container">
+        <div class="button form-container">
+            <button id="prev" class="btn btn-warning" type="button"> Quay lại</button>
             <button type="submit" name="form1_submit" onclick="kiemTraThongTin(event, 2)" class="btn btn-primary"
-                    value="Tiep tuc">Tiếp tục
+                    value="Tiep tuc" style="width: 30%">Tiếp tục
             </button>
         </div>
     </form>
 </div>
+
+<style>
+    /* Đảm bảo cha bao quanh nút là container flex */
+    .form-container {
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc (nếu cần) */
+        gap: 10px; /* Khoảng cách giữa các nút */
+    }
+
+    /* Đảm bảo nút có cùng kích thước nếu cần */
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+</style>
+
+<script>
+    // Xử lý nút "Quay lại"
+    document.getElementById('prev').addEventListener('click', function () {
+        window.history.back(); // Quay lại trang trước
+    });
+</script>
 {% endblock %}

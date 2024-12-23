@@ -318,6 +318,7 @@ function kiemTraThongTin(event, nextStep) {
     if (hangGhe.value.trim() === '') {
         hangGheError.textContent = 'Vui lòng chọn hạng ghế của bạn!';
         isValid = false;
+        alert("Vui lòng chọn hạng ghế của bạn!")
     } else {
         hangGheError.textContent = '';
     }

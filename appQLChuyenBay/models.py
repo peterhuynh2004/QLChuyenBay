@@ -66,7 +66,7 @@ class ChuyenBay(db.Model):
     GH2 = Column(Integer)
     GH1_DD = Column(Integer)
     GH2_DD = Column(Integer)
-    ghes_dadat = Column(String)  # Thêm thuộc tính để lưu các ghế đã đặt
+    ghes_dadat = Column(String(255))  # Thêm thuộc tính để lưu các ghế đã đặt
 
     def them_ghes_dadat(self, list_seats):
         # Cập nhật danh sách ghế đã đặt (danh sách ghế được truyền vào là danh sách các ghế như 'F1', 'E10', ...)
@@ -269,9 +269,10 @@ class ThongTinHanhKhach(db.Model):
     ID_User = Column(Integer, ForeignKey('NguoiDung.ID_User'), nullable=False)  # Liên kết với người dùng
 
 
+
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
+        db.create_all()
         # db.drop_all()
 
         # data sân bay
@@ -353,8 +354,8 @@ if __name__ == '__main__':
         #     tuyenbay = TuyenBay(**t)
         #     db.session.add(tuyenbay)
         # db.session.commit()
-        #
-        #
+
+
         # flights = [
         #     {
         #         "id_TuyenBay": 1,
@@ -453,14 +454,12 @@ if __name__ == '__main__':
         # db.session.commit()
 
         # # data Vé Chuyến bay
-        vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
-                                   thoiGianDat=datetime.utcnow(), id_user=1, id_ChuyenBay=1)
-        vechuyenbay2 = VeChuyenBay(giaVe=2500000, maThongTin=2, hangVe=1, soGhe=10, giaHanhLy=600000,
-                                   thoiGianDat=datetime.utcnow(), id_user=2, id_ChuyenBay=2)
-        db.session.add_all([vechuyenbay1, vechuyenbay2])
-        db.session.commit()
-        #
-
+        # vechuyenbay1 = VeChuyenBay(giaVe=2000000, maThongTin=1, hangVe=2, soGhe=5, giaHanhLy=500000,
+        #                            thoiGianDat=datetime.utcnow(), id_user=1, id_ChuyenBay=1)
+        # vechuyenbay2 = VeChuyenBay(giaVe=2500000, maThongTin=2, hangVe=1, soGhe=10, giaHanhLy=600000,
+        #                            thoiGianDat=datetime.utcnow(), id_user=2, id_ChuyenBay=2)
+        # db.session.add_all([vechuyenbay1, vechuyenbay2])
+        # db.session.commit()
 
 
 

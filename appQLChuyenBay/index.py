@@ -1,15 +1,27 @@
 import json
 import math
+import os
 from datetime import timedelta, datetime
 from flask import render_template, request, redirect, url_for, jsonify, flash, current_app
+from sqlalchemy.dialects.mssql.information_schema import sequences
+from sqlalchemy.testing.plugin.plugin_base import post_begin
+from payos import PaymentData, ItemData, PayOS
 import dao
-from appQLChuyenBay import app, login, mail
+from appQLChuyenBay import app, login, mail, db
 from flask_mail import Message
-import random
+import random, datetime
 from flask import session
 from flask_login import login_user, logout_user
+from dotenv import load_dotenv
 
 
+load_dotenv()
+
+client_id = "acd90926-de08-4e7f-bb5d-1c5b2ba7997d"
+api_key = "e533c9d0-6d93-4986-8699-fedd9947c51a"
+checksum_key = "8db231c6edefe49255362836a6ef9debd289e70023b384147e18dfc10aeeba92"
+payOS = PayOS(client_id=client_id, api_key=api_key, checksum_key=checksum_key)
+# payOS = PayOS(client_id=os.environ.get('PAYOS_CLIENT_ID'), api_key=os.environ.get('PAYOS_API_KEY'), checksum_key=os.environ.get('PAYOS_CHECKSUM_KEY'))
 
 @app.route("/", methods=['get', 'post'])
 def index():
@@ -260,7 +272,7 @@ def load_user(user_id):
         return None
 
 
-@app.route("/timkiemchuyenbay")
+@app.route("/timkiemchuyenbay", methods=['get', 'post'])
 def timkiemchuyenbay():
     airport = dao.get_san_bay()
     SanBayDi = request.args.get('NoiDi').split('(')[0].strip()
@@ -269,53 +281,124 @@ def timkiemchuyenbay():
     veNguoiLon = request.args.get('SLNguoiLon')
     veTreEm = request.args.get('SLTreEm')
     veEmBe = request.args.get('SLEmBe')
+    tongVe = int(veNguoiLon) + int(veTreEm) + int(veEmBe)
     session['veNguoiLon'] = veNguoiLon
     session['veTreEm'] = veTreEm
     session['veEmBe'] = veEmBe
+    session['tongGhe'] = tongVe
     id_SanBayDi = dao.get_id_San_Bay(SanBayDi)
     id_SanBayDen = dao.get_id_san_bay(SanBayDen)
     flight = dao.load_flight(noiDi=id_SanBayDi, noiDen=id_SanBayDen, ngayDi=ngayDi)
     return render_template('timkiemchuyenbay.html',
                            airport=airport, flight=flight,
-                           SanBayDi=SanBayDi, SanBayDen=SanBayDen, id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen, ngayDi=ngayDi)
+                           SanBayDi=SanBayDi, SanBayDen=SanBayDen, id_SanBayDi=id_SanBayDi, id_SanBayDen=id_SanBayDen, ngayDi=ngayDi, tongVe=tongVe)
 
 
 @app.route("/datveonline", methods=['GET', 'POST'])
 def datveonline():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        maChuyenBay = request.args.get('maChuyenBay')
+        if maChuyenBay:
+            session['maChuyenBay'] = maChuyenBay
+
+    elif request.method == 'POST':
         # Lấy giá trị từ form
-        hangGhe = request.form.get('hangGhe')
-        fullNameNguoiLon = []
-        phone = []
-        email = []
-        ngaySinhNguoiLon = []
-        cccd = []
+        session['hangGhe'] = request.form.get('hangGhe')
+        # Các trường cần lấy thông tin
+        fields1 = ['fullNameNguoiLon', 'phone', 'email', 'ngaySinhNguoiLon', 'cccd']
+        # Tạo một từ điển để lưu trữ dữ liệu
+        data = {field: [] for field in fields1}
         for i in range(int(session['veNguoiLon'])):
-            fullNameNguoiLon.append(request.form.getlist(f'fullNameNguoiLon[{i}]'))
-            phone.append(request.form.getlist(f'phone[{i}]'))
-            email.append(request.form.getlist(f'email[{i}]'))
-            ngaySinhNguoiLon.append(request.form.getlist(f'ngaySinhNguoiLon[{i}]'))
-            cccd.append(request.form.getlist(f'cccd[{i}]'))
+            for field in fields1:
+                data[field].append(request.form.getlist(f'{field}[{i}]'))
         # Lưu thông tin vào session
-        session['hangGhe'] = hangGhe
-        session['fullNameNguoiLon'] = fullNameNguoiLon
-        session['phone'] = phone
-        session['email'] = email
-        session['cccd'] = cccd
-        session['ngaySinhNguoiLon'] = ngaySinhNguoiLon
+        session.update(data)
+
+        #trẻ em:
+        fields2 = ['fullNameTreEm', 'ngaySinhTreEm']
+        # Tạo một từ điển để lưu trữ dữ liệu
+        data2 = {field: [] for field in fields2}
+        for i in range(int(session['veTreEm'])):
+            for field in fields2:
+                data2[field].append(request.form.getlist(f'{field}[{i}]'))
+        # Lưu thông tin vào session
+        session.update(data2)
+
+        # Em bé:
+        fields3 = ['fullNameTreEm', 'ngaySinhEmBe']
+        # Tạo một từ điển để lưu trữ dữ liệu
+        data3 = {field: [] for field in fields3}
+        for i in range(int(session['veEmBe'])):
+            for field in fields3:
+                data3[field].append(request.form.getlist(f'{field}[{i}]'))
+        # Lưu thông tin vào session
+        session.update(data3)
         # Chuyển sang bước tiếp theo
         return redirect('thongtindatve')
-    return render_template('datveonline.html', veNguoiLon=int(session['veNguoiLon']), veTreEm=int(session['veTreEm']), veEmBe=int(session['veEmBe']))
+    # Hiển thị form đặt vé
+    return render_template(
+        'datveonline.html',
+        veNguoiLon=int(session.get('veNguoiLon', 0)),
+        veTreEm=int(session.get('veTreEm', 0)),
+        veEmBe=int(session.get('veEmBe', 0))
+    )
 
 
 @app.route("/thongtindatve", methods=['GET', 'POST'])
 def thongtindatve():
-    fullNameNguoiLon = session.get('fullNameNguoiLon',[])
-    return render_template('thongtindatve.html',
-                           veNguoiLon=int(session['veNguoiLon']),
-                           veTreEm=int(session['veTreEm']),
-                           veEmBe=int(session['veEmBe']),
-                           fullNameNguoiLon=fullNameNguoiLon)
+    hangGhe = int(session['hangGhe'])
+    tenHangGhe = ''
+    if hangGhe == 0:
+        tenHangGhe = 'Phổ thông'
+    elif hangGhe == 1:
+        tenHangGhe = 'Phổ thông đặt biệt'
+    elif hangGhe == 2:
+        tenHangGhe = 'Thương gia'
+    elif hangGhe == 3:
+        tenHangGhe = 'Hạng nhất'
+
+    # Truy xuất dữ liệu từ session
+    fullNameNguoiLon = session.get('fullNameNguoiLon', [])
+    phone = session.get('phone', [])
+    email = session.get('email', [])
+    ngaySinhNguoiLon = session.get('ngaySinhNguoiLon', [])
+    cccd = session.get('cccd', [])
+
+    # Tạo danh sách hành khách
+    hanhKhach = []
+    for i in range(len(fullNameNguoiLon)):
+        hanhKhach.append({
+            'fullName': fullNameNguoiLon[i][0],  # Vì `getlist` trả về danh sách, cần lấy phần tử đầu tiên
+            'phone': phone[i][0],
+            'email': email[i][0],
+            'ngaySinh': ngaySinhNguoiLon[i][0],
+            'cccd': cccd[i][0]
+        })
+
+    # Trẻ em
+    fullNameTreEm = session.get('fullNameTreEm', [])
+    ngaySinhTreEm = session.get('ngaySinhTreEm', [])
+    treEm = []
+    for i in range(len(fullNameTreEm)):
+        hanhKhach.append({
+            'fullName': fullNameTreEm[i][0],  # Vì `getlist` trả về danh sách, cần lấy phần tử đầu tiên
+            'ngaySinh': ngaySinhTreEm[i][0],
+        })
+
+    # Em bé
+    fullNameEmBe = session.get('fullNameEmBe', [])
+    ngaySinhEmBe = session.get('ngaySinhEmBe', [])
+    emBe = []
+
+    for i in range(len(fullNameEmBe)):
+        hanhKhach.append({
+            'fullName': fullNameEmBe[i][0],  # Vì `getlist` trả về danh sách, cần lấy phần tử đầu tiên
+            'ngaySinh': ngaySinhEmBe[i][0],
+        })
+
+    # Render ra giao diện
+    return render_template('thongtindatve.html', tenHangGhe=tenHangGhe, hanhKhach=hanhKhach, treEm=treEm, emBe=emBe)
+
 
 @app.route('/thanhtoanbangtienmat', methods=['GET'])
 def thanh_toan_bang_tien_mat():
@@ -374,6 +457,7 @@ def confirm_payment():
 
         return redirect(url_for('thanhtoanthanhcong'))  # Trang xác nhận thanh toán thành công
 
+
 @app.route('/thanhtoanthanhcong', methods=['GET', 'POST'])
 def thanhtoanthanhcong():
     seats_info = session.get('seats_info')  # Lấy dữ liệu từ session
@@ -390,6 +474,76 @@ def thanhtoanthanhcong():
         flash('Không tìm thấy thông tin vé.')
         return redirect(url_for('index'))  # Chuyển hướng về trang chủ hoặc trang khác nếu không có dữ liệu
     return render_template('thanhtoanthanhcong.html')
+
+
+@app.route("/thanhtoanonline", methods=['get', 'post'])
+def thanhtoanonline():
+    return render_template('checkout.html')
+
+
+@app.route("/create_payment_link", methods=['POST'])
+def creat_payment():
+    domain="http://127.0.0.1:8000" #Xác định domain nội bộ (local) để sử dụng làm URL cho việc hủy hoặc hoàn tất thanh toán.
+    try:
+        paymentData = PaymentData(orderCode=random.randint(1000, 99999), amount=2000, description=f"thanh toan ve may bay FL{session['maChuyenBay'] } ",
+                                  cancelUrl=f"{domain}/cancel.html", returnUrl=f"{domain}/success.html")
+        payouCreatePayment = payOS.createPaymentLink(paymentData)
+        return jsonify(payouCreatePayment.to_json())
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
+
+@app.route("/cancel.html")
+def cancel():
+    # Lấy các tham số từ URL query string
+    cancel_code = request.args.get('code')
+    order_code = request.args.get('orderCode')
+    cancel_status = request.args.get('status')
+
+    # Bạn có thể xử lý dữ liệu này hoặc ghi log
+    return render_template("cancel.html", cancel_code=cancel_code, order_code=order_code, cancel_status=cancel_status)
+
+
+@app.route("/success.html")
+def success():
+    # Lấy tham số từ URL query string
+    order_code = request.args.get('orderCode')
+    status = request.args.get('status', 'PAID')
+    customer_info = session.get('customer_info', [])
+
+    if status == 'PAID':
+        try:
+            fullNameNguoiLon = session.get('fullNameNguoiLon', [])
+            phone = session.get('phone', [])
+            email = session.get('email', [])
+            ngaySinhNguoiLon = session.get('ngaySinhNguoiLon', [])
+            cccd = session.get('cccd', [])
+
+            # Kiểm tra dữ liệu từ session
+            if not fullNameNguoiLon or not phone or not email or not ngaySinhNguoiLon or not cccd:
+                raise ValueError("Dữ liệu khách hàng không đầy đủ!")
+            # Tạo danh sách hành khách
+            hanhKhach = []
+            for i in range(len(fullNameNguoiLon)):
+                hanhKhach.append({
+                    'fullName': fullNameNguoiLon[i],  # Vì `getlist` trả về danh sách, cần lấy phần tử đầu tiên
+                    'phone': phone[i],
+                    'email': email[i],
+                    'cccd': cccd[i]
+                })
+
+            # Lưu thông tin khách hàng
+            for h in hanhKhach:
+                dao.save_customer_info(h['fullName'], h['cccd'], h['phone'], 2)  # Chỉnh sửa cách truy cập các giá trị từ dict
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Lỗi khi lưu thông tin khách hàng: {str(e)}")
+            return f"Có lỗi xảy ra khi lưu thông tin khách hàng! Error: {str(e)}", 500
+
+    return render_template("success.html", order_code=order_code)
+
+
+
 
 if __name__ == '__main__':
     with app.app_context():

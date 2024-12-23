@@ -24,3 +24,4 @@ urllib3==2.2.3
 Werkzeug==3.0.6
 WTForms==3.2.1
 zipp==3.21.0
+payos==0.1.8

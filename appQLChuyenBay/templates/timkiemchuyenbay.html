@@ -20,20 +20,23 @@
                 <!-- Kết quả chuyến bay sẽ được thêm vào đây -->
                 {% if flight %}
                 {% for f in flight %}
-                <tr>
-                    <td> FL{{ f.id_ChuyenBay}}</td>
-                    <td>{{ f.gio_Bay.date() }}</td>
-                    <td> {{ f.gio_Bay.strftime('%H:%M:%S') }} </td>
-                    <td> </td>
-                    <td>
-                        <form action="/datveonline" method="get">
+                {% if f.GH1 + f.GH2 - f.GH1_DD - f.GH2_DD >= tongVe %}
+                <form action="/datveonline" method="get">
+                    <tr>
+                        <td> FL{{ f.id_ChuyenBay }}</td>
+                        <td>{{ f.gio_Bay.date() }}</td>
+                        <td> {{ f.gio_Bay.strftime('%H:%M:%S') }} </td>
+                        <td> </td>
+                        <input type="hidden" value="{{ f.id_ChuyenBay }}" name="maChuyenBay">
+                        <td>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary" onclick="searchFlights()"> Chọn
                                 </button>
                             </div>
-                        </form>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                </form>
+                {% endif %}
                 {% endfor %}
                 {% else %}
                 <td colspan="5" class="text-danger" style="padding:10px">Không có chuyến bay nào phù hợp!</td>
@@ -41,8 +44,32 @@
                 </tbody>
             </table>
         </div>
-
+    </div>
+    <div class="button form-container">
+        <button id="prev" class="btn btn-warning" type="button"> Quay lại</button>
     </div>
 </div>
+
+<style>
+    /* Đảm bảo cha bao quanh nút là container flex */
+    .form-container {
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc (nếu cần) */
+        gap: 10px; /* Khoảng cách giữa các nút */
+    }
+
+    /* Đảm bảo nút có cùng kích thước nếu cần */
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+</style>
+<script>
+    // Xử lý nút "Quay lại"
+    document.getElementById('prev').addEventListener('click', function () {
+        window.history.back(); // Quay lại trang trước
+    });
+</script>
 {% endblock %}
 

@@ -70,15 +70,17 @@ def get_all_user_roles(user_id):
 
 def load_flight(noiDi=None, noiDen=None, ngayDi=None):
     query = ChuyenBay.query
+
     if noiDi and noiDen and ngayDi:
         query = query.join(TuyenBay).filter(
             and_(
-                TuyenBay.id_SanBayDi == noiDi,
-                TuyenBay.id_SanBayDen == noiDen,
-                db.func.date(ChuyenBay.gio_Bay) == ngayDi  # Sử dụng `db.func.date` để lấy phần ngày
+                TuyenBay.id_SanBayDi == noiDi,  # Lọc sân bay đi
+                TuyenBay.id_SanBayDen == noiDen,  # Lọc sân bay đến
+                db.func.date(ChuyenBay.gio_Bay) == ngayDi  # Lọc ngày bay
             )
         )
     return query.all()
+
 
 
 def get_id_San_Bay(tenSanBay=None):
@@ -372,3 +374,31 @@ def format_seats_info(data):
     except json.JSONDecodeError as e:
         print(f"Lỗi khi phân tích chuỗi JSON: {e}")
         return None
+
+
+def save_customer_info(hoTen, cccd, sdt, id_user):
+    try:
+        new_customer = ThongTinHanhKhach(
+            HoTen=hoTen,
+            CCCD=cccd,
+            SDT=sdt,
+            ID_User=id_user
+        )
+        db.session.add(new_customer)
+        db.session.commit()
+        id_chuyenBay = session.get('maChuyenBay')
+        if id_chuyenBay:
+            chuyenBay = ChuyenBay.query.get(id_chuyenBay)
+            if chuyenBay:
+                if session['hangGhe'] == 1:
+                    chuyenBay.GH1_DD += session['tongGhe']
+                else:
+                    chuyenBay.GH2_DD += session['tongGhe']
+        db.session.add(chuyenBay)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()  # Rollback nếu có lỗi
+        print(f"Error: {str(e)}")
+
+
+
