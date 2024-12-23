@@ -48,6 +48,9 @@ class NguoiDung(db.Model, UserMixin):
     ID_DiaChi = Column(Integer, ForeignKey('DiaChi.ID_DC', ondelete='CASCADE'))
     Avt = Column(String(255), default="https://res.cloudinary.com/ddgxultsd/image/upload/v1732958968/tu5tpwmkwetp4ico5liv.png")
 
+    # Thêm mối quan hệ với bảng NguoiDung_VaiTro
+    roles = relationship('NguoiDung_VaiTro', backref='nguoidung', lazy='dynamic')
+
     def get_id(self):
         return str(self.ID_User)
 
@@ -250,7 +253,7 @@ if __name__ == '__main__':
         # 1) Thêm NguoiDung trước
         users_data = [
             {
-                "HoTen": "Nguyễn Văn A",
+                "HoTen": "Lê Việt Hải Quân",
                 "Email": "a@gmail.com",
                 "SDT": "0123456789",
                 "TenDangNhap": "userA",
@@ -259,7 +262,7 @@ if __name__ == '__main__':
                 "GioiTinh": GioiTinh.Nam
             },
             {
-                "HoTen": "Trần Thị B",
+                "HoTen": "Huỳnh Xuân Chính",
                 "Email": "b@gmail.com",
                 "SDT": "0987654321",
                 "TenDangNhap": "userB",
@@ -268,7 +271,7 @@ if __name__ == '__main__':
                 "GioiTinh": GioiTinh.Nu
             },
             {
-                "HoTen": "Phạm Văn C",
+                "HoTen": "Võ Văn Mãi",
                 "Email": "c@gmail.com",
                 "SDT": "0123123123",
                 "TenDangNhap": "userC",
@@ -321,15 +324,15 @@ if __name__ == '__main__':
         # 3) Thêm dữ liệu mẫu cho bảng TuyenBay
         tuyenbay_data = [
             {"tenTuyen": "Hà Nội - Hồ Chí Minh", "id_SanBayDi": 1, "id_SanBayDen": 2,
-             "doanhThu": 100000000, "soLuotBay": 50, "tyLe": 40},
+             "doanhThu": 100, "soLuotBay": 50, "tyLe": 40},
             {"tenTuyen": "Hà Nội - Đà Nẵng", "id_SanBayDi": 1, "id_SanBayDen": 3,
-             "doanhThu": 60000000, "soLuotBay": 30, "tyLe": 25},
+             "doanhThu": 60, "soLuotBay": 30, "tyLe": 25},
             {"tenTuyen": "Hồ Chí Minh - Đà Nẵng", "id_SanBayDi": 2, "id_SanBayDen": 3,
-             "doanhThu": 80000000, "soLuotBay": 40, "tyLe": 35},
+             "doanhThu": 80, "soLuotBay": 40, "tyLe": 35},
             {"tenTuyen": "Đà Nẵng - Hải Phòng", "id_SanBayDi": 3, "id_SanBayDen": 4,
-             "doanhThu": 40000000, "soLuotBay": 20, "tyLe": 20},
+             "doanhThu": 40, "soLuotBay": 20, "tyLe": 20},
             {"tenTuyen": "Hải Phòng - Cần Thơ", "id_SanBayDi": 4, "id_SanBayDen": 5,
-             "doanhThu": 70000000, "soLuotBay": 35, "tyLe": 30},
+             "doanhThu": 70, "soLuotBay": 35, "tyLe": 30},
         ]
 
         for data in tuyenbay_data:
@@ -386,6 +389,33 @@ if __name__ == '__main__':
                 "GH1_DD": 150,
                 "GH2_DD": 210
             },
+            {
+                "id_TuyenBay": 5,
+                "gio_Bay": datetime(2024, 12, 2, 9, 0),
+                "tG_Bay": datetime(2024, 12, 2, 11, 0),
+                "GH1": 160,
+                "GH2": 220,
+                "GH1_DD": 150,
+                "GH2_DD": 210
+            },
+            {
+                "id_TuyenBay": 5,
+                "gio_Bay": datetime(2024, 12, 2, 9, 0),
+                "tG_Bay": datetime(2024, 12, 2, 11, 0),
+                "GH1": 160,
+                "GH2": 220,
+                "GH1_DD": 150,
+                "GH2_DD": 210
+            },
+            {
+                "id_TuyenBay": 5,
+                "gio_Bay": datetime(2024, 12, 2, 9, 0),
+                "tG_Bay": datetime(2024, 12, 2, 11, 0),
+                "GH1": 160,
+                "GH2": 220,
+                "GH1_DD": 150,
+                "GH2_DD": 210
+            },
         ]
 
         for data in chuyenbay_data:
@@ -395,41 +425,41 @@ if __name__ == '__main__':
         print("Đã thêm dữ liệu ChuyenBay.")
 
 
-        # 5) Cuối cùng, thêm dữ liệu mẫu cho bảng BaoCao
+        # 5) Thêm dữ liệu mẫu cho bảng BaoCao
         # CHÚ Ý: BaoCao đang tham chiếu id_TuyenBay (1->5) & id_NguoiDung (1->3)
         baocao_data = [
             {
                 "thoiGian": datetime(2024, 12, 1, 12, 0),
                 "thang": datetime(2024, 12, 1),
-                "tongDoanhThu": 100000000,
+                "tongDoanhThu": 100,
                 "id_TuyenBay": 1,
                 "id_NguoiDung": 1
             },
             {
                 "thoiGian": datetime(2024, 12, 1, 13, 0),
                 "thang": datetime(2024, 12, 1),
-                "tongDoanhThu": 60000000,
+                "tongDoanhThu": 60,
                 "id_TuyenBay": 2,
                 "id_NguoiDung": 1
             },
             {
                 "thoiGian": datetime(2024, 12, 1, 14, 0),
                 "thang": datetime(2024, 12, 1),
-                "tongDoanhThu": 80000000,
+                "tongDoanhThu": 80,
                 "id_TuyenBay": 3,
                 "id_NguoiDung": 2
             },
             {
                 "thoiGian": datetime(2024, 12, 2, 12, 0),
                 "thang": datetime(2024, 12, 2),
-                "tongDoanhThu": 40000000,
+                "tongDoanhThu": 40,
                 "id_TuyenBay": 4,
                 "id_NguoiDung": 2
             },
             {
                 "thoiGian": datetime(2024, 12, 2, 13, 0),
                 "thang": datetime(2024, 12, 2),
-                "tongDoanhThu": 70000000,
+                "tongDoanhThu": 70,
                 "id_TuyenBay": 5,
                 "id_NguoiDung": 3
             },
@@ -440,5 +470,18 @@ if __name__ == '__main__':
             db.session.add(record)
         db.session.commit()
         print("Đã thêm dữ liệu BaoCao.")
+
+        # 6 - Update) Thêm vai trò cho các NguoiDung đã tạo
+        user_roles_data = [
+            {"ID_User": 1, "ID_VaiTro": UserRole.NguoiQuanTri},
+            {"ID_User": 2, "ID_VaiTro": UserRole.NguoiKiemDuyet},
+            {"ID_User": 3, "ID_VaiTro": UserRole.NhanVien},
+        ]
+
+        for ur_data in user_roles_data:
+            user_role_obj = NguoiDung_VaiTro(**ur_data)
+            db.session.add(user_role_obj)
+        db.session.commit()
+        print("Đã thêm vai trò cho các người dùng.")
 
         print("TẤT CẢ DỮ LIỆU ĐÃ ĐƯỢC CHÈN THÀNH CÔNG!")

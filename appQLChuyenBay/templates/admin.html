@@ -25,13 +25,18 @@
             </div>
             <!-- Sidebar -->
             <div class="sidebar">
-                <a href="#" class="active">
+                <a href="{{ url_for('admin') }}" class="active">
                     <span class="material-symbols-outlined">grid_view</span>
                     <h3>Bảng Điều Khiển</h3>
                 </a>
                 <a href="#" >
                     <span class="material-symbols-outlined">person_outline</span>
                     <h3>Người Dùng</h3>
+                </a>
+
+                <a href="{{ url_for('quanlynguoidung') }}?id=124" class="">
+                    <span class="material-symbols-outlined">groups</span>
+                    <h3>Quản lý người dùng</h3>
                 </a>
                <a href="{{ url_for('thongkebaocao') }}?id=123">
                  <span class="material-symbols-outlined">insights</span>
@@ -55,7 +60,7 @@
                     <span class="material-symbols-outlined">settings</span>
                     <h3>Cài Đặt</h3>
                 </a>
-                <a href="#">
+                <a href="{{ url_for('quanly') }}?id=125">
                     <span class="material-symbols-outlined">add</span>
                     <h3>Quản Lý</h3>
                 </a>
@@ -78,13 +83,13 @@
                <input type="datetime-local" id="realtime-calendar">
             </div>
             <div class="insights">
-                <!-- Selling section -->
+                <!-- Tổng doanh thu section -->
                 <div class="sale">
                     <span class="material-symbols-outlined">trending_up</span>
                     <div class="middle">
                         <div class="left">
                             <h3>DOANH THU</h3>
-                            <h1>$10000B</h1>
+                            <h1>${{ total_revenue }}B</h1>
                         </div>
                         <div class="progress">
                             <svg>
@@ -95,36 +100,37 @@
                     </div>
                     <small>Tháng 12/2024</small>
                 </div>
-                <!-- Expenses section -->
+                <!-- Tổng số Chuyến Bay section -->
                 <div class="expenses">
                     <span class="material-symbols-outlined">flight_takeoff</span>
                     <div class="middle">
                         <div class="left">
                             <h3>SỐ CHUYẾN BAY</h3>
-                            <h1>6969</h1>
+                            <h1>{{ total_flights }}</h1>
                         </div>
                         <div class="progress">
                             <svg>
                                 <circle r="30" cy="40" cx="40"></circle>
                             </svg>
-                            <div class="number">80%</div>
+<!--                            Tỉ lệ trung bình máy bay cất cánh thành công-->
+                            <div class="number">{{ avg_occupancy_rate }}%</div>
                         </div>
                     </div>
                     <small>Tháng 12/2024</small>
                 </div>
-                <!-- Income section -->
+                <!-- Tổng số Giờ Bay section -->
                 <div class="income">
                     <span class="material-symbols-outlined">language</span>
                     <div class="middle">
                         <div class="left">
                             <h3>TỔNG SỐ GIỜ BAY</h3>
-                            <h1>31654</h1>
+                            <h1>{{ total_hours }}</h1>
                         </div>
                         <div class="progress">
                             <svg>
                                 <circle r="30" cy="40" cx="40"></circle>
                             </svg>
-                            <div class="number">80%</div>
+                            <div class="number"> 100% </div>
                         </div>
                     </div>
                     <small>Tháng 12/2024</small>
@@ -132,7 +138,7 @@
 <!--                End selling section-->
             </div>
 <!--            end insights section-->
-<!--            start recent order-->
+<!--            start Tình Trạng Chuyến Bay-->
             <div class="recent_order">
                 <h1>Tình Trạng Chuyến Bay</h1>
                 <table>
@@ -179,7 +185,7 @@
                     </tbody>
                 </table>
             </div>
-<!--            end recent order-->
+<!--            end Tình Trạng Chuyến Bay-->
              {% endblock %}
         </main>
 <!--        End main section-->

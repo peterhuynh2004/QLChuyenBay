@@ -24,3 +24,39 @@ const themeToggler = document.querySelector('.theme-toggler');
             if (span2) span2.classList.toggle('active');
         });
 }
+
+// Hàm cập nhật giờ tự động sau khi load lại page
+
+window.onload = function() {
+    var now = new Date();
+    var localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
+    localDateTime = localDateTime.slice(0, 16); // Cắt chuỗi để loại bỏ giây và phần mili giây
+    document.getElementById('realtime-calendar').value = localDateTime;
+};
+
+// Hàm tạo animation cho các giá trị phần trăm
+function animateValue(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        obj.textContent = (progress * (end - start) + start).toFixed(2) + '%';
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
+// Hàm khởi tạo animation cho các giá trị phần trăm
+function animatePercentages() {
+    const revenuePct = document.querySelector('.sale .number');
+    const flightsPct = document.querySelector('.expenses .number');
+    const hoursPct = document.querySelector('.income .number');
+
+
+    // Lấy giá trị phần trăm thực từ các biến Flask đã được tính toán và truyền vào
+    animateValue(revenuePct, 0, 80, 2000);
+    animateValue(flightsPct, 0, 100 , 2000);
+    animateValue(hoursPct, 0, 100, 2000);
+}
