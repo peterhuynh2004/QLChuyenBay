@@ -16,7 +16,6 @@ from flask_login import login_user, logout_user, current_user
 
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 client_id = "acd90926-de08-4e7f-bb5d-1c5b2ba7997d"
@@ -366,6 +365,98 @@ def kiemtrama():
     return render_template('kiem_tra_ma.html')
 
 
+@app.route('/admin/')
+def admin():
+    tuyenbays = TuyenBay.query.all()
+    chuyenbays = ChuyenBay.query.all()
+
+    # Tính tổng doanh thu và tổng số chuyến bay
+    total_revenue = sum(ty.doanhThu for ty in tuyenbays)
+    total_flights = sum(ty.soLuotBay for ty in tuyenbays)
+
+    # Tính tổng số ghế và số ghế đã đặt
+    total_seats = sum(cb.GH1 + cb.GH2 for cb in chuyenbays)
+    occupied_seats = sum(cb.GH1_DD + cb.GH2_DD for cb in chuyenbays)
+
+    # Tính tổng giờ bay
+    total_hours = sum((cb.tG_Bay - cb.gio_Bay).total_seconds() / 3600 for cb in chuyenbays)
+
+    # Tính tỷ lệ ghế đã đặt
+    if total_seats > 0:
+        avg_occupancy_rate = round((occupied_seats / total_seats * 100), 2)
+        #Hàm round dùng để hiển thị 2 số thập phân và được làm tròn 1 cách phù hợp
+    else:
+        avg_occupancy_rate = 0
+
+    # Tính tỷ lệ trung bình thời gian bay (giả sử tất cả các chuyến bay đều cất cánh)
+    if total_flights > 0:
+        avg_flight_duration = total_hours / total_flights
+    else:
+        avg_flight_duration = 0
+
+    # Tỷ lệ chuyến bay cất cánh thành công (mặc định  100%)
+    success_rate = 100
+    return render_template('admin.html', total_revenue=total_revenue, total_flights=total_flights,
+                           avg_occupancy_rate=avg_occupancy_rate, avg_flight_duration=avg_flight_duration,
+                           success_rate=success_rate, total_hours=total_hours)
+
+
+@app.route('/admin/thongkebaocao')
+def thongkebaocao():
+    # Tính tổng số tuyến bay
+    total_routes = TuyenBay.query.count()
+
+    # Tính tổng số lượt bay (nếu null thì trả về 0)
+    total_flights = db.session.query(func.sum(TuyenBay.soLuotBay)).scalar() or 0
+
+    # Tính tổng doanh thu (nếu null thì trả về 0)
+    total_revenue = db.session.query(func.sum(TuyenBay.doanhThu)).scalar() or 0
+
+    # Tính tỷ lệ ghế đã đặt
+    total_seats = sum(cb.GH1 + cb.GH2 for cb in ChuyenBay.query.all())
+    occupied_seats = sum(cb.GH1_DD + cb.GH2_DD for cb in ChuyenBay.query.all())
+    avg_occupancy_rate = round((occupied_seats / total_seats * 100), 2) if total_seats > 0 else 0
+
+    # Chuẩn bị label và values cho Chart.js
+    labels = ["Tổng tuyến bay", "Tổng lượt bay", "Tổng doanh thu", "Tỷ lệ ghế đã đặt"]
+    values = [total_routes, total_flights, total_revenue, avg_occupancy_rate]
+
+    return render_template(
+        'thongkebaocao.html',
+        labels=labels,
+        values=values
+    )
+
+@app.route('/admin/quanlynguoidung', methods=['GET', 'POST'])
+def quanlynguoidung():
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        new_roles = request.form.getlist('new_roles')
+
+        try:
+            update_user_roles(user_id, new_roles)
+            flash('Vai trò người dùng đã được cập nhật thành công.', 'success')
+        except Exception as e:
+            flash('Lỗi khi cập nhật vai trò: {}'.format(e), 'error')
+
+        return redirect(url_for('quanlynguoidung'))
+
+    # Truy vấn người dùng và vai trò tương ứng
+    users = NguoiDung.query.all()
+    user_roles = {user.ID_User: [role.ID_VaiTro.name for role in user.roles] for user in users}
+
+    return render_template('quanlynguoidung.html', users=users, user_roles=user_roles)
+
+@app.route('/update_user_roles/<int:user_id>', methods=['GET', 'POST'])
+def edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template('update_user_roles.html', user=user)
+
+
+@app.route('/admin/quanly')
+def quanly():
+    return  render_template('quanly.html')
+
 @login.user_loader
 def load_user(user_id):
     try:
@@ -387,6 +478,22 @@ def load_user(user_id):
         # Xử lý các lỗi khác
         print("Error loading user:", e)
         return None
+
+# @app.route('/admin-login', methods=['POST'])
+# def signin_admin():
+#
+#         username = request.form['username']
+#         password = request.form['password']
+#
+#         user = utils.check_user(username = username, password = password)
+#         if user:
+#             login_user(user=user)
+#             return redirect('/admin')
+#         if not user:
+#             return render_template('admin_login.html'
+#                                    , err_msg="Tên đăng nhập hoặc mật khẩu không đúng")
+
+
 
 
 @app.route("/timkiemchuyenbay", methods=['get', 'post'])

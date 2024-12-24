@@ -12,17 +12,65 @@ import hashlib
 from flask_login import UserMixin
 from sqlalchemy import DateTime
 
-
+# Khai báo Enum Python cho vai trò và giới tính
 class UserRole(RoleEnum):
     NhanVien = 1
     NguoiQuanTri = 2
     KhachHang = 3
     NguoiKiemDuyet = 4
 
-
 class GioiTinh(GioiTinhEnum):
     Nam = 1
     Nu = 2
+
+# ----------------------------------------------------------------------
+# MODELS
+# ----------------------------------------------------------------------
+
+class NguoiDung(db.Model, UserMixin):
+    __tablename__ = 'NguoiDung'
+    ID_User = Column(Integer, primary_key=True, autoincrement=True)
+    HoTen = Column(String(255), nullable=False)
+    Email = Column(String(255), nullable=False)
+    SDT = Column(Integer, nullable=False)
+    TenDangNhap = Column(String(255), nullable=False)
+    MatKhau = Column(String(255), nullable=False)
+    NgaySinh = Column(DateTime, nullable=True)
+    GioiTinh = Column(Enum(GioiTinh), nullable=False)
+    DiaChi = Column(Integer, ForeignKey('DiaChi.ID_DC', ondelete='CASCADE'))
+    Avt = Column(String(255),
+                 default="https://res.cloudinary.com/ddgxultsd/image/upload/v1732958968/tu5tpwmkwetp4ico5liv.png")
+
+    def get_id(self):
+        return str(self.ID_User)
+
+
+class NguoiDung_VaiTro(db.Model):
+    __tablename__ = 'NguoiDung_VaiTro'
+    ID_ND_VT = Column(Integer, primary_key=True, autoincrement=True)
+    ID_User = Column(Integer, ForeignKey('NguoiDung.ID_User', ondelete='CASCADE'))
+    # Dùng Enum của SQLAlchemy, tham chiếu UserRole
+    ID_VaiTro = Column(SqlAlchemyEnum(UserRole, native_enum=False), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('ID_User', 'ID_VaiTro', name='UC_User_VaiTro'),
+    )
+
+
+class NguoiDungQuyDinh(db.Model):
+    __tablename__ = 'NguoiDung_QuyDinh'
+    ID_ND_QD = Column(Integer, primary_key=True, autoincrement=True)
+    ID_NguoiDung = Column(Integer, ForeignKey('NguoiDung.ID_User'), nullable=False)
+    ID_QuyDinh = Column(Integer, ForeignKey('QuyDinh.ID_QuyDinh'), nullable=False)
+    thoiGianSua = Column(DateTime, nullable=True)
+    lyDoSua = Column(String(255), nullable=True)
+
+    nguoi_dung = relationship('NguoiDung', foreign_keys=[ID_NguoiDung])
+    quy_dinh = relationship('QuyDinh', foreign_keys=[ID_QuyDinh])
+
+    __table_args__ = (
+        UniqueConstraint('ID_NguoiDung', 'ID_QuyDinh', 'thoiGianSua', name='unique_nguoidung_quydinh'),
+    )
 
 
 class BaoCao(db.Model):
@@ -34,23 +82,20 @@ class BaoCao(db.Model):
     id_TuyenBay = Column(Integer, ForeignKey('TuyenBay.id_TuyenBay'))
     id_NguoiDung = Column(Integer, ForeignKey('NguoiDung.ID_User'))
     __table_args__ = (
-        UniqueConstraint('thang', 'id_BaoCao', 'id_TuyenBay', name='UC_Thang'),
+        UniqueConstraint('thang', 'id_TuyenBay', name='UC_Thang'),
     )
 
 
 class TuyenBay(db.Model):
     __tablename__ = 'TuyenBay'
-
-    # Khóa chính tự động tăng
     id_TuyenBay = Column(Integer, primary_key=True, autoincrement=True)
-
-    # Các cột dữ liệu
-    tenTuyen = Column(String(255), nullable=False)  # Tên tuyến bay
+    tenTuyen = Column(String(255), nullable=False)
     id_SanBayDi = Column(Integer, ForeignKey('SanBay.id_SanBay'))
     id_SanBayDen = Column(Integer, ForeignKey('SanBay.id_SanBay'))
-    doanhThu = Column(Integer, nullable=True)  # Doanh thu (có thể NULL)
-    soLuotBay = Column(Integer, nullable=True)  # Số lượt bay (có thể NULL)
-    tyLe = Column(Integer, nullable=True)  # Tỷ lệ (có thể NULL)
+    doanhThu = Column(Integer, nullable=True)
+    soLuotBay = Column(Integer, nullable=True)
+    tyLe = Column(Integer, nullable=True)
+
     __table_args__ = (
         UniqueConstraint('id_SanBayDi', 'id_SanBayDen', name='UQ_SanBay'),
     )
@@ -93,6 +138,7 @@ class VeChuyenBay(db.Model):
                           nullable=False)  # Khoá ngoại đến bảng ChuyenBay
 
 
+
 class DiaChi(db.Model):
     __tablename__ = 'DiaChi'
     ID_DC = Column(Integer, primary_key=True, autoincrement=True)
@@ -102,63 +148,11 @@ class DiaChi(db.Model):
     TinhTP = Column(String(255), nullable=False)
 
 
-class NguoiDung(db.Model, UserMixin):
-    __tablename__ = 'NguoiDung'
-    ID_User = Column(Integer, primary_key=True, autoincrement=True)
-    HoTen = Column(String(255), nullable=False)
-    Email = Column(String(255), nullable=False)
-    SDT = Column(Integer, nullable=False)
-    TenDangNhap = Column(String(255), nullable=False)
-    MatKhau = Column(String(255), nullable=False)
-    NgaySinh = Column(DateTime, nullable=True)
-    GioiTinh = Column(Enum(GioiTinh), nullable=False)
-    DiaChi = Column(Integer, ForeignKey('DiaChi.ID_DC', ondelete='CASCADE'))
-    Avt = Column(String(255),
-                 default="https://res.cloudinary.com/ddgxultsd/image/upload/v1732958968/tu5tpwmkwetp4ico5liv.png")
-
-    def get_id(self):
-        return str(self.ID_User)
-
-
-class NguoiDung_VaiTro(db.Model):
-    __tablename__ = 'NguoiDung_VaiTro'
-    ID_ND_VT = Column(Integer, primary_key=True, autoincrement=True)
-    ID_User = Column(Integer, ForeignKey('NguoiDung.ID_User', ondelete='CASCADE'))
-    ID_VaiTro = Column(Enum(UserRole, native_enum=False), nullable=False)
-    __table_args__ = (
-        UniqueConstraint('ID_User', 'ID_VaiTro', name='UC_User_VaiTro'),
-    )
-
-
-class NguoiDungQuyDinh(db.Model):
-    __tablename__ = 'NguoiDung_QuyDinh'
-
-    # Khóa chính
-    ID_ND_QD = Column(Integer, primary_key=True, autoincrement=True)  # Khóa chính tự động tăng
-    ID_NguoiDung = Column(Integer, ForeignKey('NguoiDung.ID_User'),
-                          nullable=False)  # Khóa ngoại đến bảng NguoiDung (ID_User)
-    ID_QuyDinh = Column(Integer, ForeignKey('QuyDinh.ID_QuyDinh'),
-                        nullable=False)  # Khóa ngoại đến bảng QuyDinh (ID_QuyDinh)
-    thoiGianSua = Column(DateTime, nullable=True)  # Thời gian sửa (có thể NULL)
-    lyDoSua = Column(String(255), nullable=True)  # Lý do sửa (có thể NULL)
-
-    # Quan hệ (relationship) với bảng NguoiDung
-    nguoi_dung = relationship('NguoiDung', foreign_keys=[ID_NguoiDung])
-
-    # Quan hệ (relationship) với bảng QuyDinh
-    quy_dinh = relationship('QuyDinh', foreign_keys=[ID_QuyDinh])
-
-    # Đảm bảo không có sự kết hợp trùng lặp giữa NguoiDung và QuyDinh
-    __table_args__ = (
-        UniqueConstraint('ID_NguoiDung', 'ID_QuyDinh', 'thoiGianSua', name='unique_nguoidung_quydinh'),
-    )
-
-
 class SanBay(db.Model):
     __tablename__ = 'SanBay'
     id_SanBay = Column(Integer, primary_key=True, autoincrement=True)
     ten_SanBay = Column(String(255), nullable=False, unique=True)
-    DiaChi = Column(String(255), nullable=True)  # Thông tin địa chỉ Sanbay
+    DiaChi = Column(String(255), nullable=True)
 
 
 class SBayTrungGian(db.Model):
@@ -166,8 +160,8 @@ class SBayTrungGian(db.Model):
     ID = Column(Integer, primary_key=True, autoincrement=True)
     ID_ChuyenBay = Column(Integer, ForeignKey('ChuyenBay.id_ChuyenBay'), nullable=False)
     ID_SanBay = Column(Integer, ForeignKey('SanBay.id_SanBay'), nullable=False)
-    ThoiGianDung = Column(Integer, nullable=False)  # Thời gian dừng (phút)
-    GhiChu = Column(String(255), nullable=True)  # Ghi chú
+    ThoiGianDung = Column(Integer, nullable=False)
+    GhiChu = Column(String(255), nullable=True)
 
 class QuyDinh(db.Model):
         __tablename__ = 'QuyDinh'
@@ -224,7 +218,6 @@ class BangGiaVe(db.Model):
     # Quan hệ với bảng PhuThuDacBiet
     phu_thu = relationship('PhuThuDacBiet', backref='bang_gia_ve')
 
-    # Đảm bảo không có sự kết hợp trùng lặp giữa SanBayDi, SanBayDen và LoaiHangGhe
     __table_args__ = (
         UniqueConstraint('ID_SanBayDi', 'ID_SanBayDen', 'LoaiHangGhe', name='unique_sanbay_hangghe'),
     )
@@ -249,20 +242,20 @@ class QuyDinhSanBay(QuyDinh):
 class PhuThuDacBiet(db.Model):
     __tablename__ = 'PhuThuDacBiet'
     ID = Column(Integer, primary_key=True, autoincrement=True)
-    TenDipLe = Column(String(255), nullable=False)  # Tên dịp lễ
-    NgayBatDau = Column(Date, nullable=False)  # Ngày bắt đầu phụ thu
-    NgayKetThuc = Column(Date, nullable=False)  # Ngày kết thúc phụ thu
-    PhanTramTang = Column(Float, default=0.0)  # Tăng giá theo phần trăm
-    SoTienTang = Column(Float, default=0.0)  # Tăng giá cố định
+    TenDipLe = Column(String(255), nullable=False)
+    NgayBatDau = Column(Date, nullable=False)
+    NgayKetThuc = Column(Date, nullable=False)
+    PhanTramTang = Column(Float, default=0.0)
+    SoTienTang = Column(Float, default=0.0)
 
 
 class ThongTinHanhKhach(db.Model):
     __tablename__ = 'ThongTinHanhKhach'
     ID_HanhKhach = Column(Integer, primary_key=True, autoincrement=True)
-    HoTen = Column(String(255), nullable=False)  # Họ và tên
-    CCCD = Column(String(20), nullable=False, unique=True)  # Căn cước công dân
-    SDT = Column(String(15), nullable=False)  # Số điện thoại
-    ID_User = Column(Integer, ForeignKey('NguoiDung.ID_User'), nullable=False)  # Liên kết với người dùng
+    HoTen = Column(String(255), nullable=False)
+    CCCD = Column(String(20), nullable=False, unique=True)
+    SDT = Column(String(15), nullable=False)
+    ID_User = Column(Integer, ForeignKey('NguoiDung.ID_User'), nullable=False)
 
 
 
@@ -286,7 +279,7 @@ if __name__ == '__main__':
         # # Tạo dữ liệu cho quy định sân bay
         # new_quy_dinh_san_bay = QuyDinhSanBay(
         #     TenQuyDinh="Quy định về sân bay",
-        #     MoTa="Quy định liên quan đến số lượng sân bay, thời gian bay và dừng tại sân bay trung gian.",
+        #     MoTa="Quy định liên quan đến số lượng inhSanBaysân bay, thời gian bay và dừng tại sân bay trung gian.",
         #     LoaiQuyDinh="QuyDinhSanBay",  # Phân biệt loại quy định
         #     SoLuongSanBay=10,  # Số lượng sân bay
         #     ThoiGianBayToiThieu=30,  # Thời gian bay tối thiểu (phút)
