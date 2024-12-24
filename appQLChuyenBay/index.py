@@ -228,6 +228,15 @@ def chucnang():
 
 @app.route("/lap_lich_chuyen_bay", endpoint="lap_lich_chuyen_bay", methods=["GET", "POST"])
 def laplichchuyenbay():
+    # Lấy các quy định từ bảng QuyDinhSanBay
+    quy_dinh = dao.get_quy_dinh_san_bay()
+    thoi_gian_bay_toi_thieu = quy_dinh.ThoiGianBayToiThieu
+    thoi_gian_dung_toi_thieu = quy_dinh.ThoiGianDungToiThieu
+    thoi_gian_dung_toi_da = quy_dinh.ThoiGianDungToiDa
+
+    quy_dinh_ve = dao.get_quy_dinh_ve()
+    GH1 = quy_dinh_ve.SoLuongHangGhe1
+    GH2 = quy_dinh_ve.SoLuongHangGhe2
     if request.method == "POST":
         flight_date = request.form['flight_date']
         TuyenBay = request.form['TuyenBay']
@@ -235,11 +244,9 @@ def laplichchuyenbay():
         first_class_seats = int(request.form['first_class_seats'])
         economy_class_seats = int(request.form['economy_class_seats'])
 
-        # Lấy các quy định từ bảng QuyDinhSanBay
-        quy_dinh = dao.get_quy_dinh_san_bay()
 
         # Kiểm tra thời gian bay tối thiểu
-        thoi_gian_bay_toi_thieu = quy_dinh.ThoiGianBayToiThieu
+
         if flight_duration < thoi_gian_bay_toi_thieu:
             flash(f"Thời gian bay phải lớn hơn {thoi_gian_bay_toi_thieu} phút.", "error")
             return render_template('lap_lich_chuyen_bay.html')
@@ -269,8 +276,7 @@ def laplichchuyenbay():
                 intermediate_airports[index][field] = value
 
         # Kiểm tra thời gian dừng tại sân bay trung gian
-        thoi_gian_dung_toi_thieu = quy_dinh.ThoiGianDungToiThieu
-        thoi_gian_dung_toi_da = quy_dinh.ThoiGianDungToiDa
+
         for airport in intermediate_airports:
             thoi_gian_dung = int(airport.get("duration", 0))
             if thoi_gian_dung < thoi_gian_dung_toi_thieu:
@@ -286,7 +292,9 @@ def laplichchuyenbay():
 
         return redirect(url_for('lap_lich_chuyen_bay'))
 
-    return render_template('lap_lich_chuyen_bay.html')
+    return render_template('lap_lich_chuyen_bay.html', thoi_gian_bay_toi_thieu = thoi_gian_bay_toi_thieu,
+    thoi_gian_dung_toi_thieu = thoi_gian_dung_toi_thieu,
+    thoi_gian_dung_toi_da = thoi_gian_dung_toi_da, GH1=GH1, GH2=GH2)
 
 
 from dao import get_filtered_flights
@@ -327,38 +335,6 @@ def danhsachchuyenbay():
             })
 
     return render_template('danhsachchuyenbay.html', flights=flight_info, pagination=flights)
-
-@app.route("/api/danhsachchuyenbay", methods=["POST"])
-def api_danhsachchuyenbay():
-    data = request.json
-    noi_di = data.get('SanBayDi', None)
-    noi_den = data.get('SanBayDen', None)
-    thoi_gian = data.get('ThoiGian', None)
-    gh1 = data.get('GH1', None)
-    gh2 = data.get('GH2', None)
-
-    # Gọi hàm DAO để lọc chuyến bay
-    flights = dao.get_filtered_flights(noi_di, noi_den, thoi_gian, gh1, gh2, page=1, per_page=10)
-
-    # Chuyển dữ liệu chuyến bay thành JSON
-    result = []
-    for flight in flights.items:
-        route = dao.get_route_name_by_id(flight.id_TuyenBay)
-        sân_bay_trung_gian = dao.get_route_sanbaytrunggian_by_id(flight.id)
-
-        if route:
-            result.append({
-                "id": flight.id,
-                "hành_trình": route.tenTuyen,
-                "thời_gian": flight.gio_Bay.strftime('%d-%m-%Y %H:%M'),
-                "ghế_hạng_1_còn_trống": flight.GH1_con,
-                "ghế_hạng_2_còn_trống": flight.GH2_con,
-                "GH1": flight.GH1,
-                "GH2": flight.GH2,
-                "sân_bay_trung_gian": ', '.join(sân_bay_trung_gian),
-            })
-
-    return jsonify(result)
 
 @app.route('/ban_ve/<int:id_chuyen_bay>', methods=['get', 'post'])
 def banve(id_chuyen_bay):
@@ -722,9 +698,11 @@ def thanhtoanonline():
 def creat_payment():
     domain="http://127.0.0.1:8000" #Xác định domain nội bộ (local) để sử dụng làm URL cho việc hủy hoặc hoàn tất thanh toán.
     try:
-        paymentData = PaymentData(orderCode=random.randint(1000, 99999), amount=2000, description=f"thanh toan ve may bay FL{session['maChuyenBay'] } ",
+        paymentData = PaymentData(orderCode=random.randint(1000, 99999), amount=2000, description=f"thanh toan ve {session['maChuyenBay'] } ",
                                   cancelUrl=f"{domain}/cancel.html", returnUrl=f"{domain}/success.html")
+        print(paymentData)  # In ra paymentData
         payouCreatePayment = payOS.createPaymentLink(paymentData)
+        print(payouCreatePayment)  # In ra paymentData
         return jsonify(payouCreatePayment.to_json())
     except Exception as e:
         return jsonify(error=str(e)), 403

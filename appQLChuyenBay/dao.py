@@ -615,3 +615,6 @@ def save_customer_info(hoTen, cccd, sdt, id_user):
         print(f"Error: {str(e)}")
 
 
+def get_quy_dinh_ve():
+    quy_dinh_ve = db.session.query(QuyDinhVe).filter(QuyDinhVe.ID_QuyDinh == 2).first()
+    return quy_dinh_ve
