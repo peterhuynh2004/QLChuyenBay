@@ -10,8 +10,9 @@ from flask import session, current_app, jsonify
 from flask_sqlalchemy import pagination
 from sqlalchemy import func
 from sqlalchemy import text
+
 from models import NguoiDung, SanBay, NguoiDung_VaiTro, UserRole, ChuyenBay, TuyenBay, SBayTrungGian, VeChuyenBay, \
-    ThongTinHanhKhach, QuyDinhSanBay, QuyDinhBanVe, QuyDinhVe
+    ThongTinHanhKhach, QuyDinhSanBay, QuyDinhBanVe, QuyDinhVe, BangGiaVe
 from appQLChuyenBay import app, db, mail
 import hashlib
 import cloudinary.uploader
@@ -614,4 +615,10 @@ def save_customer_info(hoTen, cccd, sdt, id_user):
         db.session.rollback()  # Rollback nếu có lỗi
         print(f"Error: {str(e)}")
 
-
+def get_GiaVeByByIDSanBay(sanBayDi = None, sanBayDen=None, loaiGhe=None):
+    query = BangGiaVe.query.with_entities(BangGiaVe.Gia_Ve)
+    if sanBayDi and sanBayDen and loaiGhe:
+        query = query.filter(BangGiaVe.ID_SanBayDi == sanBayDi ,
+                             BangGiaVe.ID_SanBayDen == sanBayDen,
+                             BangGiaVe.LoaiHangGhe.__eq__(loaiGhe))
+    return query.first()[0]
